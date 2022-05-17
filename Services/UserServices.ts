@@ -1,12 +1,6 @@
-import AWS from "aws-sdk"
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-let serviceConfigOptions: ServiceConfigurationOptions = {
-  region: process.env.AWS_REGION,
-  endpoint: process.env.AWS_ENDPOINT
-};
-const dynamoDB = new AWS.DynamoDB.DocumentClient(serviceConfigOptions);
+import {dynamoDB} from '../utils/dynamoDB'
 
-export const UserServices = {
+export const userServices = {
     getUserDataService : async(data:any) => {
         return dynamoDB
         .get({
@@ -23,7 +17,7 @@ export const UserServices = {
       return dynamoDB
       .scan({
         TableName: "ArriumShiv",
-        Limit:2,
+        Limit:5,
       })
       .promise()
     }

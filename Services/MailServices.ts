@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     },
   });
   
-  export const MailServices = {
+  export const mailServices = {
       
       
       
@@ -39,7 +39,7 @@ const transporter = nodemailer.createTransport({
 
     },
 
-    sendMailSignupVerifyEmail: async(data:any) => {
+    sendMailEmailVerification: async(data:any) => {
         return transporter.sendMail({
             from: '"Arrium Testing" <devscaleupally@gmail.com>', // sender address
             to: data.email, // list of receivers

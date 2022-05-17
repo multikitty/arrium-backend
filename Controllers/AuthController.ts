@@ -1,16 +1,16 @@
 
 import bcrypt from 'bcryptjs'
-import {AuthServices} from "../Services/AuthServices";
+import {authServices} from "../services/authServices";
 import jwt from 'jsonwebtoken'
-import { config } from '../Utils/config';
-import { MailServices } from '../Services/MailServices';
+import { config } from '../utils/config';
+import { mailServices } from '../services/mailServices';
 
 
-export const AuthController = {
+export const authController = {
     login : async (request:any, response:any) => {
 
         try {
-            await AuthServices.loginService(request.body).then((result:any)=>{
+            await authServices.loginService(request.body).then((result:any)=>{
 
                 var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
                     expiresIn: 86400 // expires in 24 hours
@@ -26,18 +26,14 @@ export const AuthController = {
                                 status: true,
                                 message: 'Getting login data!',
                                 data: result.Items[0],
-                                error_code: false,
-                                error_msg: null,
                                 meta: null
                             })
                         }else{
                             response.status(200)
                             response.send({
                                 status: false,
-                                message: null,
+                                message: "You’re login details are incorrect. Please try again!",
                                 data: [],
-                                error_code: true,
-                                error_msg: "You’re login details are incorrect. Please try again!",
                                 meta: null
                             })
                         }
@@ -46,10 +42,8 @@ export const AuthController = {
                         response.status(200)
                         response.send({
                             status: false,
-                            message: null,
+                            message: "You’re login details are incorrect. Please try again",
                             data: [],
-                            error_code: true,
-                            error_msg: "You’re login details are incorrect. Please try again",
                             meta: error
                         })
                     })
@@ -60,10 +54,8 @@ export const AuthController = {
             response.status(200)
             response.send({
                 status: false,
-                message: null,
+                message: "You’re login details are incorrect. Please try again!",
                 data: [],
-                error_code: true,
-                error_msg: "You’re login details are incorrect. Please try again!",
                 meta: error
             })
         }
@@ -73,134 +65,156 @@ export const AuthController = {
     
     signupRegistration : async (request:any, response:any) => {
         try {
-            await AuthServices.signupRegistrationService(request.body).then(result =>{
 
-                var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
-                    expiresIn: 86400 // expires in 24 hours
-                });
+            await authServices.signupCheckExistEmail(request.body).then((res:any) =>{
+                if(res.Count > 0){
+                    response.status(200)
+                    response.send({
+                        status: false,
+                        message: "An account already exists for this email address",
+                        data: [],
+                        meta: null
+                    }) 
+                }else{
+                     authServices.signupRegistrationService(request.body).then(result =>{
+        
+                        var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
+                            expiresIn: 86400 // expires in 24 hours
+                        });
 
-                response.status(200)
-                response.send({
-                    status: true,
-                    message: 'User Registration Success!',
-                    data: token,
-                    error_code: false,
-                    error_msg: null,
-                    meta: null
-                }) 
+                       const emailData= {
+                            email: request.body.email,
+                            token: token,
+                        }
+
+                        mailServices.sendMailEmailVerification(emailData).then(res =>{
+                            console.log('getting success mail', res)
+                        })
+                        .catch(error =>{
+                            console.log('Ooops getting error on email send', error)
+                        })
+        
+                        response.status(200)
+                        response.send({
+                            status: true,
+                            message: 'User Registration Success!',
+                            data: token,
+                            meta: null
+                        }) 
+                    })
+                }
             })
+
         } catch (error) {
-            console.log('signup registration error', error)
+            response.status(200)
+            response.send({
+                status: false,
+                message: 'Something went wrong while Registration!',
+                data: [],
+                meta: error
+            }) 
         }
     },
     
     signupAccountInfo : async (request:any, response:any) => {
         try {
-            await AuthServices.AccountInfoService(request.body).then(result => {
+            await authServices.AccountInfoService(request.body).then(result => {
                 response.status(200)
                 response.send({
                     status: true,
                     message: 'Getting login data!',
                     data: result.Attributes,
-                    error_code: false,
-                    error_msg: null,
                     meta: null
                 }) 
             })
         } catch (error) {
             console.log('Oops something went wrong on signup account info', error)
+            response.status(200)
+                response.send({
+                    status: true,
+                    message: 'Someting went wrong on Account Info!',
+                    meta: error
+                }) 
         }
     },
     
+
     
     signupOTPConfirmation : async (request:any, response:any) => {
         try {
-            await AuthServices.SignupOTPConfirmationService(request.body).then(result => {
-                // console.log('getting result response', result)
-                if(result){
-                    response.status(200)
-                    response.send({
-                        status: true,
-                        message: 'OTP verified successfully!',
-                        data: [],
-                        error_code: false,
-                        error_msg: null,
-                        meta: null
-                    })
-                }else{
-                    response.status(200)
-                    response.send({
-                        status: false,
-                        message: null,
-                        data: result,
-                        error_code: true,
-                        error_msg: "Invalid OTP please try again",
-                        meta: null
-                    })
-                }
-            })
+            if(request.body.otp === "1234"){
+                await authServices.SignupOTPConfirmationService(request.body).then(result => {
+                    // console.log('getting result response', result)
+                    if(result){
+                        response.status(200)
+                        response.send({
+                            status: true,
+                            message: 'OTP verified successfully!',
+                            data: [],
+                            meta: null
+                        })
+                    }else{
+                        response.status(200)
+                        response.send({
+                            status: false,
+                            message: "Invalid OTP please try again",
+                            data: [],
+                            meta: null
+                        })
+                    }
+                })
+            }else{
+                response.status(200)
+                response.send({
+                    status: false,
+                    message: "Invalid OTP please try again",
+                    data: [],
+                    meta: null
+                })
+            }
         } catch (error) {
-            console.log('Oops something went wrong on otp confirmation', error)
+            response.status(200)
+            response.send({
+                status: false,
+                message: "Someting went wrong on OTP verification!",
+                data: [],
+                meta: error
+            })
         }
     },
 
     signupAmazonFlexInfo : async (request:any, response:any) => {
         try {
-            await AuthServices.signupAmazonFlexInfoService(request.body).then(result =>{
+            await authServices.signupAmazonFlexInfoService(request.body).then(result =>{
                 if(result){
                     response.status(200)
                     response.send({
                         status: true,
                         message: 'Amazon Flex info added successfully!',
                         data: result,
-                        error_code: false,
-                        error_msg: null,
                         meta: null
                     })
                 } else{
                     response.status(200)
                     response.send({
                         status: false,
-                        message: null,
+                        message: "We are unable to verify your email",
                         data: result,
-                        error_code: true,
-                        error_msg: "We are unable to verify your email",
                         meta: null
                     })
                 }
             })
         } catch (error) {
-            console.log('Oops something went wrong on adding amazon flex info', error)
-        }
-    },
-
-    signupSendMail: async (request:any, response:any) => {
-        try {
-            await AuthServices.signupSendMailService(request.body).then((result:any) => {
-
-                var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
-                    expiresIn: 86400 // expires in 24 hours
-                });
-
-                result.Item["token"] = token;
-
-                if(result.Item){
-                    // MailServices.sendMailSignupVerifyEmail(result.Item).then(res => {
-                        response.send({
-                            status: true,
-                            message: 'Email sent successfully!',
-                            data: [],
-                            error_code: false,
-                            error_msg: null,
-                            meta: null
-                        })
-                    // })
-                }
+            response.status(200)
+            response.send({
+                status: false,
+                message: "Someting went wrong while email verification!",
+                data: [],
+                meta: error
             })
-        } catch (error) {
-            console.log('error at sending mail', error)
         }
     },
+
 
     signupEmailVerify : async (request:any, response:any) => {
         try {
@@ -218,14 +232,12 @@ export const AuthController = {
             //     request.body.pk = decoded.pk;
             //     request.body.sk = decoded.sk;
             // })
-            await AuthServices.signupEmailVerifyService(request.body).then(result => {
+            await authServices.signupEmailVerifyService(request.body).then(result => {
                 response.status(200)
                 response.send({
                     status: true,
                     message: 'Your email verified successfully!',
                     data: [],
-                    error_code: false,
-                    error_msg: null,
                     meta: null
                 }) 
             })
@@ -237,7 +249,7 @@ export const AuthController = {
 
     forgotPassword : async (request:any, response:any) => {
         try {
-            await AuthServices.forgotPasswordService(request.body).then((result:any) => {
+            await authServices.forgotPasswordService(request.body).then((result:any) => {
 
                 if(result !== false){
                     var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
@@ -247,33 +259,27 @@ export const AuthController = {
                     result["token"] = token;
     
                     try {
-                         MailServices.sendMailForgotPassword(result).then((res)=>{
+                         mailServices.sendMailForgotPassword(result).then((res)=>{
                             response.send({
                                 status: true,
                                 message: 'Email sent successfully!',
                                 data: res,
-                                error_code: false,
-                                error_msg: null,
                                 meta: null
                             })
                         })
                         .catch(error => {
                             response.send({
-                                status: true,
-                                message: null,
+                                status: false,
+                                message: "We are unable to send mail!",
                                 data: [],
-                                error_code: true,
-                                error_msg: "We are unable to send mail!",
                                 meta: error
                             })
                         })
                     } catch (error) {
                         response.send({
                             status: false,
-                            message: null,
+                            message: "Something went wrong while sending mail",
                             data: [],
-                            error_code: true,
-                            error_msg: "Something went wrong while sending mail",
                             meta: error
                         })
                     }
@@ -282,10 +288,8 @@ export const AuthController = {
                     response.status(200)
                     response.send({
                         status: false,
-                        message: null,
+                        message: "Invalid Email Address!",
                         data: [],
-                        error_code: true,
-                        error_msg: "Invalid Email Address!",
                         meta: null
                     })
                 }
@@ -294,10 +298,8 @@ export const AuthController = {
             response.status(200)
             response.send({
                 status: false,
-                message: null,
+                message: "Oops something went wrong!",
                 data: [],
-                error_code: true,
-                error_msg: "Oops something went wrong!",
                 meta: error
             })
         }
@@ -307,23 +309,19 @@ export const AuthController = {
     forgotPasswordReset: async (request:any, response:any) => {
 
         try {
-            await AuthServices.forgotPasswordResetService(request.body).then(result =>{
+            await authServices.forgotPasswordResetService(request.body).then(result =>{
                 response.send({
                     status: true,
                     message: 'Password Updated successfully!',
                     data: [],
-                    error_code: false,
-                    error_msg: null,
                     meta: null
                 })
             })
         } catch (error) {
             response.send({
                 status: false,
-                message: null,
+                message: "Unable to update Password",
                 data: [],
-                error_code: true,
-                error_msg: "Unable to update Password",
                 meta: error
             })
         }
@@ -336,17 +334,13 @@ export const AuthController = {
                 status: true,
                 message: 'Token verified successfully!',
                 data: [],
-                error_code: false,
-                error_msg: null,
                 meta: null
             })
         }else{
             response.send({
                 status: false,
-                message: null,
+                message: "Invalid Token Failed to authenticate token",
                 data: [],
-                error_code: true,
-                error_msg: "Invalid Token Failed to authenticate token",
                 meta: null
             }) 
         }

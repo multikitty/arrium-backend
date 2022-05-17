@@ -1,12 +1,10 @@
-import { UserServices } from "../Services/UserServices"
+import { userServices } from "../services/userServices"
 
 
-export const UserController = {
+export const userController = {
     getUserData : async (request:any, response:any) =>{
        try {
-        //    console.log('getting sk pk', request.body.sk, request.body.pk)
-            await UserServices.getUserDataService(request.body).then(result =>{
-                // console.log('hi getting response', result)
+            await userServices.getUserDataService(request.body).then(result =>{
                 if(result.Item){
                     
                     delete result.Item.password;
@@ -17,8 +15,6 @@ export const UserController = {
                         status: true,
                         message: 'User data retrived successfully!',
                         data: result.Item,
-                        error_code: false,
-                        error_msg: null,
                         meta: null
                     })
                 }
@@ -27,10 +23,8 @@ export const UserController = {
             response.status(200)
             response.send({
                 status: false,
-                message: null,
+                message: "Something went wrong while getting users",
                 data: [],
-                error_code: true,
-                error_msg: null,
                 meta: error
             })
        }
@@ -39,11 +33,33 @@ export const UserController = {
 
     getAllUsers : async (request:any, response:any) => {
         try {
-            await UserServices.getAllUsersService(request.body).then(result => {
-                console.log('getting all users', result)
+            await userServices.getAllUsersService(request.body).then((result:any) => {
+               if(result.Items.length > 0) {
+                    response.status(200)
+                    response.send({
+                        status: true,
+                        message: 'User data retrived successfully!',
+                        data: result.Items,
+                        meta: null
+                    })
+               }else{
+                    response.status(200)
+                    response.send({
+                        status: false,
+                        message: "No Customers Found",
+                        data: [],
+                        meta: null
+                    })
+               }
             })
         } catch (error) {
-            
+            response.status(200)
+            response.send({
+                status: false,
+                message: "Something went wrong while gettting All Customers",
+                data: [],
+                meta: error
+            })
         }
     }
 }

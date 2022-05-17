@@ -1,11 +1,11 @@
-import { config } from "../Utils/config";
+import { config } from "../utils/config";
 import jwt from 'jsonwebtoken'
 
 
-export const auth = (request:any, response:any, next:any) => {
+export const authentication = (request:any, response:any, next:any) => {
     var token = request.headers['x-access-token'];
 
-    if (!token)
+    if (!token) 
     return response.status(200).send({
             status: false,
             message: null,

@@ -1,23 +1,22 @@
 import bcrypt from 'bcryptjs'
-// import { customAlphabet } from "nanoid";
-// const nanoid = customAlphabet(
-//   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-//   5
-// );
+import {dynamoDB} from '../utils/dynamoDB'
+
+export const authServices = {
 
 
+  signupCheckExistEmail: async (data: any) => {
+    return dynamoDB.scan({
+      TableName: "ArriumShiv",
+      FilterExpression:
+        "contains(email, :email)",
+      ExpressionAttributeValues: {
+        ":email": data.email,
+      },
+    })
+      .promise()
+  },
 
-import AWS from "aws-sdk"
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-let serviceConfigOptions: ServiceConfigurationOptions = {
-  region: process.env.AWS_REGION,
-  endpoint: process.env.AWS_ENDPOINT
-};
-const dynamoDB = new AWS.DynamoDB.DocumentClient(serviceConfigOptions);
 
-
-
-export const AuthServices = {
   signupRegistrationService: async (data: any) => {
     return dynamoDB.put({
       Item: {
