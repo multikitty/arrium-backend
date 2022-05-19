@@ -1,13 +1,13 @@
 
 import bcrypt from 'bcryptjs'
-import {authServices} from "../services/authServices";
+import { authServices } from "../services/authServices";
 import jwt from 'jsonwebtoken'
 import { config } from '../utils/config';
 import { mailServices } from '../services/mailServices';
 
 
 export const authController = {
-    login : async (request:any, response:any) => {
+    login: async (request: any, response: any) => {
 
         try {
             await authServices.loginService(request.body).then((result:any)=>{
@@ -15,12 +15,16 @@ export const authController = {
                 var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
                     expiresIn: 86400 // expires in 24 hours
                 });
-    
+
                 result.Items[0]["token"] = token;
-    
+
                 bcrypt.compare(request.body.password, result.Items[0].password)
                     .then(authenticated => {
                         if(authenticated === true){
+
+                            delete result.Items[0].password;
+                            delete result.Items[0].amznFlexPassword;
+
                             response.status(200)
                             response.send({
                                 status: true,
@@ -47,9 +51,9 @@ export const authController = {
                             meta: error
                         })
                     })
-    
+
             })
-            
+
         } catch (error) {
             response.status(200)
             response.send({
@@ -59,48 +63,78 @@ export const authController = {
                 meta: error
             })
         }
-    
-      },
-    
-    
-    signupRegistration : async (request:any, response:any) => {
+
+    },
+
+
+    signupRegistration: async (request: any, response: any) => {
         try {
 
-            await authServices.signupCheckExistEmail(request.body).then((res:any) =>{
-                if(res.Count > 0){
+            await authServices.signupCheckExistEmail(request.body).then((res: any) => {
+                if (res.Count > 0) {
                     response.status(200)
                     response.send({
                         status: false,
                         message: "An account already exists for this email address",
                         data: [],
                         meta: null
-                    }) 
-                }else{
-                     authServices.signupRegistrationService(request.body).then(result =>{
-        
-                        var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
+                    })
+                } else {
+                   authServices.signupRegistrationService(request.body).then(result => {
+
+                        var token = jwt.sign({ pk: (`u#${request.body.email}`), sk: (`login#${request.body.email}`) }, config.secret, {
                             expiresIn: 86400 // expires in 24 hours
                         });
 
-                       const emailData= {
+                        const emailData = {
                             email: request.body.email,
                             token: token,
                         }
-
-                        mailServices.sendMailEmailVerification(emailData).then(res =>{
-                            console.log('getting success mail', res)
+                        //send email verifcation link
+                        mailServices.sendMailEmailVerification(emailData).then(res => {
+                            // console.log('getting success mail', res)
                         })
-                        .catch(error =>{
+                        .catch(error => {
                             console.log('Ooops getting error on email send', error)
                         })
-        
+
+                        //generate 6digit Customer ID
+                        let randomNumber = "9"+(Math.floor(Math.random()*90000) + 10000);
+                        request.body["randomNumber"] = randomNumber;
+                        authServices.findIfCustomerIdExist(randomNumber).then(res => {
+                            // console.log('getting body data', request.body)
+                            if (res.Count === 0) {
+                                // console.log('getting response here need to add customer id', res)
+                                authServices.addCustomerId(request.body)
+                                .then(res =>{
+                                    // console.log('getting response after add id', res)
+                                })
+                                    .catch(err => {
+                                        console.log('unable to add customer id', err)
+                                    })
+                            } else {
+                                let randomNumber = "9" + (Math.floor(Math.random() * 90000) + 10000);
+                                request.body["randomNumber"] = randomNumber;
+                                authServices.addCustomerId(request.body).then(res => {
+                                    // console.log('customer id added', res)
+                                }).catch(err => {
+                                    console.log('unable to update customer ID', err)
+                                })
+
+                            }
+                        })
+                        .catch(err => {
+                            console.log('unable to update customer ID', err)
+                        })
+                        //generate customer ID end
+
                         response.status(200)
                         response.send({
                             status: true,
                             message: 'User Registration Success!',
                             data: token,
                             meta: null
-                        }) 
+                        })
                     })
                 }
             })
@@ -112,11 +146,11 @@ export const authController = {
                 message: 'Something went wrong while Registration!',
                 data: [],
                 meta: error
-            }) 
+            })
         }
     },
-    
-    signupAccountInfo : async (request:any, response:any) => {
+
+    signupAccountInfo: async (request: any, response: any) => {
         try {
             await authServices.AccountInfoService(request.body).then(result => {
                 response.status(200)
@@ -125,27 +159,27 @@ export const authController = {
                     message: 'Getting login data!',
                     data: result.Attributes,
                     meta: null
-                }) 
+                })
             })
         } catch (error) {
             console.log('Oops something went wrong on signup account info', error)
             response.status(200)
-                response.send({
-                    status: true,
-                    message: 'Someting went wrong on Account Info!',
-                    meta: error
-                }) 
+            response.send({
+                status: true,
+                message: 'Someting went wrong on Account Info!',
+                meta: error
+            })
         }
     },
-    
 
-    
-    signupOTPConfirmation : async (request:any, response:any) => {
+
+
+    signupOTPConfirmation: async (request: any, response: any) => {
         try {
-            if(request.body.otp === "1234"){
+            if (request.body.otp === "1234") {
                 await authServices.SignupOTPConfirmationService(request.body).then(result => {
                     // console.log('getting result response', result)
-                    if(result){
+                    if (result) {
                         response.status(200)
                         response.send({
                             status: true,
@@ -153,21 +187,21 @@ export const authController = {
                             data: [],
                             meta: null
                         })
-                    }else{
+                    } else {
                         response.status(200)
                         response.send({
                             status: false,
-                            message: "Invalid OTP please try again",
+                            message: "Incorrect OTP. Please try again, or go back to re-enter your number",
                             data: [],
                             meta: null
                         })
                     }
                 })
-            }else{
+            } else {
                 response.status(200)
                 response.send({
                     status: false,
-                    message: "Invalid OTP please try again",
+                    message: "Incorrect OTP. Please try again, or go back to re-enter your number",
                     data: [],
                     meta: null
                 })
@@ -183,10 +217,10 @@ export const authController = {
         }
     },
 
-    signupAmazonFlexInfo : async (request:any, response:any) => {
+    updateAmazonFlexInfo: async (request: any, response: any) => {
         try {
-            await authServices.signupAmazonFlexInfoService(request.body).then(result =>{
-                if(result){
+            await authServices.updateAmazonFlexInfoService(request.body).then(result => {
+                if (result) {
                     response.status(200)
                     response.send({
                         status: true,
@@ -194,7 +228,7 @@ export const authController = {
                         data: result,
                         meta: null
                     })
-                } else{
+                } else {
                     response.status(200)
                     response.send({
                         status: false,
@@ -215,31 +249,49 @@ export const authController = {
         }
     },
 
-
-    signupEmailVerify : async (request:any, response:any) => {
+    sendEmailVerify : async(request: any, response: any) =>{
         try {
-            // const token = request.query.token
-            // jwt.verify(token, config.secret, function(err:any, decoded:any) {
-            //     if (err)
-            //     return response.status(200).send({
-            //         status: false,
-            //         message: null,
-            //         data: [],
-            //         error_code: true,
-            //         error_msg: "Failed to authenticate token",
-            //         meta: err
-            //        });
-            //     request.body.pk = decoded.pk;
-            //     request.body.sk = decoded.sk;
-            // })
-            await authServices.signupEmailVerifyService(request.body).then(result => {
+            var token = jwt.sign({ pk: request.body.pk, sk: request.body.sk }, config.secret, {
+                expiresIn: '10m' // expires in 24 hours
+            });
+
+            const emailData = {
+                email: request.body.email,
+                token: token,
+            }
+            //send email verifcation link
+            mailServices.sendMailEmailVerification(emailData).then(res => {
+                response.status(200)
+                response.send({
+                    status: true,
+                    message: 'A Verification email sent successfully!',
+                    data: [],
+                    meta: null
+                })
+            })
+            
+        } catch (error) {
+            response.status(200)
+            response.send({
+                status: false,
+                message: 'Oops something went wrong on sending email varification!',
+                data: [],
+                meta: null
+            })
+        }
+    },
+
+
+    updateEmailVerify: async (request: any, response: any) => {
+        try {
+            await authServices.updateEmailVerifyService(request.body).then(result => {
                 response.status(200)
                 response.send({
                     status: true,
                     message: 'Your email verified successfully!',
                     data: [],
                     meta: null
-                }) 
+                })
             })
         } catch (error) {
             console.log('Oops something went wrong on email verification', error)
@@ -247,19 +299,19 @@ export const authController = {
     },
 
 
-    forgotPassword : async (request:any, response:any) => {
+    forgotPassword: async (request: any, response: any) => {
         try {
-            await authServices.forgotPasswordService(request.body).then((result:any) => {
+            await authServices.forgotPasswordService(request.body).then((result: any) => {
 
-                if(result !== false){
-                    var token = jwt.sign({ pk: (`u#${request.body.email}`), sk:(`login#${request.body.email}`) }, config.secret, {
+                if (result !== false) {
+                    var token = jwt.sign({ pk: (`u#${request.body.email}`), sk: (`login#${request.body.email}`) }, config.secret, {
                         expiresIn: '10m'
                     });
 
                     result["token"] = token;
-    
+
                     try {
-                         mailServices.sendMailForgotPassword(result).then((res)=>{
+                        mailServices.sendMailForgotPassword(result).then((res) => {
                             response.send({
                                 status: true,
                                 message: 'Email sent successfully!',
@@ -267,14 +319,14 @@ export const authController = {
                                 meta: null
                             })
                         })
-                        .catch(error => {
-                            response.send({
-                                status: false,
-                                message: "We are unable to send mail!",
-                                data: [],
-                                meta: error
+                            .catch(error => {
+                                response.send({
+                                    status: false,
+                                    message: "We are unable to send mail!",
+                                    data: [],
+                                    meta: error
+                                })
                             })
-                        })
                     } catch (error) {
                         response.send({
                             status: false,
@@ -284,7 +336,7 @@ export const authController = {
                         })
                     }
 
-                }else{
+                } else {
                     response.status(200)
                     response.send({
                         status: false,
@@ -306,10 +358,10 @@ export const authController = {
     },
 
 
-    forgotPasswordReset: async (request:any, response:any) => {
+    forgotPasswordReset: async (request: any, response: any) => {
 
         try {
-            await authServices.forgotPasswordResetService(request.body).then(result =>{
+            await authServices.setNewPasswordService(request.body).then(result => {
                 response.send({
                     status: true,
                     message: 'Password Updated successfully!',
@@ -328,24 +380,24 @@ export const authController = {
     },
 
 
-    verifyForgotToken: async (request:any, response:any) => {
-        if(request.body.pk && request.body.sk){
+    verifyForgotToken: async (request: any, response: any) => {
+        if (request.body.pk && request.body.sk) {
             response.send({
                 status: true,
                 message: 'Token verified successfully!',
                 data: [],
                 meta: null
             })
-        }else{
+        } else {
             response.send({
                 status: false,
                 message: "Invalid Token Failed to authenticate token",
                 data: [],
                 meta: null
-            }) 
+            })
         }
     }
 
-    
+
 }
 

@@ -1,24 +1,92 @@
-import {dynamoDB} from '../utils/dynamoDB'
+import { dynamoDB } from '../utils/dynamoDB'
 
 export const userServices = {
-    getUserDataService : async(data:any) => {
-        return dynamoDB
-        .get({
-          TableName: "ArriumShiv",
-          Key: {
-            pk: data.pk,
-            sk: data.sk
-          },
-        })
-        .promise()
-    },
-
-    getAllUsersService: async(data:any) => {
-      return dynamoDB
-      .scan({
+  getUserDataService: async (data: any) => {
+    return dynamoDB
+      .get({
         TableName: "ArriumShiv",
-        Limit:5,
+        Key: {
+          pk: data.pk,
+          sk: data.sk
+        },
       })
       .promise()
-    }
+  },
+
+  getAllUsersService: async (data: any) => {
+    return dynamoDB
+      .scan({
+        TableName: "ArriumShiv",
+        Limit: 5,
+      })
+      .promise()
+  },
+
+  updateProfileService: async (data: any) => {
+    return dynamoDB
+      .update({
+        TableName: "ArriumShiv",
+        Key: {
+          pk: data.pk,
+          sk: data.sk,
+        },
+        UpdateExpression: `set ${data.fieldName} = :fieldName`,
+        ExpressionAttributeValues: {
+          ":fieldName": data.fieldValue,
+        },
+        ReturnValues: "ALL_NEW",//will return all Attributes in response
+      })
+      .promise()
+  },
+
+  updateEmailService: async (data:any) => {
+    return dynamoDB
+      .update({
+        TableName: "ArriumShiv",
+        Key: {
+          sk: data.sk,
+          pk: data.pk
+        },
+        UpdateExpression: `set email = :email, emailVerified = :emailVerified, sk = :sk, pk = :pk`,
+        ExpressionAttributeValues: {
+          ":email": data.fieldValue,
+          ":emailVerified": "unverified",
+          ":sk": `login#${data.fieldValue}`,
+          ":pk": `u#${data.fieldValue}`
+        },
+        ReturnValues: "ALL_NEW",
+      })
+      .promise()
+  },
+
+  currentPasswordService : async(data:any) => {
+    return dynamoDB.get({
+      TableName: "ArriumShiv",
+      Key: {
+        pk: data.pk,
+        sk: data.sk
+      },
+      AttributesToGet: ['password']
+    })
+      .promise()
+  },
+
+  updatePhoneNumberService: async (data: any) => {
+    return dynamoDB
+      .update({
+        TableName: "ArriumShiv",
+        Key: {
+          sk: data.sk,
+          pk: data.pk
+        },
+        UpdateExpression: `set phoneNumber= :phoneNumber, phoneVerified= :phoneVerified`,
+        ExpressionAttributeValues: {
+          ":phoneNumber": data.phoneNumber,
+          ":phoneVerified": "unverified"
+        },
+        ReturnValues: "ALL_NEW",//will return all Attributes in response
+      })
+      .promise()
+  }
+
 }

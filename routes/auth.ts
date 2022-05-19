@@ -37,13 +37,13 @@ router.post('/login', authController.login)
 router.post('/signup-registration', authController.signupRegistration)
 router.post('/signup-account-info', authentication, authController.signupAccountInfo)
 router.post('/signup-otp-confirmation', authentication, authController.signupOTPConfirmation)
-router.post('/signup-amazon-flex-info', authentication, authController.signupAmazonFlexInfo)
-router.post('/signup-verify-email', authentication, authController.signupEmailVerify)
-
+router.post('/update-amazon-flex-info', authentication, authController.updateAmazonFlexInfo)
 router.post('/forgot-password', authController.forgotPassword)
 router.post('/forgot-password-verify-token', authentication, authController.verifyForgotToken)
 router.post('/forgot-password-reset', authentication, authController.forgotPasswordReset)
-router.post('/mark-verify-email', authentication, authController.signupEmailVerify)
+
+router.post('/send-email-verify', authentication, authController.sendEmailVerify)
+router.post('/update-verify-email', authentication, authController.updateEmailVerify)
 
 
 export = router

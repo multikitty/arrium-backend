@@ -8,10 +8,8 @@ export const authentication = (request:any, response:any, next:any) => {
     if (!token) 
     return response.status(200).send({
             status: false,
-            message: null,
+            message: "No token Provided",
             data: [],
-            error_code: true,
-            error_msg: "No token Provided",
             meta: null
           })
 
@@ -19,10 +17,8 @@ export const authentication = (request:any, response:any, next:any) => {
         if (err)
         return response.status(200).send({
           status: false,
-          message: null,
+          message: "Failed to authenticate token",
           data: [],
-          error_code: true,
-          error_msg: "Failed to authenticate token",
           meta: err
          });
         //  console.log('getting data', decoded)
