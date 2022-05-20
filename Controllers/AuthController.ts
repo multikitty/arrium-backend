@@ -132,7 +132,7 @@ export const authController = {
                         response.send({
                             status: true,
                             message: 'User Registration Success!',
-                            data: token,
+                            data: {token},
                             meta: null
                         })
                     })
