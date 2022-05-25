@@ -11,7 +11,13 @@ import { authSchema } from "../validationSchema/authSchema";
 router.get("/user-data", authentication, userController.getUserData);
 router.get("/get-all-users", authentication, userController.getAllUsers);
 
-router.post("/update-profile", authentication, userController.updateProfile);
+router.post(
+  "/update-profile",
+  authSchema.updateProfile,
+  validationSchema,
+  authentication,
+  userController.updateProfile
+);
 router.post(
   "/change-password",
   authSchema.resetPasswordSchema,

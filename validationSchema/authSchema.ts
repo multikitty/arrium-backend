@@ -16,7 +16,13 @@ export const authSchema = {
       .isEmpty()
       .withMessage("Password is required")
       .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long."),
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must have at least one character lowercase")
+      .matches(/[A-Z]/)
+      .withMessage("Password must have at least one character uppercase")
+      .matches(/\d/)
+      .withMessage("Password must contain number characters"),
   ],
 
   //Validation for signup Registration
@@ -139,5 +145,18 @@ export const authSchema = {
       .withMessage("OTP is required")
       .isLength({ min: 4, max: 4 })
       .withMessage("Please provide valid OTP"),
+  ],
+
+  updateProfile: [
+    body("fieldName")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please provide Fieldname!"),
+    body("fieldValue")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please provide Fieldvalue"),
   ],
 };
