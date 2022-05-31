@@ -7,9 +7,9 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please enter email!")
+      .withMessage("Please enter email address")
       .isEmail()
-      .withMessage("Please enter valid email!"),
+      .withMessage("Please enter a valid email address"),
     body("password")
       .trim()
       .not()
@@ -31,16 +31,22 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please enter email!")
+      .withMessage("Please enter email address")
       .isEmail()
-      .withMessage("Please enter valid email!"),
+      .withMessage("Please enter a valid email address"),
     body("password")
       .trim()
       .not()
       .isEmpty()
       .withMessage("Password is required")
       .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long."),
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must have at least one character lowercase")
+      .matches(/[A-Z]/)
+      .withMessage("Password must have at least one character uppercase")
+      .matches(/\d/)
+      .withMessage("Password must contain number characters"),
   ],
 
   //validation for signup Account Information
@@ -50,21 +56,21 @@ export const authSchema = {
       .not()
       .isEmpty()
       .withMessage("First name is required")
-      .isLength({ min: 2 })
+      .isLength({ min: 2, max: 40 })
       .withMessage("Please provide valid First name"),
     body("lastname")
       .trim()
       .not()
       .isEmpty()
       .withMessage("Surname is required")
-      .isLength({ min: 2 })
+      .isLength({ min: 2, max: 40 })
       .withMessage("Please provide valid Surname"),
     body("phoneNumber")
       .trim()
       .not()
       .isEmpty()
       .withMessage("Phone number is required")
-      .isLength({ min: 8 })
+      .isLength({ min: 8, max: 13 })
       .withMessage("Please provide valid Phone number"),
     body("tzName")
       .trim()
@@ -91,9 +97,9 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Amazon flex username is required!")
+      .withMessage("Amazon flex username is required")
       .isEmail()
-      .withMessage("Please enter valid Amazon flex username!"),
+      .withMessage("Please enter valid Amazon flex username"),
     body("amznFlexPassword")
       .trim()
       .not()
@@ -108,9 +114,9 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please enter email!")
+      .withMessage("Please enter email address")
       .isEmail()
-      .withMessage("Please enter valid email!"),
+      .withMessage("Please enter a valid email address"),
   ],
 
   resetPasswordSchema: [
@@ -120,14 +126,26 @@ export const authSchema = {
       .isEmpty()
       .withMessage("Password is required")
       .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long."),
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must have at least one character lowercase")
+      .matches(/[A-Z]/)
+      .withMessage("Password must have at least one character uppercase")
+      .matches(/\d/)
+      .withMessage("Password must contain number characters"),
     body("current_password")
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Current password is required")
+      .withMessage("Password is required")
       .isLength({ min: 8 })
-      .withMessage("Current password must be at least 8 characters long."),
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must have at least one character lowercase")
+      .matches(/[A-Z]/)
+      .withMessage("Password must have at least one character uppercase")
+      .matches(/\d/)
+      .withMessage("Password must contain number characters"),
   ],
 
   updatephoneNumberSchema: [
@@ -136,7 +154,7 @@ export const authSchema = {
       .not()
       .isEmpty()
       .withMessage("Phone number is required")
-      .isLength({ min: 8 })
+      .isLength({ min: 8, max: 13 })
       .withMessage("Please provide valid Phone number"),
     body("otp")
       .trim()
@@ -152,7 +170,7 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please provide Fieldname!"),
+      .withMessage("Please provide Fieldname"),
     body("fieldValue")
       .trim()
       .not()
