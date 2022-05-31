@@ -8,7 +8,6 @@ import { authentication } from "../middlewares/authentication";
 import AWS from "aws-sdk";
 import { ServiceConfigurationOptions } from "aws-sdk/lib/service";
 import JsonWebTokenError from "jsonwebtoken";
-import { config } from "../utils/config";
 import { authSchema } from "../validationSchema/authSchema";
 import { validationSchema } from "../middlewares/validationSchema";
 let serviceConfigOptions: ServiceConfigurationOptions = {

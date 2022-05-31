@@ -1,12 +1,10 @@
 import bcrypt from "bcryptjs";
 import { authServices } from "../services/authServices";
 import jwt from "jsonwebtoken";
-import { config } from "../utils/config";
 import { mailServices } from "../services/mailServices";
 
 export const authController = {
   login: async (request: any, response: any) => {
-    console.log("getting auth data", request.body);
     try {
       await authServices.loginService(request.body).then((result: any) => {
         if (result.Count === 0) {
@@ -21,7 +19,7 @@ export const authController = {
               pk: `u#${request.body.email}`,
               sk: `login#${request.body.email}`,
             },
-            config.secret,
+            process.env.JWT_SECRET_KEY as string,
             {
               expiresIn: 86400, // expires in 24 hours
             }
@@ -89,7 +87,7 @@ export const authController = {
                     pk: `u#${request.body.email}`,
                     sk: `login#${request.body.email}`,
                   },
-                  config.secret,
+                  process.env.JWT_SECRET_KEY as string,
                   {
                     expiresIn: 86400, // expires in 24 hours
                   }
@@ -262,7 +260,7 @@ export const authController = {
     try {
       var token = jwt.sign(
         { pk: request.body.pk, sk: request.body.sk },
-        config.secret,
+        process.env.JWT_SECRET_KEY as string,
         {
           expiresIn: "10m", // expires in 24 hours
         }
@@ -316,7 +314,7 @@ export const authController = {
                 pk: `u#${request.body.email}`,
                 sk: `login#${request.body.email}`,
               },
-              config.secret,
+              process.env.JWT_SECRET_KEY as string,
               {
                 expiresIn: "5m",
               }
