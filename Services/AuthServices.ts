@@ -1,23 +1,22 @@
 import bcrypt from 'bcryptjs'
-// import { customAlphabet } from "nanoid";
-// const nanoid = customAlphabet(
-//   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-//   5
-// );
+import {dynamoDB} from '../utils/dynamoDB'
+
+export const authServices = {
 
 
+  signupCheckExistEmail: async (data: any) => {
+    return dynamoDB.scan({
+      TableName: "ArriumShiv",
+      FilterExpression:
+        "contains(email, :email)",
+      ExpressionAttributeValues: {
+        ":email": data.email,
+      },
+    })
+      .promise()
+  },
 
-import AWS from "aws-sdk"
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-let serviceConfigOptions: ServiceConfigurationOptions = {
-  region: process.env.AWS_REGION,
-  endpoint: process.env.AWS_ENDPOINT
-};
-const dynamoDB = new AWS.DynamoDB.DocumentClient(serviceConfigOptions);
 
-
-
-export const AuthServices = {
   signupRegistrationService: async (data: any) => {
     return dynamoDB.put({
       Item: {
@@ -26,13 +25,42 @@ export const AuthServices = {
         email: data.email,
         password: bcrypt.hashSync(data.password, 10),
         refCode: data.refCode,
-        role: "Driver",
+        role: "driver",
         emailVerified: "unverified",
         currentSteps: "Account Info",
         created_at: Date.now() / 1000 | 0 //time in unix
       },
       TableName: "ArriumShiv",
     })
+      .promise()
+  },
+
+  findIfCustomerIdExist:async (data: any) => {
+    return dynamoDB.scan({
+      TableName: "ArriumShiv",
+      FilterExpression:
+        "contains(customerID, :customerID)",
+      ExpressionAttributeValues: {
+        ":customerID": data,
+      },
+    })
+      .promise()
+  },
+
+  addCustomerId:async (data: any) => {
+    return dynamoDB
+      .update({
+        TableName: "ArriumShiv",
+        Key: {
+          pk: "u#"+data.email,
+          sk: "login#"+data.email,
+        },
+        UpdateExpression: `set customerID = :customerID`,
+        ExpressionAttributeValues: {
+          ":customerID": data.randomNumber,
+        },
+        ReturnValues: "ALL_NEW",//will return all Attributes in response
+      })
       .promise()
   },
 
@@ -92,7 +120,7 @@ export const AuthServices = {
       .promise()
   },
   
-  signupAmazonFlexInfoService: async (data: any) => {
+  updateAmazonFlexInfoService: async (data: any) => {
     return dynamoDB
       .update({
         TableName: "ArriumShiv",
@@ -124,7 +152,7 @@ export const AuthServices = {
       .promise()
   },
 
-  signupEmailVerifyService: async (data: any) => {
+  updateEmailVerifyService: async (data: any) => {
     return dynamoDB
       .update({
         TableName: "ArriumShiv",
@@ -164,7 +192,7 @@ export const AuthServices = {
   },
 
 
-  forgotPasswordResetService: async (data: any) => {
+  setNewPasswordService: async (data: any) => {
       return dynamoDB.update({
         TableName: "ArriumShiv",
         Key: {
