@@ -1,32 +1,20 @@
-##Note : please re-write this file as per nodejs , currently it's written for django python
+FROM node:12.18.3
 
-
-# importing base image
-FROM python:3.9
-
-# test change demo
-
-# updating docker host or host machine
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-
-# changing current working directory to /usr/src/app
+# Create app directory
 WORKDIR /usr/src/app
 
-# install dependencies
-RUN pip install --upgrade pip 
-COPY ./requirements.txt /usr/src/app
-RUN pip install -r requirements.txt
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package.json package.json
+COPY package*.json ./
 
-# copy project
-COPY . /usr/src/app
+RUN npm install
+# If you are building your code for production
+RUN npm ci --only=production
 
+# Bundle app source
+COPY . .
 
-
-# informing Docker that the container listens on the
-# specified network ports at runtime i.e 8000.
-EXPOSE 80
-
-# running server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
+EXPOSE 9000
+CMD [ "node", "App.js" ]
