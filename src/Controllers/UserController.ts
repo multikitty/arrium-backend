@@ -1,6 +1,6 @@
-import { userServices } from "../services/userServices";
 import bcrypt from "bcryptjs";
-import { authServices } from "../services/authServices";
+import { authServices } from './../Services/AuthServices';
+import { userServices } from './../Services/UserServices';
 
 export const userController = {
   getUserData: async (request: any, response: any) => {
@@ -89,8 +89,6 @@ export const userController = {
       const dbPassword = await userServices.currentPasswordService(
         request.body
       );
-      // console.log('getting current Password here', currentPassword?.Item?.password)
-
       bcrypt
         .compare(request.body.current_password, dbPassword?.Item?.password)
         .then((authenticated) => {

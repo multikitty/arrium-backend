@@ -1,15 +1,15 @@
 import express from "express";
 const router = express.Router();
 router.use(express.json());
-
-import { authController } from "../controllers/authController";
-import { authentication } from "../middlewares/authentication";
+import { authController } from './../Controllers/AuthController';
+import { validationSchema } from './../Middlewares/validationSchema';
+import { authentication } from './../Middlewares/authentication';
 
 import AWS from "aws-sdk";
 import { ServiceConfigurationOptions } from "aws-sdk/lib/service";
 import JsonWebTokenError from "jsonwebtoken";
 import { authSchema } from "../validationSchema/authSchema";
-import { validationSchema } from "../middlewares/validationSchema";
+
 let serviceConfigOptions: ServiceConfigurationOptions = {
   region: process.env.AWS_REGION,
   endpoint: process.env.AWS_ENDPOINT,

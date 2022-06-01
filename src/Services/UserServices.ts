@@ -1,4 +1,4 @@
-import { dynamoDB } from '../utils/dynamoDB'
+import { dynamoDB } from './../Utils/dynamoDB';
 
 export const userServices = {
   getUserDataService: async (data: any) => {

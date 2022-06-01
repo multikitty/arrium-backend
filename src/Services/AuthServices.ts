@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import {dynamoDB} from '../utils/dynamoDB'
+import { dynamoDB } from './../Utils/dynamoDB';
 
 export const authServices = {
 

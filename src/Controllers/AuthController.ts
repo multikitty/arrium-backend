@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
-import { authServices } from "../services/authServices";
 import jwt from "jsonwebtoken";
-import { mailServices } from "../services/mailServices";
+import bcrypt from "bcryptjs";
+import { mailServices } from './../Services/MailServices';
+import { authServices } from './../Services/AuthServices';
 
 export const authController = {
   login: async (request: any, response: any) => {
