@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { mailServices } from './../Services/MailServices';
-import { authServices } from './../Services/AuthServices';
+import { mailServices } from "./../Services/MailServices";
+import { authServices } from "./../Services/AuthServices";
 
 export const authController = {
   login: async (request: any, response: any) => {
@@ -59,7 +59,6 @@ export const authController = {
         }
       });
     } catch (error) {
-      
       response.status(301);
       response.send({
         success: false,
@@ -182,7 +181,6 @@ export const authController = {
         });
       });
     } catch (error) {
-      console.log(error);
       response.status(301);
       response.send({
         success: false,

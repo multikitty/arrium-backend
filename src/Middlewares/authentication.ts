@@ -18,7 +18,7 @@ export const authentication = (request: any, response: any, next: any) => {
           success: false,
           message: "Failed to authenticate token",
         });
-      console.log('getting data', decoded)
+      // console.log('getting data', decoded)
       // if everything good, save to request for use in other routes
       request.body.pk = decoded.pk;
       request.body.sk = decoded.sk;
