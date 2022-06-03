@@ -1,10 +1,8 @@
-
-
-// DynamoDB Connection
 import AWS from "aws-sdk"
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-let serviceConfigOptions: ServiceConfigurationOptions = {
-  region: process.env.AWS_REGION,
-  endpoint: process.env.AWS_ENDPOINT
-};
-export const dynamoDB = new AWS.DynamoDB.DocumentClient(serviceConfigOptions);
+const config = require('./config');
+// configure aws dynamo db 
+AWS.config.update(config.aws_remote_config);
+// dynamo db initialization
+export const dynamoDB = new AWS.DynamoDB.DocumentClient();
+// table name for connection
+export const TableName = config.aws_table_name

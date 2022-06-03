@@ -1,10 +1,10 @@
-import { dynamoDB } from './../Utils/dynamoDB';
+import { dynamoDB, TableName } from './../Utils/dynamoDB';
 
 export const userServices = {
   getUserDataService: async (data: any) => {
     return dynamoDB
       .get({
-        TableName: "ArriumShiv",
+        TableName: TableName,
         Key: {
           pk: data.pk,
           sk: data.sk
@@ -16,7 +16,7 @@ export const userServices = {
   getAllUsersService: async (data: any) => {
     return dynamoDB
       .scan({
-        TableName: "ArriumShiv",
+        TableName: TableName,
         Limit: 5,
       })
       .promise()
@@ -25,7 +25,7 @@ export const userServices = {
   updateProfileService: async (data: any) => {
     return dynamoDB
       .update({
-        TableName: "ArriumShiv",
+        TableName: TableName,
         Key: {
           pk: data.pk,
           sk: data.sk,
@@ -42,7 +42,7 @@ export const userServices = {
   updateEmailService: async (data:any) => {
     return dynamoDB
       .update({
-        TableName: "ArriumShiv",
+        TableName: TableName,
         Key: {
           sk: data.sk,
           pk: data.pk
@@ -61,7 +61,7 @@ export const userServices = {
 
   currentPasswordService : async(data:any) => {
     return dynamoDB.get({
-      TableName: "ArriumShiv",
+      TableName: TableName,
       Key: {
         pk: data.pk,
         sk: data.sk
@@ -74,7 +74,7 @@ export const userServices = {
   updatePhoneNumberService: async (data: any) => {
     return dynamoDB
       .update({
-        TableName: "ArriumShiv",
+        TableName: TableName,
         Key: {
           sk: data.sk,
           pk: data.pk

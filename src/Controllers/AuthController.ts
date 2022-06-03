@@ -11,7 +11,7 @@ export const authController = {
           response.status(200);
           response.send({
             success: false,
-            message: "You’re login details are incorrect. Please try again!",
+            message: "Your login details are incorrect. Please try again!",
           });
         } else {
           var token = jwt.sign(
@@ -59,6 +59,7 @@ export const authController = {
         }
       });
     } catch (error) {
+      
       response.status(301);
       response.send({
         success: false,
@@ -181,6 +182,7 @@ export const authController = {
         });
       });
     } catch (error) {
+      console.log(error);
       response.status(301);
       response.send({
         success: false,

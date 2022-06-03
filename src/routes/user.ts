@@ -8,7 +8,7 @@ import { authentication } from './../Middlewares/authentication';
 import { userController } from './../Controllers/UserController';
 //get User Details
 router.get("/user-data", authentication, userController.getUserData);
-router.get("/get-all-users", authentication, userController.getAllUsers);
+router.get("/get-all-users",  userController.getAllUsers);
 
 router.post(
   "/update-profile",
