@@ -1,26 +1,28 @@
-FROM node:14 as base
+FROM node:14
 
-WORKDIR /app
+# WORKDIR /home/node/app
 
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-FROM base as production
-
-ENV NODE_PATH=./build
-
-EXPOSE 9000
-
-RUN npm run build
-
-# WORKDIR /app
 # COPY package*.json ./
-# RUN npm install
+
+# RUN npm i
+
 # COPY . .
+
+# FROM base as production
+
+# ENV NODE_PATH=./build
+
+# EXPOSE 9000
+
 # RUN npm run build
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 9000
+RUN npm run build
+RUN npm start
 
 # FROM node:12.13-alpine as production
 # ARG NODE_ENV=production
