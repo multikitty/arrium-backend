@@ -15,14 +15,14 @@ FROM node:14
 # EXPOSE 9000
 
 # RUN npm run build
-RUN mkdir -p /home/node/app
+#RUN mkdir -p /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 9000
 RUN npm run build
-RUN npm start
+CMD [ "node", "start" ]
 
 # FROM node:12.13-alpine as production
 # ARG NODE_ENV=production
