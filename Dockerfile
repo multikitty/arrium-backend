@@ -16,12 +16,14 @@ FROM node:14
 
 # RUN npm run build
 #RUN mkdir -p /home/node/app
-WORKDIR /app
-COPY package*.json ./
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+COPY package*.json /usr/src/app/
+#COPY package*.json ./
 RUN npm install
-COPY . .
+COPY . /usr/src/app
 EXPOSE 9000
-RUN npm run build
+#RUN npm run build
 CMD [ "node", "start" ]
 
 # FROM node:12.13-alpine as production
