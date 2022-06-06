@@ -1,4 +1,2 @@
 node_modules
 build
-docker-compose.prod.yml
-docker-compose.yml

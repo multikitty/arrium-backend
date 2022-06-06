@@ -1,19 +1,19 @@
-version: '3.7'
+# version: '3.7'
 
-services:
-  ts-node-docker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: base
-    logging:
-      driver: awslogs
-    volumes:
-      - ./src:/home/node/app/src
-      - ./nodemon.json:/home/node/app/nodemon.json
-    container_name: nginx_arrium
-    expose:
-      - '9000'
-    ports:
-      - '9000:9000'
-    command: npm run dev
+# services:
+#   ts-node-docker:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#       target: base
+#     logging:
+#       driver: awslogs
+#     volumes:
+#       - ./src:/home/node/app/src
+#       - ./nodemon.json:/home/node/app/nodemon.json
+#     container_name: nginx_arrium
+#     expose:
+#       - '9000'
+#     ports:
+#       - '9000:9000'
+#     command: npm run dev
