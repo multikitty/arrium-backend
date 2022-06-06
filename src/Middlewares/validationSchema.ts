@@ -7,8 +7,16 @@ export const validationSchema = (request: any, response: any, next: any) => {
     //manupulate errors validation result
     let errorData: any = [];
     for (let index = 0; index < errors.array().length; index++) {
-      if (errors.array()[index].param !== errors?.array()[index - 1]?.param) {
+
+      delete errors.array()[index].value;
+      delete errors.array()[index].location;
+      
+      if (index === 0) {
         errorData.push(errors.array()[index]);
+      } else {
+        if (errors.array()[index].param !== errors.array()[index - 1].param) {
+          errorData.push(errors.array()[index]);
+        }
       }
     }
     response.status(200);

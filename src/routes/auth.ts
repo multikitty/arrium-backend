@@ -1,9 +1,9 @@
 import express from "express";
 const router = express.Router();
 router.use(express.json());
-import { authController } from './../Controllers/AuthController';
-import { validationSchema } from './../Middlewares/validationSchema';
-import { authentication } from './../Middlewares/authentication';
+import { AuthController } from "./../Controllers/AuthController";
+import { validationSchema } from "./../Middlewares/validationSchema";
+import { authentication } from "./../Middlewares/authentication";
 
 import AWS from "aws-sdk";
 import { ServiceConfigurationOptions } from "aws-sdk/lib/service";
@@ -34,62 +34,62 @@ router.post(
   "/login",
   authSchema.loginSchema,
   validationSchema,
-  authController.login
+  AuthController.login
 );
 router.post(
   "/signup-registration",
   authSchema.signupRegistrationSchema,
   validationSchema,
-  authController.signupRegistration
+  AuthController.signupRegistration
 );
 router.post(
   "/signup-account-info",
   authSchema.signupAccountInfoSchema,
   validationSchema,
   authentication,
-  authController.signupAccountInfo
+  AuthController.signupAccountInfo
 );
 router.post(
   "/signup-otp-confirmation",
   authSchema.otpConfirmationSchema,
   validationSchema,
   authentication,
-  authController.signupOTPConfirmation
+  AuthController.signupOTPConfirmation
 );
 router.post(
   "/update-amazon-flex-info",
   authSchema.updateAmazonFlexSchema,
   validationSchema,
   authentication,
-  authController.updateAmazonFlexInfo
+  AuthController.updateAmazonFlexInfo
 );
 router.post(
   "/forgot-password",
   authSchema.emailSchema,
   validationSchema,
-  authController.forgotPassword
+  AuthController.forgotPassword
 );
 
 router.post(
   "/forgot-password-verify-token",
   authentication,
-  authController.verifyForgotToken
+  AuthController.verifyForgotToken
 );
 router.post(
   "/forgot-password-reset",
   authentication,
-  authController.forgotPasswordReset
+  AuthController.forgotPasswordReset
 );
 
 router.post(
   "/send-email-verify",
   authentication,
-  authController.sendEmailVerify
+  AuthController.sendEmailVerify
 );
 router.post(
   "/update-verify-email",
   authentication,
-  authController.updateEmailVerify
+  AuthController.updateEmailVerify
 );
 
 export = router;

@@ -177,4 +177,30 @@ export const authSchema = {
       .isEmpty()
       .withMessage("Please provide Fieldvalue"),
   ],
+
+  verficationToken: [
+    body("verficationToken")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Please provide Verfication Token")
+      .isLength({ min: 100 })
+      .withMessage("Please provide valid Verfication Token"),
+  ],
+
+  passwordSchema: [
+    body("password")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must have at least one character lowercase")
+      .matches(/[A-Z]/)
+      .withMessage("Password must have at least one character uppercase")
+      .matches(/\d/)
+      .withMessage("Password must contain number characters"),
+  ],
 };

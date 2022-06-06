@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { mailServices } from "./../Services/MailServices";
 import { authServices } from "./../Services/AuthServices";
 
-export const authController = {
+export const AuthController = {
   login: async (request: any, response: any) => {
     try {
       await authServices.loginService(request.body).then((result: any) => {

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { dynamoDB, TableName } from "./../Utils/dynamoDB";
 
-export const authServices = {
+export const SignupServices = {
   signupCheckExistEmail: async (data: any) => {
     return dynamoDB
       .scan({
@@ -57,22 +57,7 @@ export const authServices = {
         ExpressionAttributeValues: {
           ":customerID": data.randomNumber,
         },
-        ReturnValues: "ALL_NEW", //will return all Attributes in response
-      })
-      .promise();
-  },
-
-  loginService: async (data: any) => {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression:
-          // "contains(email, :email) AND contains ( password, :password)",
-          "contains(email, :email)",
-        ExpressionAttributeValues: {
-          ":email": data.email,
-          // ":password": data.password,
-        },
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   },
@@ -93,7 +78,7 @@ export const authServices = {
           ":tzName": data.tzName,
           ":currentSteps": "otp",
         },
-        ReturnValues: "ALL_NEW", //will return all Attributes in response
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   },
@@ -158,42 +143,6 @@ export const authServices = {
         UpdateExpression: `set emailVerified = :emailVerified`,
         ExpressionAttributeValues: {
           ":emailVerified": "verified",
-        },
-        ReturnValues: "ALL_NEW",
-      })
-      .promise();
-  },
-
-  forgotPasswordService: async (data: any) => {
-    const params = {
-      TableName: TableName,
-      Key: {
-        pk: `u#${data.email}`,
-        sk: `login#${data.email}`,
-      },
-      AttributesToGet: ["firstname", "lastname", "email"],
-    };
-    var exists = null;
-    let result = await dynamoDB.get(params).promise();
-    if (result.Item !== undefined && result.Item !== null) {
-      exists = result.Item;
-    } else {
-      exists = false;
-    }
-    return exists;
-  },
-
-  setNewPasswordService: async (data: any) => {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          pk: data.pk,
-          sk: data.sk,
-        },
-        UpdateExpression: `set password = :password`,
-        ExpressionAttributeValues: {
-          ":password": bcrypt.hashSync(data.password, 10),
         },
         ReturnValues: "ALL_NEW",
       })

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
-import { authServices } from './../Services/AuthServices';
-import { userServices } from './../Services/UserServices';
+import { authServices } from "./../Services/AuthServices";
+import { userServices } from "./../Services/UserServices";
 
 export const userController = {
   getUserData: async (request: any, response: any) => {
@@ -86,11 +86,11 @@ export const userController = {
 
   changePassword: async (request: any, response: any) => {
     try {
-      const dbPassword = await userServices.currentPasswordService(
+      const dbPassword: any = await userServices.currentPasswordService(
         request.body
       );
       bcrypt
-        .compare(request.body.current_password, dbPassword?.Item?.password)
+        .compare(request.body.current_password, dbPassword.Item.password)
         .then((authenticated) => {
           if (authenticated) {
             // console.log('Okay password is matching');
