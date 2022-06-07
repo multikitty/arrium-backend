@@ -3,6 +3,7 @@ import { mailServices } from "./../Services/MailServices";
 import { SignupServices } from "./../Services/SignupServices";
 
 export const SignupController = {
+  // Signup Step 1
   signupRegistration: async (request: any, response: any) => {
     try {
       await SignupServices.signupCheckExistEmail(request.body).then(
@@ -16,6 +17,7 @@ export const SignupController = {
           } else {
             SignupServices.signupRegistrationService(request.body).then(
               (result) => {
+                // email verification token
                 var token = jwt.sign(
                   {
                     pk: `u#${request.body.email}`,
@@ -26,14 +28,13 @@ export const SignupController = {
                     expiresIn: 86400, // expires in 24 hours
                   }
                 );
-
+                // email data
                 const emailData = {
                   email: request.body.email,
                   token: token,
                 };
                 //send email verifcation link
-                mailServices
-                  .sendMailEmailVerification(emailData)
+                mailServices.sendMailEmailVerification(emailData)
                   .then((res) => {
                     // console.log('getting success mail', res)
                   })
@@ -102,7 +103,7 @@ export const SignupController = {
       });
     }
   },
-
+  // Signup Step 2
   signupAccountInfo: async (request: any, response: any) => {
     try {
       await SignupServices.AccountInfoService(request.body).then((result) => {
@@ -121,7 +122,7 @@ export const SignupController = {
       });
     }
   },
-
+  // Signup Step 3
   signupOTPConfirmation: async (request: any, response: any) => {
     try {
       if (request.body.otp === "1234") {

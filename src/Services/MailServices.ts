@@ -34,7 +34,7 @@ export const mailServices = {
 
   sendMailEmailVerification: async (data: any) => {
     return transporter.sendMail({
-      from: '"Arrium Testing" <devscaleupally@gmail.com>', // sender address
+      from: '"Arrium" <devscaleupally@gmail.com>', // sender address
       to: data.email, // list of receivers
       subject: "You signup successfully, please verify your email", // Subject line
       text: "Please follow the below link to verify your email address", // plain text body

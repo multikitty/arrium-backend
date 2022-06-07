@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { dynamoDB, TableName } from "./../Utils/dynamoDB";
 
 export const SignupServices = {
+  
   signupCheckExistEmail: async (data: any) => {
     return dynamoDB
       .scan({
