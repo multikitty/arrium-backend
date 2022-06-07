@@ -6,12 +6,10 @@
 #       context: .
 #       dockerfile: Dockerfile
 #       target: base
-#     logging:
-#       driver: awslogs
 #     volumes:
 #       - ./src:/home/node/app/src
 #       - ./nodemon.json:/home/node/app/nodemon.json
-#     container_name: nginx_arrium
+#     container_name: arrium-backend-api
 #     expose:
 #       - '9000'
 #     ports:
