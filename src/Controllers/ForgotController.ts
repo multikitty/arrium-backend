@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { mailServices } from "./../Services/MailServices";
+import mailServices from "../Services/mailServices";
 import { ForgotServices } from "./../Services/ForgotServices";
 
 export const ForgotController = {
@@ -32,13 +32,14 @@ export const ForgotController = {
                   });
                 })
                 .catch((error) => {
-                  console.log("getting error while sending mail", error);
+                  response.status(500);
                   response.send({
                     success: false,
                     message: "We are unable to send mail!",
                   });
                 });
             } catch (error) {
+              response.status(500);
               response.send({
                 success: false,
                 message: "Something went wrong while sending mail",
@@ -54,10 +55,10 @@ export const ForgotController = {
         }
       );
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },
@@ -77,22 +78,29 @@ export const ForgotController = {
             // if everything good, save to request for use in other routes
             request.body.pk = decoded.pk;
             request.body.sk = decoded.sk;
+
+            ForgotServices.setNewPasswordService(request.body)
+              .then((result) => {
+                response.send({
+                  success: true,
+                  message: "Password Updated successfully!",
+                });
+              })
+              .catch((error) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                });
+              });
           }
         }
       );
-      await ForgotServices.setNewPasswordService(request.body).then(
-        (result) => {
-          response.send({
-            success: true,
-            message: "Password Updated successfully!",
-          });
-        }
-      );
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },

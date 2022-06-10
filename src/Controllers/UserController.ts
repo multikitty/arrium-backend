@@ -1,11 +1,12 @@
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { authServices } from "./../Services/AuthServices";
-import { userServices } from "./../Services/UserServices";
+import userServices from "../Services/userServices";
+import mailServices from "../Services/mailServices";
 
-export const userController = {
-  getUserData: async (request: any, response: any) => {
+export class userController {
+  async getUserData(request: any, response: any) {
     try {
-      await userServices.getUserDataService(request.body).then((result) => {
+      await userServices.getUserData(request.body).then((result) => {
         if (result.Item) {
           delete result.Item.password;
           delete result.Item.amznFlexPassword;
@@ -13,31 +14,81 @@ export const userController = {
           response.status(200);
           response.send({
             success: true,
-            message: "User data retrived successfully!",
+            message: "User data retrived successfully",
             data: result.Item,
           });
         }
       });
     } catch (error) {
-      response.status(200);
+      response.status(500);
       response.send({
         success: false,
         message: "Something went wrong while getting users",
       });
     }
-  },
+  }
 
-  getAllUsers: async (request: any, response: any) => {
+  async getUserById(request: any, response: any) {
     try {
-      await userServices
-        .getAllUsersService(request.body)
-        .then((result: any) => {
-          if (result.Items.length > 0) {
+      await userServices.getUserById(request.params.id).then((result: any) => {
+        if (result.Count !== 0) {
+          delete result.Items[0].password;
+          delete result.Items[0].amznFlexPassword;
+
+          response.status(200);
+          response.send({
+            success: true,
+            message: "User data retrived successfully",
+            data: result.Items[0],
+          });
+        } else {
+          response.status(200);
+          response.send({
+            success: false,
+            message: "No Customers Found",
+          });
+        }
+      });
+    } catch (error) {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong while getting users",
+      });
+    }
+  }
+
+  async updateAccountInfoById(request: any, response: any) {
+    try {
+      await userServices.updateAccountInfoById(request.body).then((result) => {
+        if (result.Attributes) {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "User Account Information updated successfully",
+          });
+        }
+      });
+    } catch (error) {
+      console.log("getting error while update", error);
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong while getting users",
+      });
+    }
+  }
+
+  async listAllUsers(request: any, response: any) {
+    if (request.body.user_role === "admin") {
+      try {
+        await userServices.getAllUsers(request).then((result: any) => {
+          if (result.Count !== 0) {
             response.status(200);
             response.send({
               success: true,
-              message: "User data retrived successfully!",
-              data: result.Items,
+              message: "User data retrived successfully",
+              data: result,
             });
           } else {
             response.status(200);
@@ -47,19 +98,76 @@ export const userController = {
             });
           }
         });
-    } catch (error) {
-      response.status(200);
+      } catch (error) {
+        console.log("getting error", error);
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong while gettting All Customers",
+        });
+      }
+    } else {
+      response.status(500);
       response.send({
         success: false,
-        message: "Something went wrong while gettting All Customers",
+        message: "You don't have permission to access this route",
       });
     }
-  },
+  }
 
-  updateProfile: async (request: any, response: any) => {
+  async sendEmailVerify(request: any, response: any) {
+    try {
+      var token = jwt.sign(
+        { pk: request.body.pk, sk: request.body.sk },
+        process.env.JWT_SECRET_KEY as string,
+        {
+          expiresIn: "10m", // expires in 24 hours
+        }
+      );
+
+      const emailData = {
+        email: request.body.email,
+        token: token,
+      };
+      //send email verifcation link
+      mailServices.sendMailEmailVerification(emailData).then((res) => {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "A Verification email sent successfully",
+        });
+      });
+    } catch (error) {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something work with db. Try after sometime",
+      });
+    }
+  }
+
+  async VerifyEmail(request: any, response: any) {
+    try {
+      await userServices.updateEmailVerify(request.body).then((result) => {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "Your email verified successfully",
+        });
+      });
+    } catch (error) {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Oops something went wrong on email verification",
+      });
+    }
+  }
+
+  async updateProfile(request: any, response: any) {
     try {
       if (request.body.fieldName === "email") {
-        await userServices.updateEmailService(request.body).then((res) => {
+        await userServices.changeEmail(request.body).then((res) => {
           response.status(200);
           response.send({
             success: true,
@@ -68,37 +176,34 @@ export const userController = {
         });
       }
 
-      await userServices.updateProfileService(request.body).then((res) => {
+      await userServices.updateProfile(request.body).then((res) => {
         response.status(200);
         response.send({
           success: true,
-          message: `${request.body.fieldName} updated successfully!`,
+          message: `${request.body.fieldName} updated successfully`,
         });
       });
     } catch (error) {
-      response.status(200);
+      response.status(500);
       response.send({
         success: false,
         message: "Something went wrong while updating your profile",
       });
     }
-  },
+  }
 
-  changePassword: async (request: any, response: any) => {
+  async changePassword(request: any, response: any) {
     try {
-      const dbPassword: any = await userServices.currentPasswordService(
-        request.body
-      );
+      const dbPassword: any = await userServices.currentPassword(request.body);
       bcrypt
         .compare(request.body.current_password, dbPassword.Item.password)
         .then((authenticated) => {
           if (authenticated) {
-            // console.log('Okay password is matching');
-            authServices.setNewPasswordService(request.body).then(() => {
+            userServices.setNewPassword(request.body).then(() => {
               response.status(200);
               response.send({
                 success: false,
-                message: "New Password updated successfully!",
+                message: "New Password updated successfully",
               });
             });
           } else {
@@ -110,31 +215,29 @@ export const userController = {
           }
         });
     } catch (error) {
-      response.status(200);
+      response.status(500);
       response.send({
         success: false,
         message: "Something went wrong while updating your password",
       });
     }
-  },
+  }
 
-  updatephoneNumber: async (request: any, response: any) => {
+  async updatephoneNumber(request: any, response: any) {
     if (request.body.otp === "1234") {
       try {
-        await userServices
-          .updatePhoneNumberService(request.body)
-          .then((res) => {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "Phone number updated successfully!",
-            });
+        await userServices.updatePhoneNumber(request.body).then((res) => {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "Phone number updated successfully",
           });
+        });
       } catch (error) {
-        response.status(200);
+        response.status(500);
         response.send({
           success: false,
-          message: "Something went wrong while updating phone number!",
+          message: "Something went wrong while updating phone number",
         });
       }
     } else {
@@ -145,5 +248,7 @@ export const userController = {
           "Incorrect OTP. Please try again, or go back to re-enter your number",
       });
     }
-  },
-};
+  }
+}
+
+export default new userController();

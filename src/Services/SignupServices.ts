@@ -2,12 +2,11 @@ import bcrypt from "bcryptjs";
 import { dynamoDB, TableName } from "./../Utils/dynamoDB";
 
 export const SignupServices = {
-  
   signupCheckExistEmail: async (data: any) => {
     return dynamoDB
       .scan({
         TableName: TableName,
-        FilterExpression: "contains(email, :email)",
+        FilterExpression: "email = :email",
         ExpressionAttributeValues: {
           ":email": data.email,
         },
@@ -25,8 +24,9 @@ export const SignupServices = {
           password: bcrypt.hashSync(data.password, 10),
           refCode: data.refCode,
           role: "driver",
-          emailVerified: "unverified",
+          emailVerified: false,
           currentSteps: "account_info",
+          customerID: data.randomNumber,
           created_at: (Date.now() / 1000) | 0, //time in unix
         },
         TableName: TableName,
@@ -42,23 +42,6 @@ export const SignupServices = {
         ExpressionAttributeValues: {
           ":customerID": data,
         },
-      })
-      .promise();
-  },
-
-  addCustomerId: async (data: any) => {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          pk: "u#" + data.email,
-          sk: "login#" + data.email,
-        },
-        UpdateExpression: `set customerID = :customerID`,
-        ExpressionAttributeValues: {
-          ":customerID": data.randomNumber,
-        },
-        ReturnValues: "ALL_NEW",
       })
       .promise();
   },
@@ -94,7 +77,7 @@ export const SignupServices = {
         },
         UpdateExpression: `set phoneVerified = :phoneVerified, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
-          ":phoneVerified": "verified",
+          ":phoneVerified": true,
           ":currentSteps": "amazon_flex",
         },
         ReturnValues: "ALL_NEW",
@@ -129,23 +112,6 @@ export const SignupServices = {
           sk: data.sk,
         },
         AttributesToGet: ["firstname", "lastname", "email"],
-      })
-      .promise();
-  },
-
-  updateEmailVerifyService: async (data: any) => {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          sk: data.sk,
-          pk: data.pk,
-        },
-        UpdateExpression: `set emailVerified = :emailVerified`,
-        ExpressionAttributeValues: {
-          ":emailVerified": "verified",
-        },
-        ReturnValues: "ALL_NEW",
       })
       .promise();
   },

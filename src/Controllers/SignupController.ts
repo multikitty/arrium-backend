@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { mailServices } from "./../Services/MailServices";
+import  mailServices from "../Services/mailServices";
 import { SignupServices } from "./../Services/SignupServices";
 
 export const SignupController = {
@@ -15,91 +15,82 @@ export const SignupController = {
               message: "An account already exists for this email address",
             });
           } else {
-            SignupServices.signupRegistrationService(request.body).then(
-              (result) => {
-                // email verification token
-                var token = jwt.sign(
-                  {
-                    pk: `u#${request.body.email}`,
-                    sk: `login#${request.body.email}`,
-                  },
-                  process.env.JWT_SECRET_KEY as string,
-                  {
-                    expiresIn: 86400, // expires in 24 hours
+            //Generate Customer Id
+            let exist: boolean = false;
+            let customerId = "";
+            do {
+              customerId = "9" + (Math.floor(Math.random() * 90000) + 10000);
+              SignupServices.findIfCustomerIdExist(customerId).then(
+                (result) => {
+                  if (result.Count === 0) {
+                    request.body["randomNumber"] = String(customerId);
+                    return (exist = false);
+                  } else {
+                    return (exist = true);
                   }
-                );
-                // email data
-                const emailData = {
-                  email: request.body.email,
-                  token: token,
-                };
-                //send email verifcation link
-                mailServices.sendMailEmailVerification(emailData)
-                  .then((res) => {
-                    // console.log('getting success mail', res)
-                  })
-                  .catch((error) => {
-                    response.status(200);
-                    response.send({
-                      success: false,
-                      message: "Something work with db. Try after sometime",
-                    });
-                  });
+                }
+              );
+            } while (false);
 
-                //generate 6digit Customer ID
-                let randomNumber =
-                  "9" + (Math.floor(Math.random() * 90000) + 10000);
-                request.body["randomNumber"] = randomNumber;
-                SignupServices.findIfCustomerIdExist(randomNumber)
-                  .then((res) => {
-                    // console.log('getting body data', request.body)
-                    if (res.Count === 0) {
-                      // console.log('getting response here need to add customer id', res)
-                      SignupServices.addCustomerId(request.body)
-                        .then((res) => {
-                          // console.log('getting response after add id', res)
-                        })
-                        .catch((err) => {
-                          console.log("unable to add customer id", err);
-                        });
-                    } else {
-                      let randomNumber =
-                        "9" + (Math.floor(Math.random() * 90000) + 10000);
-                      request.body["randomNumber"] = randomNumber;
-                      SignupServices.addCustomerId(request.body)
-                        .then((res) => {
-                          // console.log('customer id added', res)
-                        })
-                        .catch((err) => {
-                          console.log("unable to update customer ID", err);
-                        });
-                    }
-                  })
-                  .catch((error) => {
-                    response.status(301);
-                    response.send({
-                      success: false,
-                      message: "Something work with db. Try after sometime",
-                    });
-                  });
-                //generate customer ID end
+            //End Generate Customer Id
 
-                response.status(200);
-                response.send({
-                  success: true,
-                  message: "User Registration Success!",
-                  data: { token },
-                });
+            //  email verification token
+            let token = jwt.sign(
+              {
+                pk: `u#${request.body.email}`,
+                sk: `login#${request.body.email}`,
+                user_role: "driver",
+              },
+              process.env.JWT_SECRET_KEY as string,
+              {
+                expiresIn: 86400, // expires in 24 hours
               }
             );
+            // email data
+            const emailData = {
+              email: request.body.email,
+              token,
+            };
+
+            //send email verifcation link
+            mailServices
+              .sendMailEmailVerification(emailData)
+              .then((mailResponse) => {
+                if (mailResponse) {
+                  SignupServices.signupRegistrationService(request.body)
+                    .then(() => {
+                      response.status(200);
+                      response.send({
+                        success: true,
+                        message: "User Registration Success!",
+                        data: { token },
+                      });
+                    })
+                    .catch((error) => {
+                      response.status(500);
+                      response.send({
+                        success: false,
+                        message:
+                          "Something went wrong, please try after sometime.",
+                      });
+                    });
+                }
+              })
+              .catch((error) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                });
+              });
           }
         }
       );
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },
@@ -115,10 +106,10 @@ export const SignupController = {
         });
       });
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },
@@ -128,7 +119,6 @@ export const SignupController = {
       if (request.body.otp === "1234") {
         await SignupServices.SignupOTPConfirmationService(request.body).then(
           (result) => {
-            // console.log('getting result response', result)
             if (result) {
               response.status(200);
               response.send({
@@ -154,10 +144,10 @@ export const SignupController = {
         });
       }
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },
@@ -182,10 +172,10 @@ export const SignupController = {
         }
       );
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },

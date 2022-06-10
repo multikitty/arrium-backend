@@ -170,12 +170,12 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please provide Fieldname"),
+      .withMessage("Please provide FieldName"),
     body("fieldValue")
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please provide Fieldvalue"),
+      .withMessage("Please provide FieldValue"),
   ],
 
   verficationToken: [

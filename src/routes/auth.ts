@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 router.use(express.json());
-import { AuthController } from "./../Controllers/AuthController";
 import { validationSchema } from "./../Middlewares/validationSchema";
 import { authentication } from "./../Middlewares/authentication";
 
@@ -29,67 +28,5 @@ router.get("/authTest", async (request, response) => {
   });
 });
 
-//Define here all routes related to Authentication
-router.post(
-  "/login",
-  authSchema.loginSchema,
-  validationSchema,
-  AuthController.login
-);
-router.post(
-  "/signup-registration",
-  authSchema.signupRegistrationSchema,
-  validationSchema,
-  AuthController.signupRegistration
-);
-router.post(
-  "/signup-account-info",
-  authSchema.signupAccountInfoSchema,
-  validationSchema,
-  authentication,
-  AuthController.signupAccountInfo
-);
-router.post(
-  "/signup-otp-confirmation",
-  authSchema.otpConfirmationSchema,
-  validationSchema,
-  authentication,
-  AuthController.signupOTPConfirmation
-);
-router.post(
-  "/update-amazon-flex-info",
-  authSchema.updateAmazonFlexSchema,
-  validationSchema,
-  authentication,
-  AuthController.updateAmazonFlexInfo
-);
-router.post(
-  "/forgot-password",
-  authSchema.emailSchema,
-  validationSchema,
-  AuthController.forgotPassword
-);
-
-router.post(
-  "/forgot-password-verify-token",
-  authentication,
-  AuthController.verifyForgotToken
-);
-router.post(
-  "/forgot-password-reset",
-  authentication,
-  AuthController.forgotPasswordReset
-);
-
-router.post(
-  "/send-email-verify",
-  authentication,
-  AuthController.sendEmailVerify
-);
-router.post(
-  "/update-verify-email",
-  authentication,
-  AuthController.updateEmailVerify
-);
 
 export = router;

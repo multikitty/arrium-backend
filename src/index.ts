@@ -15,13 +15,10 @@ import signup from "./routes/signup";
 import forgot from "./routes/forgot";
 
 app.get("/", (req: Request, res: Response) => {
-  res.send(
-    '<h1>Hellow there from express</h1><br/><a href="http://localhost:9000/v1/auth/authTest">http://localhost:9000/v1/auth/authTest</a>'
-  );
+  res.send("<h1>Hellow there from express</h1>");
 });
 
 //Routes Defined Here
-// app.use("/v1/auth", auth);
 app.use("/v1/user", user);
 app.use("/v1/signin", signin);
 app.use("/v1/signup", signup);

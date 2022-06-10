@@ -17,6 +17,7 @@ export const SigninController = {
             {
               pk: `u#${request.body.email}`,
               sk: `login#${request.body.email}`,
+              user_role: result.Items[0].role,
             },
             process.env.JWT_SECRET_KEY as string,
             {
@@ -49,19 +50,19 @@ export const SigninController = {
               }
             })
             .catch((error) => {
-              response.status(301);
+              response.status(500);
               response.send({
                 success: false,
-                message: "Something work with db. Try after sometime",
+                message: "Something went wrong, please try after sometime.",
               });
             });
         }
       });
     } catch (error) {
-      response.status(301);
+      response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
       });
     }
   },
