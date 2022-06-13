@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import userServices from "../Services/userServices";
-import mailServices from "../Services/mailServices";
+import MailServices from "../Services/MailServices";
 
-export class userController {
+import UserServices from "../Services/UserServices";
+
+export default class UserController {
   async getUserData(request: any, response: any) {
     try {
-      await userServices.getUserData(request.body).then((result) => {
+      await new UserServices().getUserData(request.body).then((result) => {
         if (result.Item) {
           delete result.Item.password;
           delete result.Item.amznFlexPassword;
@@ -30,25 +31,27 @@ export class userController {
 
   async getUserById(request: any, response: any) {
     try {
-      await userServices.getUserById(request.params.id).then((result: any) => {
-        if (result.Count !== 0) {
-          delete result.Items[0].password;
-          delete result.Items[0].amznFlexPassword;
+      await new UserServices()
+        .getUserById(request.params.id)
+        .then((result: any) => {
+          if (result.Count !== 0) {
+            delete result.Items[0].password;
+            delete result.Items[0].amznFlexPassword;
 
-          response.status(200);
-          response.send({
-            success: true,
-            message: "User data retrived successfully",
-            data: result.Items[0],
-          });
-        } else {
-          response.status(200);
-          response.send({
-            success: false,
-            message: "No Customers Found",
-          });
-        }
-      });
+            response.status(200);
+            response.send({
+              success: true,
+              message: "User data retrived successfully",
+              data: result.Items[0],
+            });
+          } else {
+            response.status(200);
+            response.send({
+              success: false,
+              message: "No Customers Found",
+            });
+          }
+        });
     } catch (error) {
       response.status(500);
       response.send({
@@ -60,15 +63,17 @@ export class userController {
 
   async updateAccountInfoById(request: any, response: any) {
     try {
-      await userServices.updateAccountInfoById(request.body).then((result) => {
-        if (result.Attributes) {
-          response.status(200);
-          response.send({
-            success: true,
-            message: "User Account Information updated successfully",
-          });
-        }
-      });
+      await new UserServices()
+        .updateAccountInfoById(request.body)
+        .then((result) => {
+          if (result.Attributes) {
+            response.status(200);
+            response.send({
+              success: true,
+              message: "User Account Information updated successfully",
+            });
+          }
+        });
     } catch (error) {
       console.log("getting error while update", error);
       response.status(500);
@@ -82,7 +87,7 @@ export class userController {
   async listAllUsers(request: any, response: any) {
     if (request.body.user_role === "admin") {
       try {
-        await userServices.getAllUsers(request).then((result: any) => {
+        await new UserServices().getAllUsers(request).then((result: any) => {
           if (result.Count !== 0) {
             response.status(200);
             response.send({
@@ -130,7 +135,7 @@ export class userController {
         token: token,
       };
       //send email verifcation link
-      mailServices.sendMailEmailVerification(emailData).then((res) => {
+      new MailServices().sendMailEmailVerification(emailData).then((res) => {
         response.status(200);
         response.send({
           success: true,
@@ -148,13 +153,15 @@ export class userController {
 
   async VerifyEmail(request: any, response: any) {
     try {
-      await userServices.updateEmailVerify(request.body).then((result) => {
-        response.status(200);
-        response.send({
-          success: true,
-          message: "Your email verified successfully",
+      await new UserServices()
+        .updateEmailVerify(request.body)
+        .then((result) => {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "Your email verified successfully",
+          });
         });
-      });
     } catch (error) {
       response.status(500);
       response.send({
@@ -167,7 +174,7 @@ export class userController {
   async updateProfile(request: any, response: any) {
     try {
       if (request.body.fieldName === "email") {
-        await userServices.changeEmail(request.body).then((res) => {
+        await new UserServices().changeEmail(request.body).then((res) => {
           response.status(200);
           response.send({
             success: true,
@@ -176,7 +183,7 @@ export class userController {
         });
       }
 
-      await userServices.updateProfile(request.body).then((res) => {
+      await new UserServices().updateProfile(request.body).then((res) => {
         response.status(200);
         response.send({
           success: true,
@@ -194,12 +201,14 @@ export class userController {
 
   async changePassword(request: any, response: any) {
     try {
-      const dbPassword: any = await userServices.currentPassword(request.body);
+      const dbPassword: any = await new UserServices().currentPassword(
+        request.body
+      );
       bcrypt
         .compare(request.body.current_password, dbPassword.Item.password)
         .then((authenticated) => {
           if (authenticated) {
-            userServices.setNewPassword(request.body).then(() => {
+            new UserServices().setNewPassword(request.body).then(() => {
               response.status(200);
               response.send({
                 success: false,
@@ -226,7 +235,7 @@ export class userController {
   async updatephoneNumber(request: any, response: any) {
     if (request.body.otp === "1234") {
       try {
-        await userServices.updatePhoneNumber(request.body).then((res) => {
+        await new UserServices().updatePhoneNumber(request.body).then((res) => {
           response.status(200);
           response.send({
             success: true,
@@ -250,5 +259,3 @@ export class userController {
     }
   }
 }
-
-export default new userController();

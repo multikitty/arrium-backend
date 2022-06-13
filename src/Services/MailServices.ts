@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export class mailServices {
+export default class MailServices {
   async sendMailEmailVerification(data: any) {
     return transporter.sendMail({
       from: '"Arrium" <devscaleupally@gmail.com>', // sender address
@@ -32,4 +32,4 @@ export class mailServices {
   }
 }
 
-export default new mailServices();
+// export default new mailServices();

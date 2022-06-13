@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import mailServices from "../Services/mailServices";
+import MailServices from "../Services/MailServices";
 import { ForgotServices } from "./../Services/ForgotServices";
 
 export const ForgotController = {
@@ -22,7 +22,7 @@ export const ForgotController = {
             result["token"] = token;
 
             try {
-              mailServices
+             new MailServices()
                 .sendMailForgotPassword(result)
                 .then((res) => {
                   response.send({

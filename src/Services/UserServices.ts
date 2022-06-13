@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { dynamoDB, TableName } from "../Utils/dynamoDB";
 
-export class userServices {
+export default class UserServices {
   async getUserData(data: any) {
     return dynamoDB
       .get({
@@ -52,7 +52,7 @@ export class userServices {
 
   async getAllUsers(request: any) {
     let expression = "attribute_exists(customerID)";
-    const limit = request.query.limit || 10;
+    // const limit = request.query.limit || 10;
     if (request.query.search !== undefined) {
       expression =
         "attribute_exists(customerID) AND contains(#firstname, :firstname)";
@@ -184,4 +184,4 @@ export class userServices {
   }
 }
 
-export default new userServices();
+// export default new userServices();

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import  mailServices from "../Services/mailServices";
+import MailServices from "../Services/MailServices";
 import { SignupServices } from "./../Services/SignupServices";
 
 export const SignupController = {
@@ -30,7 +30,7 @@ export const SignupController = {
                   }
                 }
               );
-            } while (false);
+            } while (exist);
 
             //End Generate Customer Id
 
@@ -53,7 +53,7 @@ export const SignupController = {
             };
 
             //send email verifcation link
-            mailServices
+            new MailServices()
               .sendMailEmailVerification(emailData)
               .then((mailResponse) => {
                 if (mailResponse) {

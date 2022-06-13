@@ -5,19 +5,19 @@ router.use(express.json());
 import { authSchema } from "./../validationSchema/authSchema";
 import { validationSchema } from "./../Middlewares/validationSchema";
 import { authentication } from "./../Middlewares/authentication";
-import userController from "./../Controllers/userController";
+import UserController from "./../Controllers/UserController";
 
 //get User Details
-router.get("/", authentication, userController.getUserData);
+router.get("/", authentication, new UserController().getUserData);
 
-router.get("/list", authentication, userController.listAllUsers);
+router.get("/list", authentication, new UserController().listAllUsers);
 
-router.get("/:id", authentication, userController.getUserById);
+router.get("/:id", authentication, new UserController().getUserById);
 
 router.put(
   "/update-account-info",
   authentication,
-  userController.updateAccountInfoById
+  new UserController().updateAccountInfoById
 );
 
 router.post(
@@ -25,17 +25,17 @@ router.post(
   authSchema.emailSchema,
   validationSchema,
   authentication,
-  userController.sendEmailVerify
+  new UserController().sendEmailVerify
 );
 
-router.post("/verify-email", authentication, userController.VerifyEmail);
+router.post("/verify-email", authentication, new UserController().VerifyEmail);
 
 router.post(
   "/change-password",
   authSchema.resetPasswordSchema,
   validationSchema,
   authentication,
-  userController.changePassword
+  new UserController().changePassword
 );
 
 router.post(
@@ -43,7 +43,7 @@ router.post(
   authSchema.updateProfile,
   validationSchema,
   authentication,
-  userController.updateProfile
+  new UserController().updateProfile
 );
 
 router.post(
@@ -51,7 +51,7 @@ router.post(
   authSchema.updatephoneNumberSchema,
   validationSchema,
   authentication,
-  userController.updatephoneNumber
+  new UserController().updatephoneNumber
 );
 
 //need to create update phone number api
