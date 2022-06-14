@@ -54,10 +54,12 @@ export const SignupServices = {
           sk: data.sk,
           pk: data.pk,
         },
-        UpdateExpression: `set firstname = :firstname, lastname= :lastname, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
+        UpdateExpression: `set firstname = :firstname, lastname= :lastname, country= :country, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
           ":firstname": data.firstname,
           ":lastname": data.lastname,
+          ":country": data.country,
+          ":dialCode": data.dialCode,
           ":phoneNumber": data.phoneNumber,
           ":tzName": data.tzName,
           ":currentSteps": "otp",

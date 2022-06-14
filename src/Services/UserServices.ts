@@ -66,8 +66,12 @@ export default class UserServices {
           ExpressionAttributeValues: {
             ":firstname": request.query.search,
           },
+          // ExclusiveStartKey: {
+          //   pk: "u#dpddiglk10@plancetose.com",
+          //   sk: "login#dpddiglk10@plancetose.com",
+          // },
           // ProjectionExpression: "customerID",
-          // Limit: limit,
+          // Limit: 5,
         })
         .promise();
     } else {
@@ -75,7 +79,11 @@ export default class UserServices {
         .scan({
           TableName: TableName,
           FilterExpression: expression,
-          // Limit: limit,
+          // ExclusiveStartKey: {
+          //   pk: "u#dpddiglk10@plancetose.com",
+          //   sk: "login#dpddiglk10@plancetose.com",
+          // },
+          Limit: 30,
         })
         .promise();
     }
