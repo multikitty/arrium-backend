@@ -15,7 +15,7 @@ import signup from "./routes/signup";
 import forgot from "./routes/forgot";
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Hellow there from express</h1>");
+  res.send("<h1>Hello world, from arrium</h1>");
 });
 
 //Routes Defined Here
