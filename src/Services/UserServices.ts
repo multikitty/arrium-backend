@@ -1,7 +1,21 @@
 import bcrypt from "bcryptjs";
-import { dynamoDB, TableName } from "../Utils/dynamoDB";
+import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB";
+
 
 export default class UserServices {
+  // Fetch User by GSI Index from GSI-Login
+  async getUserIndexByEmail(email : string) {
+    let queryParams = {
+      IndexName: GSI.login,
+      KeyConditionExpression: "pkEmail = :pkEmail",
+      ExpressionAttributeValues: {
+        ":pkEmail": email,
+      },
+      TableName: TableName
+    };
+    return dynamoDB.query(queryParams).promise();
+  }
+
   async getUserData(data: any) {
     return dynamoDB
       .get({

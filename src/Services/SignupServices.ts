@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { dynamoDB, TableName } from "./../Utils/dynamoDB";
+import { dynamoDB, TableName } from "../Utils/dynamoDB";
 
 export const SignupServices = {
   signupCheckExistEmail: async (data: any) => {
@@ -12,22 +12,24 @@ export const SignupServices = {
         },
       })
       .promise();
-  },
+  }, 
+
 
   signupRegistrationService: async (data: any) => {
     return dynamoDB
       .put({
         Item: {
-          pk: "u#" + data.email,
-          sk: "login#" + data.email,
+          pk: data.pk,
+          sk: data.sk,
           email: data.email,
+          pkEmail: data.email,
           password: bcrypt.hashSync(data.password, 10),
           refCode: data.refCode,
-          role: "driver",
+          role: data.role,
           emailVerified: false,
           currentSteps: "account_info",
-          customerID: data.randomNumber,
-          created_at: (Date.now() / 1000) | 0, //time in unix
+          customerID: data.customerId,
+          createdAt: (Date.now() / 1000) | 0, //time in unix
         },
         TableName: TableName,
       })

@@ -15,8 +15,8 @@ export default class MailServices {
     return transporter.sendMail({
       from: '"Arrium" <devscaleupally@gmail.com>', // sender address
       to: data.email, // list of receivers
-      subject: "You signup successfully, please verify your email", // Subject line
-      text: "Please follow the below link to verify your email address", // plain text body
+      subject: "Your account has been created successfully, please verify your email.", // Subject line
+      text: "Please follow the below link to verify your email address.", // plain text body
       html: `<p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>`,
     });
   }

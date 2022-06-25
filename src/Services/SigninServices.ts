@@ -1,18 +1,15 @@
-import { dynamoDB, TableName } from "./../Utils/dynamoDB";
+import { dynamoDB, TableName, GSI } from "../Utils/dynamoDB";
 
 export const SigninServices = {
   loginService: async (data: any) => {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression:
-          // "contains(email, :email) AND contains ( password, :password)",
-          "contains(email, :email)",
-        ExpressionAttributeValues: {
-          ":email": data.email,
-          // ":password": data.password,
-        },
-      })
-      .promise();
+    let queryParams = {
+      IndexName: GSI.login,
+      KeyConditionExpression: "pkEmail = :pkEmail",
+      ExpressionAttributeValues: {
+        ":pkEmail": data.email,
+      },
+      TableName: TableName
+    };
+    return dynamoDB.query(queryParams).promise();
   },
 };

@@ -1,7 +1,8 @@
 module.exports = {
   aws_table_name: "ArriumFlex",
   aws_local_config: {
-    //Provide details for local configuration
+    region: "us-east-1",
+    endpoint: "http://localhost:8000"
   },
   aws_remote_config: {
     accessKeyId: "AKIAW4RSWKBVTKOM7HFI",

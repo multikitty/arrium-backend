@@ -1,11 +1,12 @@
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { SigninServices } from "./../Services/SigninServices";
+import UserServices from "../Services/UserServices";
 
 export const SigninController = {
   login: async (request: any, response: any) => {
     try {
-      await SigninServices.loginService(request.body).then((result: any) => {
+      await new UserServices().getUserIndexByEmail("ross.geller@gmail.com").then((result: any) => {
+        console.log(result)
         if (result.Count === 0) {
           response.status(200);
           response.send({
@@ -13,33 +14,42 @@ export const SigninController = {
             message: "Your login details are incorrect. Please try again!",
           });
         } else {
-          var token = jwt.sign(
-            {
-              pk: `u#${request.body.email}`,
-              sk: `login#${request.body.email}`,
-              user_role: result.Items[0].role,
-            },
-            process.env.JWT_SECRET_KEY as string,
-            {
-              expiresIn: 86400, // expires in 24 hours
-            }
-          );
+          let keyParams = {
+            pk: result.Items[0]["sk"],
+            sk: result.Items[0]["pk"]
+          }
+          // create token
+          // let token = jwt.sign(
+          //   {
+          //     pk: result.Items[0]["sk"],
+          //     sk: result.Items[0]["pk"]
+          //   },
+          //   process.env.JWT_SECRET_KEY as string,
+          //   {
+          //     expiresIn: 86400, // expires in 24 hours
+          //   }
+          // );
 
-          result.Items[0]["token"] = token;
-
+          // result.Items[0]["token"] = token;
           bcrypt
             .compare(request.body.password, result.Items[0].password)
-            .then((authenticated) => {
+            .then(async (authenticated) => {
+              console.log(authenticated)
               if (authenticated === true) {
-                delete result.Items[0].password;
-                delete result.Items[0].amznFlexPassword;
+              new UserServices().getUserData(keyParams).then((res) => {
+                console.log("userData=", res)
+              }).catch((err) => {
 
-                response.status(200);
-                response.send({
-                  success: true,
-                  message: "Getting login data!",
-                  data: result.Items[0],
-                });
+              })
+                // delete result.Items[0].password;
+                // delete result.Items[0].amznFlexPassword;
+
+                // response.status(200);
+                // response.send({
+                //   success: true,
+                //   message: "Getting login data!",
+                //   data: result.Items[0],
+                // });
               } else {
                 response.status(200);
                 response.send({

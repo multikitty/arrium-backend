@@ -1,4 +1,4 @@
-import { dynamoDB, TableName } from "./../Utils/dynamoDB";
+import { dynamoDB, TableName } from "../Utils/dynamoDB";
 import bcrypt from "bcryptjs";
 
 export const ForgotServices = {

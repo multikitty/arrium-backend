@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import MailServices from "../Services/MailServices";
-import { ForgotServices } from "./../Services/ForgotServices";
+import { ForgotServices } from "../Services/ForgotServices";
 
 export const ForgotController = {
   forgotPassword: async (request: any, response: any) => {
