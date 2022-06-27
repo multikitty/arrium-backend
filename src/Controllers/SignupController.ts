@@ -1,9 +1,10 @@
+import fs from "fs";
 import jwt from "jsonwebtoken";
+import companyIds from "../Utils/customerId.json"
 import MailServices from "../Services/MailServices";
 import { SignupServices } from "../Services/SignupServices";
 import UserServices from '../Services/UserServices';
-import fs from "fs";
-import companyIds from "../Utils/customerId.json"
+
 export const SignupController = {
   // Signup Step 1
   signupRegistration: async (request: any, response: any) => {
@@ -110,7 +111,6 @@ export const SignupController = {
         response.send({
           success: true,
           message: "Account information updated successfully",
-          // data: result.Attributes,
         });
       });
     } catch (error) {
@@ -122,6 +122,7 @@ export const SignupController = {
       });
     }
   },
+
   // Signup Step 3
   signupOTPConfirmation: async (request: any, response: any) => {
     try {
@@ -162,19 +163,38 @@ export const SignupController = {
 
   updateAmazonFlexInfo: async (request: any, response: any) => {
     try {
-      await SignupServices.updateAmazonFlexInfoService(request.body).then(
+      // AMZN Flex data
+      let flexData = {
+        pk : request.body.pk,
+        sk : `flexDetails#${request.body.amznFlexUser}`,
+        amznFlexUser : request.body.amznFlexUser,
+        amznFlexPassword : request.body.amznFlexPassword
+      }
+      // update flex data
+      await SignupServices.updateAmazonFlexInfoService(flexData).then(
         (result) => {
           if (result) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "Amazon Flex info added successfully!",
+            // Update account registration steps
+            SignupServices.updateCurrentSteps(request.body)
+            .then((result) => {
+              response.status(200);
+              response.send({
+                success: true,
+                message: "Amazon Flex info updated successfully.",
+              });  
+            }).catch((err) => {
+              response.status(500);
+              response.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error : err
+              });
             });
           } else {
-            response.status(200);
+            response.status(500);
             response.send({
               success: false,
-              message: "We are unable to verify your email",
+              message: "Something went wrong, please try after sometime.",
             });
           }
         }

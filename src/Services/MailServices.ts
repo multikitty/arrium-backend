@@ -24,7 +24,7 @@ export default class MailServices {
   async sendMailForgotPassword(data: any) {
     return transporter.sendMail({
       from: '"Arrium Testing" <devscaleupally@gmail.com>', // sender address
-      to: data.email, // list of receivers
+      to: data.pkEmail, // list of receivers
       subject: "Forget Password reset link", // Subject line
       text: "Please follow the below link to reset your password", // plain text body
       html: `<p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p>`,

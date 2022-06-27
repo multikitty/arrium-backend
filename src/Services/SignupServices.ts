@@ -2,19 +2,6 @@ import bcrypt from "bcryptjs";
 import { dynamoDB, TableName } from "../Utils/dynamoDB";
 
 export const SignupServices = {
-  signupCheckExistEmail: async (data: any) => {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression: "email = :email",
-        ExpressionAttributeValues: {
-          ":email": data.email,
-        },
-      })
-      .promise();
-  }, 
-
-
   signupRegistrationService: async (data: any) => {
     return dynamoDB
       .put({
@@ -32,18 +19,6 @@ export const SignupServices = {
           createdAt: (Date.now() / 1000) | 0, //time in unix
         },
         TableName: TableName,
-      })
-      .promise();
-  },
-
-  findIfCustomerIdExist: async (data: any) => {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression: "contains(customerID, :customerID)",
-        ExpressionAttributeValues: {
-          ":customerID": data,
-        },
       })
       .promise();
   },
@@ -90,19 +65,31 @@ export const SignupServices = {
   },
 
   updateAmazonFlexInfoService: async (data: any) => {
+    return dynamoDB.put({
+      Item: {
+        pk: data.pk,
+        sk: data.sk,
+        amznFlexUser : data.amznFlexUser,
+        amznFlexPassword : data.amznFlexPassword,
+      },
+      TableName: TableName,
+    })
+    .promise();
+  },
+
+  updateCurrentSteps: async (data: any) => {
     return dynamoDB
       .update({
         TableName: TableName,
         Key: {
-          sk: data.sk,
           pk: data.pk,
+          sk: data.sk,
         },
-        UpdateExpression: `set amznFlexUser = :amznFlexUser, amznFlexPassword= :amznFlexPassword, currentSteps= :currentSteps`,
+        UpdateExpression: `set currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
-          ":amznFlexUser": data.amznFlexUser,
-          ":amznFlexPassword": data.amznFlexPassword,
           ":currentSteps": "finished",
         },
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   },

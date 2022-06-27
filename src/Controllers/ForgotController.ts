@@ -1,64 +1,65 @@
 import jwt from "jsonwebtoken";
 import MailServices from "../Services/MailServices";
 import { ForgotServices } from "../Services/ForgotServices";
+import UserServices from "../Services/UserServices";
 
 export const ForgotController = {
   forgotPassword: async (request: any, response: any) => {
     try {
-      await ForgotServices.forgotPasswordService(request.body).then(
-        (result: any) => {
-          if (result !== false) {
-            var token = jwt.sign(
-              {
-                pk: `u#${request.body.email}`,
-                sk: `login#${request.body.email}`,
-              },
-              process.env.JWT_SECRET_KEY as string,
-              {
-                expiresIn: "5m",
-              }
-            );
-
-            result["token"] = token;
-
-            try {
-             new MailServices()
-                .sendMailForgotPassword(result)
-                .then((res) => {
-                  response.send({
-                    success: true,
-                    message: "Email sent successfully!",
-                    // data: res,
-                  });
-                })
-                .catch((error) => {
-                  response.status(500);
-                  response.send({
-                    success: false,
-                    message: "We are unable to send mail!",
-                  });
-                });
-            } catch (error) {
+      await new UserServices().getUserIndexByEmail(request.body.email).then((result: any) => {
+        if (result.Count === 0) {
+          response.status(200);
+          response.send({
+            success: false,
+            message: "Email ID not found. Please check and try again!",
+          });
+        } else {
+          let keyParams = {
+            pk: result.Items[0]["sk"],
+            sk: result.Items[0]["pk"], 
+            user_role : result.Items[0]["role"]
+          }
+          // create token
+          let token = jwt.sign(
+            keyParams,
+            process.env.JWT_SECRET_KEY as string,
+            {
+              expiresIn: "30m",
+            }
+          );
+          result.Items[0]["token"] = token;
+          // send mail
+          new MailServices()
+            .sendMailForgotPassword(result.Items[0])
+            .then((res) => {
+              response.send({
+                success: true,
+                message: "Password reset link sent, please check your email!",
+              });
+            })
+            .catch((error) => {
               response.status(500);
               response.send({
                 success: false,
-                message: "Something went wrong while sending mail",
+                message: "We are unable to send mail!",
+                error : error
               });
-            }
-          } else {
-            response.status(200);
-            response.send({
-              success: false,
-              message: "Email ID not found. Please check and try again!",
             });
-          }
         }
-      );
+      }).catch((error) => {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error : error
+        });
+      });
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
         message: "Something went wrong, please try after sometime.",
+        error : error
       });
     }
   },
