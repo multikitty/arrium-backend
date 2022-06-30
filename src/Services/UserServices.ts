@@ -27,6 +27,32 @@ export default class UserServices {
       })
       .promise();
   }
+  // get amazon flex details
+  async fetchAmznFlexDetails(data: any) {
+    let params = {
+      TableName : TableName,
+      ScanIndexForward: true,
+      ConsistentRead: false,
+      KeyConditionExpression: "#bef90 = :bef90 And begins_with(#bef91, :bef91)",
+      ExpressionAttributeValues: {
+        ":bef90": data.pk,
+        ":bef91": "flexDetails#"
+      },
+      ExpressionAttributeNames: {
+        "#bef90": "pk",
+        "#bef91": "sk"
+      }
+    }
+    return dynamoDB.query(params).promise();
+  }
+  
+  /**
+  * updateFlexDetails
+  */
+  public updateFlexDetails(data: Object) {
+    console.log(data)
+  }
+
 
   async getUserById(customerID: any) {
     return dynamoDB
@@ -39,16 +65,16 @@ export default class UserServices {
       })
       .promise();
   }
-
-  async updateAccountInfoById(data: any) {
+  //update user account info 
+  async updateAccountInfo(data: any) {
     return dynamoDB
       .update({
         TableName: TableName,
         Key: {
-          sk: data.userSK,
           pk: data.userPK,
+          sk: data.userSK,
         },
-        UpdateExpression: `set firstname = :firstname, lastname= :lastname, phoneNumber= :phoneNumber, email= :email, emailVerified = :emailVerified, tzName = :tzName`,
+        UpdateExpression: `set firstname = :firstname, lastname= :lastname, phoneNumber= :phoneNumber, email= :email, emailVerified = :emailVerified, tzName = :tzName, role = :role, accountStatus = :accountStatus`,
         ExpressionAttributeValues: {
           ":firstname": data.firstname,
           ":lastname": data.lastname,
@@ -56,60 +82,47 @@ export default class UserServices {
           ":email": data.email,
           ":emailVerified": data.emailVerified,
           ":tzName": data.tzName,
-          // ":role": data.role,
-          // ":status": data.status,
+          ":role": data.role,
+          ":accountStatus": data.status,
         },
         ReturnValues: "ALL_NEW",
       })
       .promise();
   }
-
-  async getAllUsers(request: any) {
-    let expression = "attribute_exists(customerID)";
-    // const limit = request.query.limit || 10;
-    if (request.query.search !== undefined) {
-      expression =
-        "attribute_exists(customerID) AND contains(#firstname, :firstname)";
+  // fetch user list
+  async getAllUsers(data: any) {
+    if(data.sk && data.pk) {
       return dynamoDB
         .scan({
+          IndexName: GSI.login,
           TableName: TableName,
-          FilterExpression: expression,
-          ExpressionAttributeNames: {
-            "#firstname": "firstname",
+          ConsistentRead: false,
+          ExclusiveStartKey: {
+            pk: data.pk,
+            sk: data.sk
           },
-          ExpressionAttributeValues: {
-            ":firstname": request.query.search,
-          },
-          // ExclusiveStartKey: {
-          //   pk: "u#dpddiglk10@plancetose.com",
-          //   sk: "login#dpddiglk10@plancetose.com",
-          // },
-          // ProjectionExpression: "customerID",
-          // Limit: 5,
+          Limit: 4,
         })
         .promise();
     } else {
       return dynamoDB
         .scan({
+          IndexName: GSI.login,
           TableName: TableName,
-          FilterExpression: expression,
-          // ExclusiveStartKey: {
-          //   pk: "u#dpddiglk10@plancetose.com",
-          //   sk: "login#dpddiglk10@plancetose.com",
-          // },
-          // Limit: 4,
+          ConsistentRead: false,
+          Limit: 4,
         })
         .promise();
     }
   }
-
+  // update mail verify status
   async updateEmailVerify(data: any) {
     return dynamoDB
       .update({
         TableName: TableName,
         Key: {
-          sk: data.sk,
           pk: data.pk,
+          sk: data.sk,
         },
         UpdateExpression: `set emailVerified = :emailVerified`,
         ExpressionAttributeValues: {

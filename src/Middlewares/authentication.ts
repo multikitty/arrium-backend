@@ -21,7 +21,7 @@ export const authentication = (request: any, response: any, next: any) => {
       // if everything good, save to request for use in other routes
       request.body.pk = decoded.pk;
       request.body.sk = decoded.sk;
-      request.body.user_role = decoded.user_role || "driver";
+      request.body.role = decoded.userRole;
       next();
     }
   );

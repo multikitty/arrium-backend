@@ -28,6 +28,40 @@ export default class UserController {
       });
     }
   }
+  // get amzn flex details
+  async getAmznFlexDetails(request: any, response: any) {
+    try {
+      await new UserServices().fetchAmznFlexDetails(request.params).then((result : any) => {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "Flex details retrieved successfully",
+          data: result,
+        });
+      }).catch((error) => {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error : error
+        });  
+      });
+    } catch (error) {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });
+    }
+  }
+
+  /**
+  * updateAmznFlexDetails
+  */
+  public updateAmznFlexDetails(req: any, res : any) {
+    new UserServices().updateFlexDetails(req.params)
+  }
 
   async getUserById(request: any, response: any) {
     try {
@@ -60,113 +94,152 @@ export default class UserController {
       });
     }
   }
-
-  async updateAccountInfoById(request: any, response: any) {
+  
+  async updateAccountInfo(request: any, response: any) {
     try {
       await new UserServices()
-        .updateAccountInfoById(request.body)
-        .then((result) => {
-          if (result.Attributes) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "User Account Information updated successfully",
-            });
-          }
-        });
-    } catch (error) {
-      console.log("getting error while update", error);
-      response.status(500);
-      response.send({
-        success: false,
-        message: "Something went wrong while getting users",
-      });
-    }
-  }
-
-  async listAllUsers(request: any, response: any) {
-    if (request.body.user_role === "admin") {
-      try {
-        await new UserServices().getAllUsers(request).then((result: any) => {
-          if (result.Count !== 0) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "User data retrived successfully",
-              data: result,
-            });
-          } else {
-            response.status(200);
-            response.send({
-              success: false,
-              message: "No Customers Found",
-            });
-          }
-        });
-      } catch (error) {
-        console.log("getting error", error);
+      .updateAccountInfo(request.body)
+      .then((result) => {
+        if (result.Attributes) {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "User Account Information updated successfully",
+          });
+        }
+      }).catch((error) => {
         response.status(500);
         response.send({
           success: false,
-          message: "Something went wrong while gettting All Customers",
+          message: "Something went wrong, please try after sometime.",
+          error : error
         });
-      }
-    } else {
+      });
+    } catch (error) {
       response.status(500);
       response.send({
         success: false,
-        message: "You don't have permission to access this route",
+        message: "Something went wrong, please try after sometime.",
+        error : error
       });
     }
   }
-
+  // fetch user list
+  async listAllUsers(request: any, response: any) {
+    if (request.body.role === "admin") {
+      try {
+        await new UserServices().getAllUsers(request.query).then((result: any) => {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "User data retrieved successfully.",
+            data: result,
+          });
+        }).catch((err) => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error : err
+          });
+        });
+      } catch (error) {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error : error
+        });
+      }
+    } else {
+      response.status(403);
+      response.send({
+        success: false,
+        message: "Access denied!",
+      });
+    }
+  }
+  // send email verification email
   async sendEmailVerify(request: any, response: any) {
     try {
-      var token = jwt.sign(
-        { pk: request.body.pk, sk: request.body.sk },
+      let token = jwt.sign(
+        {
+          pk: request.body.pk,
+          sk: request.body.sk,
+          userRole: request.body.role
+        },
         process.env.JWT_SECRET_KEY as string,
         {
-          expiresIn: "10m", // expires in 24 hours
+          expiresIn: '15m', // expires in 15 minutes
         }
       );
-
+      // email data
       const emailData = {
         email: request.body.email,
-        token: token,
+        token,
       };
       //send email verifcation link
       new MailServices().sendMailEmailVerification(emailData).then((res) => {
         response.status(200);
         response.send({
           success: true,
-          message: "A Verification email sent successfully",
+          message: "Verification email sent successfully",
+        });
+      }).catch((error) => {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error : error
         });
       });
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
-        message: "Something work with db. Try after sometime",
+        message: "Something went wrong, please try after sometime.",
+        error : error
       });
     }
   }
-
+  // verify email
   async VerifyEmail(request: any, response: any) {
     try {
-      await new UserServices()
-        .updateEmailVerify(request.body)
-        .then((result) => {
-          response.status(200);
-          response.send({
-            success: true,
-            message: "Your email verified successfully",
-          });
-        });
+      jwt.verify(
+        request.body.verficationToken,
+        process.env.JWT_SECRET_KEY as string,
+        async function (err: any, decoded: any) {
+          if (err) {
+            return response.status(200).send({
+              success: false,
+              message: "Verfication Failed!",
+            });
+          } else {
+            await new UserServices()
+              .updateEmailVerify(request.body)
+              .then((result) => {
+                response.status(200);
+                response.send({
+                  success: true,
+                  message: "Your email verified successfully",
+                });
+              }).catch((error) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                  error : error
+                });    
+              });
+          }
+        }
+      ); 
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
-        message: "Oops something went wrong on email verification",
+        message: "Something went wrong, please try after sometime.",
+        error : error
       });
     }
   }

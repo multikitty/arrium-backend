@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 // initialize app
 const app: Express = express();
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 //Import Routes File 
 import signup from "./routes/signup";

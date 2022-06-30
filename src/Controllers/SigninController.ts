@@ -14,9 +14,9 @@ export const SigninController = {
           });
         } else {
           let keyParams = {
-            pk: result.Items[0]["sk"],
-            sk: result.Items[0]["pk"], 
-            user_role : result.Items[0]["role"]
+            pk: result.Items[0]["pk"],
+            sk: result.Items[0]["sk"], 
+            userRole : result.Items[0]["role"]
           }
           // match password
           bcrypt

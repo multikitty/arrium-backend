@@ -39,7 +39,8 @@ export const SignupController = {
               let token = jwt.sign(
                 {
                   pk: request.body.pk,
-                  sk: request.body.sk
+                  sk: request.body.sk,
+                  userRole: request.body.role
                 },
                 process.env.JWT_SECRET_KEY as string,
                 {
@@ -166,10 +167,11 @@ export const SignupController = {
       // AMZN Flex data
       let flexData = {
         pk : request.body.pk,
-        sk : `flexDetails#${request.body.amznFlexUser}`,
+        sk : `flexDetails#${request.body.pk}`,
         amznFlexUser : request.body.amznFlexUser,
         amznFlexPassword : request.body.amznFlexPassword
       }
+      console.log(flexData)
       // update flex data
       await SignupServices.updateAmazonFlexInfoService(flexData).then(
         (result) => {

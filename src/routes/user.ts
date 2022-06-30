@@ -10,15 +10,15 @@ import UserController from "./../Controllers/UserController";
 //get User Details
 router.get("/", authentication, new UserController().getUserData);
 
-router.get("/list", authentication, new UserController().listAllUsers);
+router.get("/list", new UserController().listAllUsers);
 
 router.get("/:id", authentication, new UserController().getUserById);
 
-router.put(
-  "/update-account-info",
-  authentication,
-  new UserController().updateAccountInfoById
-);
+router.get("/flex-details/:pk", authentication, new UserController().getAmznFlexDetails);
+
+router.put("/flex-details/:pk", authentication, new UserController().updateAmznFlexDetails);
+
+router.put("/update-account-info", authentication, new UserController().updateAccountInfo);
 
 router.post(
   "/request-verify-email",
@@ -54,6 +54,5 @@ router.post(
   new UserController().updatephoneNumber
 );
 
-//need to create update phone number api
 
 export = router;

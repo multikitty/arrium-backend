@@ -4,6 +4,7 @@ import { ForgotServices } from "../Services/ForgotServices";
 import UserServices from "../Services/UserServices";
 
 export const ForgotController = {
+  // forgot password
   forgotPassword: async (request: any, response: any) => {
     try {
       await new UserServices().getUserIndexByEmail(request.body.email).then((result: any) => {
@@ -15,9 +16,9 @@ export const ForgotController = {
           });
         } else {
           let keyParams = {
-            pk: result.Items[0]["sk"],
-            sk: result.Items[0]["pk"], 
-            user_role : result.Items[0]["role"]
+            pk: result.Items[0]["pk"],
+            sk: result.Items[0]["sk"], 
+            userRole : result.Items[0]["role"]
           }
           // create token
           let token = jwt.sign(
@@ -63,7 +64,7 @@ export const ForgotController = {
       });
     }
   },
-
+  // update password
   forgotPasswordReset: async (request: any, response: any) => {
     try {
       jwt.verify(
@@ -79,7 +80,8 @@ export const ForgotController = {
             // if everything good, save to request for use in other routes
             request.body.pk = decoded.pk;
             request.body.sk = decoded.sk;
-
+            request.body.role = decoded.userRole;
+            // update new password
             ForgotServices.setNewPasswordService(request.body)
               .then((result) => {
                 response.send({
@@ -92,6 +94,7 @@ export const ForgotController = {
                 response.send({
                   success: false,
                   message: "Something went wrong, please try after sometime.",
+                  error : error
                 });
               });
           }
@@ -105,7 +108,7 @@ export const ForgotController = {
       });
     }
   },
-
+  // verify token
   verifyForgotToken: async (request: any, response: any) => {
     jwt.verify(
       request.body.verficationToken,
@@ -125,4 +128,5 @@ export const ForgotController = {
       }
     );
   },
+
 };
