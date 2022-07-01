@@ -32,7 +32,7 @@ export const SignupController = {
               request.body.customerId = String(cIdObj.lastCustomerId);
               let userRole = "driver"
               // create sk, pk and role
-              request.body.pk = `${request.body.countryCode ?? "UK"}-${request.body.customerId}`;
+              request.body.pk = `${request.body.countryCode}-${request.body.customerId}`;
               request.body.sk = `${userRole}#${request.body.customerId}`;
               request.body.role = userRole;
               //  email verification token
@@ -171,7 +171,6 @@ export const SignupController = {
         amznFlexUser : request.body.amznFlexUser,
         amznFlexPassword : request.body.amznFlexPassword
       }
-      console.log(flexData)
       // update flex data
       await SignupServices.updateAmazonFlexInfoService(flexData).then(
         (result) => {

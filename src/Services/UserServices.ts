@@ -31,19 +31,12 @@ export default class UserServices {
   async fetchAmznFlexDetails(data: any) {
     let params = {
       TableName : TableName,
-      ScanIndexForward: true,
-      ConsistentRead: false,
-      KeyConditionExpression: "#bef90 = :bef90 And begins_with(#bef91, :bef91)",
-      ExpressionAttributeValues: {
-        ":bef90": data.pk,
-        ":bef91": "flexDetails#"
-      },
-      ExpressionAttributeNames: {
-        "#bef90": "pk",
-        "#bef91": "sk"
+      Key: {
+        pk:  data.pk,
+        sk: `flexDetails#${data.pk}`
       }
     }
-    return dynamoDB.query(params).promise();
+    return dynamoDB.get(params).promise();
   }
   
   /**
@@ -53,18 +46,6 @@ export default class UserServices {
     console.log(data)
   }
 
-
-  async getUserById(customerID: any) {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression: "customerID = :customerID",
-        ExpressionAttributeValues: {
-          ":customerID": customerID,
-        },
-      })
-      .promise();
-  }
   //update user account info 
   async updateAccountInfo(data: any) {
     return dynamoDB
@@ -91,7 +72,7 @@ export default class UserServices {
   }
   // fetch user list
   async getAllUsers(data: any) {
-    if(data.sk && data.pk) {
+    if(data.nextPage) {
       return dynamoDB
         .scan({
           IndexName: GSI.login,
@@ -99,9 +80,11 @@ export default class UserServices {
           ConsistentRead: false,
           ExclusiveStartKey: {
             pk: data.pk,
-            sk: data.sk
+            sk: data.sk,
+            customerID: data.customerID,
+            pkEmail: data.pkEmail
           },
-          Limit: 4,
+          Limit: 1,
         })
         .promise();
     } else {
@@ -110,7 +93,7 @@ export default class UserServices {
           IndexName: GSI.login,
           TableName: TableName,
           ConsistentRead: false,
-          Limit: 4,
+          Limit: 1,
         })
         .promise();
     }

@@ -33,7 +33,6 @@ export const SigninController = {
                 );
                 result.Items[0]["token"] = token;
                 delete result.Items[0].password;
-                console.log(result)
                 response.status(200);
                 response.send({
                   success: true,

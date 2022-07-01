@@ -10,8 +10,6 @@ export default class UserController {
       await new UserServices().getUserData(request.body).then((result) => {
         if (result.Item) {
           delete result.Item.password;
-          delete result.Item.amznFlexPassword;
-
           response.status(200);
           response.send({
             success: true,
@@ -19,12 +17,20 @@ export default class UserController {
             data: result.Item,
           });
         }
+      }).catch((error) => {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error : error
+        });  
       });
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
-        message: "Something went wrong while getting users",
+        message: "Something went wrong, please try after sometime.",
+        error : error
       });
     }
   }
@@ -32,12 +38,21 @@ export default class UserController {
   async getAmznFlexDetails(request: any, response: any) {
     try {
       await new UserServices().fetchAmznFlexDetails(request.params).then((result : any) => {
-        response.status(200);
-        response.send({
-          success: true,
-          message: "Flex details retrieved successfully",
-          data: result,
-        });
+        if(result.Item) {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "Flex details retrieved successfully",
+            data: result.Item,
+          });
+        } else {
+          response.status(200);
+          response.send({
+            success: false,
+            message: "Flex details are empty.",
+            data: result.Item,
+          });
+        }
       }).catch((error) => {
         response.status(500);
         response.send({
@@ -62,35 +77,42 @@ export default class UserController {
   public updateAmznFlexDetails(req: any, res : any) {
     new UserServices().updateFlexDetails(req.params)
   }
-
-  async getUserById(request: any, response: any) {
+  // get single user data
+  async getUserByPkSk(request: any, response: any) {
     try {
       await new UserServices()
-        .getUserById(request.params.id)
+        .getUserData(request.query)
         .then((result: any) => {
-          if (result.Count !== 0) {
-            delete result.Items[0].password;
-            delete result.Items[0].amznFlexPassword;
-
+          console.log(result)
+          if (result.Item) {
+            delete result.Item.password;
             response.status(200);
             response.send({
               success: true,
-              message: "User data retrived successfully",
-              data: result.Items[0],
+              message: "Customer data retrieved successfully",
+              data: result.Item,
             });
           } else {
             response.status(200);
             response.send({
               success: false,
-              message: "No Customers Found",
+              message: "No data found",
             });
           }
+        }).catch((error) => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error: error
+          });
         });
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
-        message: "Something went wrong while getting users",
+        message: "Something went wrong, please try after sometime.",
+        error: error
       });
     }
   }

@@ -10,9 +10,9 @@ import UserController from "./../Controllers/UserController";
 //get User Details
 router.get("/", authentication, new UserController().getUserData);
 
-router.get("/list", new UserController().listAllUsers);
+router.get("/list", authentication, new UserController().listAllUsers);
 
-router.get("/:id", authentication, new UserController().getUserById);
+router.get("/get", authentication, new UserController().getUserByPkSk);
 
 router.get("/flex-details/:pk", authentication, new UserController().getAmznFlexDetails);
 

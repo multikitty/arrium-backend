@@ -11,7 +11,7 @@ class BlockServices {
   /**
    * getBlock
    */
-  public getBlock() {
+  public getBlock(data : Object) {
     
   }
 }
