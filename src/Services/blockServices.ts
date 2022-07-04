@@ -6,7 +6,6 @@ export default class BlockServices {
     */
   public setBlock(data : any) {
     console.log(data.blockItems)
-    // let batchNumber
   }
 
   /**
