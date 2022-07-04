@@ -1,7 +1,7 @@
 import AWS from "aws-sdk"
 const config = require('./config');
 // configure aws dynamo db 
-AWS.config.update(config.aws_local_config);
+AWS.config.update(config.aws_remote_config);
 // dynamo db initialization
 export const dynamoDB = new AWS.DynamoDB.DocumentClient();
 // table name for connection

@@ -16,7 +16,7 @@ export const SignupServices = {
           emailVerified: false,
           currentSteps: "account_info",
           customerID: data.customerId,
-          createdAt: (Date.now() / 1000) | 0, //time in unix,
+          startDate: (Date.now() / 1000) | 0, //time in unix,
           accountStatus: "active"
         },
         TableName: TableName,

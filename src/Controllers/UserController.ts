@@ -74,8 +74,33 @@ export default class UserController {
   /**
   * updateAmznFlexDetails
   */
-  public updateAmznFlexDetails(req: any, res : any) {
-    new UserServices().updateFlexDetails(req.params)
+  public updateAmznFlexDetails(request: any, response : any) {
+    const result = new UserServices().updateFlexDetails(request.body)
+    .then((result) => {
+      // handle result 
+      if(result.Attributes) {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "Configuration details updated successfully.",
+          data: result.Attributes
+        });
+      } else {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
+    })
+    .catch((error) => {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });
+    })
   }
   // get single user data
   async getUserByPkSk(request: any, response: any) {
@@ -83,7 +108,6 @@ export default class UserController {
       await new UserServices()
         .getUserData(request.query)
         .then((result: any) => {
-          console.log(result)
           if (result.Item) {
             delete result.Item.password;
             response.status(200);
@@ -116,7 +140,7 @@ export default class UserController {
       });
     }
   }
-  
+  // update account info
   async updateAccountInfo(request: any, response: any) {
     try {
       await new UserServices()

@@ -1,17 +1,18 @@
 
-class BlockServices {
+export default class BlockServices {
     
-   /**
-    * addBlock
+  /**
+    * setBlock
     */
-   public addBlock() {
-           
-   }
+  public setBlock(data : any) {
+    console.log(data.blockItems)
+    // let batchNumber
+  }
 
   /**
    * getBlock
    */
-  public getBlock(data : Object) {
+  // public getBlock(data : Object) {
     
-  }
+  // }
 }
