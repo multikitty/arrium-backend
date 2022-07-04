@@ -12,7 +12,6 @@ import signup from "./routes/signup";
 import signin from "./routes/signin";
 import forgot from "./routes/forgot";
 import user from "./routes/user";
-import block from "./routes/block";
 // Testing route
 app.get("/", (req: Request, res: Response) => {
   res.send("<h1>Hello welcome to arrium api collection :)</h1>");
@@ -23,7 +22,6 @@ app.use("/v1/signin", signin);
 app.use("/v1/signup", signup);
 app.use("/v1/forgot-password", forgot);
 app.use("/v1/user", user);
-app.use("/v1/block", block);
 
 // Handling 404 Page Not Found
 app.use((req, res, next) => {
