@@ -76,7 +76,7 @@ export default class UserController {
   */
   public updateAmznFlexDetails(request: any, response : any) {
     const result = new UserServices().updateFlexDetails(request.body)
-    .then((result) => {
+    .then((result : any) => {
       // handle result 
       if(result.Attributes) {
         response.status(200);
@@ -93,7 +93,7 @@ export default class UserController {
         });
       }
     })
-    .catch((error) => {
+    .catch((error : any) => {
       response.status(500);
       response.send({
         success: false,
