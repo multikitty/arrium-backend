@@ -1,17 +1,32 @@
+import { dynamoDB, TableName } from "../Utils/dynamoDB"
 
 export default class BlockServices {
     
-  /**
-    * setBlock
-    */
-  public setBlock(data : any) {
-    console.log(data.blockItems)
-  }
+    /**
+      * setBlock
+      */
+    public setBlock(data : any) {
+      console.log(data.blockItems)
+    }
 
-  /**
-   * getBlock
-   */
-  // public getBlock(data : Object) {
-    
-  // }
-}
+   /**
+    * getBatchNumber
+    */
+   public getBatchNumber(userPk : String) {
+    let params = {
+      TableName: TableName,
+      Key: {
+        pk: userPk,
+        sk: "batchnumber"
+      } 
+    }
+    return dynamoDB.get(params).promise()
+   }
+  
+    /**
+     * getBlock
+     */
+    // public getBlock(data : Object) {
+      
+    // }
+  }
