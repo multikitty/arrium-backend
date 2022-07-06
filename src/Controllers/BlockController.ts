@@ -5,9 +5,11 @@ export default class BlockController {
    /**
     * addBlocks
     */
-  public addBlocks(request: any, response: any) {
+  public async addBlocks(request: any, response: any) {
     let batchNumber = 1;
-    new BlockServices().getBatchNumber(request.body.pk).then((result : any) => {
+    // Get current batch number
+    new BlockServices().getBatchNumber(request.body.pk).then( async (result : any) => {
+      // generate new batch number
       if(result.Item) {
         let newBatchNumber = result.Item?.batch + 1;
         batchNumber = newBatchNumber;
@@ -15,8 +17,9 @@ export default class BlockController {
       // Start adding blocks
       let blockList = request.body.blockItems;
       let batchSize = 25;
-      let batchParams = [];
+      let batchItemsList = [];
       let failedItems : any[] = []
+      // loop through block list
       for (let i = 0; i < blockList.length; i++) {
         const block = blockList[i];
         // get block date and day
@@ -37,7 +40,7 @@ export default class BlockController {
         let duration : string = String(difference.asHours());
         duration = `${duration} Hours`;
         // create sort key for block
-        let blockSk = `block#${batchNumber}#${bDate}#${block.bStartTime}#${block.bEndTime}`;
+        let blockSk = `block#${batchNumber}#${bDate}#${block.bStartTime}#${block.bEndTime}#${block.offerId}`;
         // Create block item object
         let blockItem = {
           PutRequest: {
@@ -57,24 +60,27 @@ export default class BlockController {
               offerID: block.offerId,
               surgeMultiplier: block.surgeMultiplier,
               projectedTips: block.projectedTips,
-              priorityOffer: block.priorityOffer
+              priorityOffer: block.priorityOffer,
+              expDate: block.bEndTime
             },
           },
         };
         // add block item in array
-        batchParams.push(blockItem)
-        if(batchParams.length === batchSize || batchParams.length === blockList.length) {
-          // execute batch operation
-          new BlockServices().insertBlocks(batchParams).then((result: any) => {
+        batchItemsList.push(blockItem)
+        if(batchItemsList.length === batchSize || i+1 === blockList.length) {
+          // execute batch write operation
+          await new BlockServices().insertBlocks(batchItemsList).then(async (result: any) => {
+            batchItemsList = [] // clear batchItemsList
             // store unprocessed (failed items)
             failedItems.push(result.UnprocessedItems)
-            if(batchParams.length === blockList.length) {
+            if(i+1 === blockList.length) {
               // update batch number
               let batchInfo = {
                 userPk : request.body.pk,
                 batchNumber : batchNumber
               }
-              new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
+              // Update batch number
+              await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
                 if(result.Attributes) {
                   response.status(200);
                   response.send({
@@ -117,4 +123,53 @@ export default class BlockController {
       });  
     });
   }
+
+ /**
+  * getBlockList
+  */
+  public getBlockList(request: any, response: any) {
+    // Get current batch number
+    new BlockServices().getBatchNumber(request.body.pk).then((result : any) => {
+      // generate new batch number
+      if(result.Item) {
+        let batchNumber = result.Item?.batch;
+        let batchInfo = {
+          userPk : request.body.pk,
+          batch : batchNumber
+        }
+        // fetch block list 
+        new BlockServices().getBlockList(batchInfo)
+        .then((result : any) => {
+          response.status(200);
+          response.send({
+            success: true,
+            message: "Searched blocks list fetched successfully.",
+            data : result.Items
+          });  
+        }).catch((err : any) => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error : err
+          });  
+        });
+      } else {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "No data found.",
+          data : []
+        });  
+      }
+    }).catch((error : any) => {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });  
+    });
+  }
 }
+
