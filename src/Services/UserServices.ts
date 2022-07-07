@@ -152,7 +152,7 @@ export default class UserServices {
             customerID: data.customerID,
             pkEmail: data.pkEmail
           },
-          Limit: 1,
+          Limit: 10,
         })
         .promise();
     } else {
@@ -161,7 +161,7 @@ export default class UserServices {
           IndexName: GSI.login,
           TableName: TableName,
           ConsistentRead: false,
-          Limit: 1,
+          Limit: 10,
         })
         .promise();
     }
