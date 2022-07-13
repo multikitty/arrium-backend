@@ -3,39 +3,39 @@ import PreferenceServices from "../Services/PreferenceServices"
 
 export default class PreferencesController {
 
-
-    private getWeekDayNumber(weekDay : string) {
-        switch (weekDay) {
-            case "mon":
-                return 1;
-                break;
-            case "tue":
-                return 2;
-                break;
-            case "wed":
-                return 3;
-                break;
-            case "thu":
-                return 4;
-                break;
-            case "fri":
-                return 5;
-                break;
-            case "sat":
-                return 6;
-                break;
-            case "sun":
-                return 7;
-                break;
-            default:
-                break;
-        }
-    }
-
     /**
     * addPreferencesByUser
     */
     public async addPreferencesByUser(req: any, res: any) {
+        // function for getting weekday number
+        const getWeekDayNumber =  (weekDay : string) => {
+            switch (weekDay) {
+                case "mon":
+                    return 1;
+                    break;
+                case "tue":
+                    return 2;
+                    break;
+                case "wed":
+                    return 3;
+                    break;
+                case "thu":
+                    return 4;
+                    break;
+                case "fri":
+                    return 5;
+                    break;
+                case "sat":
+                    return 6;
+                    break;
+                case "sun":
+                    return 7;
+                    break;
+                default:
+                    break;
+            }
+        }
+        // add preferences
         let preferenceList = req.body.preferences;
         let batchSize = 25;
         let batchItemsList = [];
@@ -44,7 +44,7 @@ export default class PreferencesController {
         for (let i = 0; i < preferenceList.length; i++) {
             const listItem = preferenceList[i];
             // create sort key
-            let sortKey = `availability#${this.getWeekDayNumber(listItem.day)}#${listItem.day}#${listItem.stationCode}`;
+            let sortKey = `availability#${getWeekDayNumber(listItem.day)}#${listItem.day}#${listItem.stationCode}`;
             // Create block item object
             let prefItem = {
                 PutRequest: {
@@ -117,7 +117,7 @@ export default class PreferencesController {
     * getPreferences
     */
     public async getPreferencesByUser(req: any, res: any) {
-        await new PreferenceServices().getPreferenceByUser("UK-900001")
+        await new PreferenceServices().getPreferenceByUser(req.body.pk)
         .then((result : any) => {
             res.status(200);
             res.send({
