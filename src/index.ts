@@ -13,6 +13,7 @@ import signin from "./routes/signin";
 import forgot from "./routes/forgot";
 import user from "./routes/user";
 import block from "./routes/block";
+import modelVersions from "./routes/modelVersions"
 import preference from "./routes/preference";
 // Testing route
 app.get("/", (req: Request, res: Response) => {
@@ -26,6 +27,8 @@ app.use("/v1/forgot-password", forgot);
 app.use("/v1/user", user);
 app.use("/v1/block", block);
 app.use("/v1/preference", preference);
+app.use("/v1/model-versions", modelVersions);
+
 
 // Handling 404 Page Not Found
 app.use((req, res, next) => {

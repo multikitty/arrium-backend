@@ -2,7 +2,7 @@ import  moment from "moment";
 import BlockServices from "../Services/BlockServices";
 
 export default class BlockController {
-   /**
+  /**
     * addBlocks
     */
   public async addBlocks(request: any, response: any) {
@@ -11,7 +11,7 @@ export default class BlockController {
     new BlockServices().getBatchNumber(request.body.pk).then( async (result : any) => {
       // generate new batch number
       if(result.Item) {
-        let newBatchNumber = result.Item?.batch + 1;
+        let newBatchNumber = result.Item.batch + 1;
         batchNumber = newBatchNumber;
       } 
       // Start adding blocks
@@ -124,15 +124,15 @@ export default class BlockController {
     });
   }
 
- /**
-  * getBlockList
-  */
+  /**
+    * getBlockList
+    */
   public getBlockList(request: any, response: any) {
     // Get current batch number
     new BlockServices().getBatchNumber(request.body.pk).then((result : any) => {
       // generate new batch number
       if(result.Item) {
-        let batchNumber = result.Item?.batch;
+        let batchNumber = result.Item.batch;
         let batchInfo = {
           userPk : request.body.pk,
           batch : batchNumber
