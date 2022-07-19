@@ -50,23 +50,23 @@ export default class ModelVersionsController {
     /**
     * getPhoneModelList
     */
-    // public async getPhoneModelList(req: any, res: any) {
-    //     await new ModelVersionsServices().addPhoneModel(data).then((result : any) => {
-    //         res.status(200);
-    //         res.send({
-    //             success: true,
-    //             message: "Phone model added successfully!",
-    //             data: result,
-    //         });  
-    //     }).catch((error : any) => {
-    //         res.status(500);
-    //         res.send({
-    //             success: false,
-    //             message: "Something went wrong, please try after sometime.",
-    //             error : error
-    //         });  
-    //     })
-    // }
+    public async getPhoneModelList(req: any, res: any) {
+        await new ModelVersionsServices().getPhoneModelList(req.query).then((result : any) => {
+            res.status(200);
+            res.send({
+                success: true,
+                message: "Phone model added successfully!",
+                data: result,
+            });  
+        }).catch((error : any) => {
+            res.status(500);
+            res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error : error
+            });  
+        })
+    }
 
 
 

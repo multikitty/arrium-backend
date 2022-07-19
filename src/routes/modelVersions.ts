@@ -11,4 +11,7 @@ router.post("/os-version/add", authentication, new ModelVersionsController().add
 
 router.post("/flex-version/add", authentication, new ModelVersionsController().addFlexVersion);
 
+router.get("/phone-model", authentication, new ModelVersionsController().getPhoneModelList);
+
+
 export = router;
