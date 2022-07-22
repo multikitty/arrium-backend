@@ -20,44 +20,7 @@ export default class ModelVersionsServices {
         return dynamoDB.put(params).promise()
     }   
 
-    /**
-    * getPhoneModelList
-    */
-    public getPhoneModelList(data : any) {
-      if(data.next_page) {
-        return dynamoDB.query({
-          TableName: TableName,
-          ScanIndexForward: true,
-          ConsistentRead: false,
-          Limit: 1,
-          KeyConditionExpression: "#69240 = :69240",
-          ExpressionAttributeValues: {
-            ":69240": "phoneModel"
-          },
-          ExpressionAttributeNames: {
-            "#69240": "pk"
-          },
-          ExclusiveStartKey: {
-            pk: data.pk,
-            sk: data.sk,
-          },
-        }).promise();
-      } else {
-        return dynamoDB.query({
-          TableName: TableName,
-          ScanIndexForward: true,
-          ConsistentRead: false,
-          Limit: 10,
-          KeyConditionExpression: "#69240 = :69240",
-          ExpressionAttributeValues: {
-            ":69240": "phoneModel"
-          },
-          ExpressionAttributeNames: {
-            "#69240": "pk"
-          }
-        }).promise();
-      }
-    }
+   
 
     /**
     * addOsVersion
@@ -74,19 +37,34 @@ export default class ModelVersionsServices {
         return dynamoDB.put(params).promise()
     }   
 
-    /**
-    * getPhoneModelList
+     /**
+    * addFlexVersion
     */
-    public getOsVersionList(data : any) {
+    public addFlexVersion(data : any) {
+        let params = {
+            TableName: TableName,
+            Item: {
+              pk: data.pk,
+              sk: data.sk,
+              flexVersion: data.flexVersion
+            }
+        }
+        return dynamoDB.put(params).promise()
+    }  
+
+     /**
+    * Model version lists
+    */
+    public getModelVersionList(data : any) {
       if(data.next_page) {
         return dynamoDB.query({
           TableName: TableName,
           ScanIndexForward: true,
           ConsistentRead: false,
-          Limit: 1,
+          Limit: 10,
           KeyConditionExpression: "#69240 = :69240",
           ExpressionAttributeValues: {
-            ":69240": "osVersion"
+            ":69240": data.entityName
           },
           ExpressionAttributeNames: {
             "#69240": "pk"
@@ -104,7 +82,7 @@ export default class ModelVersionsServices {
           Limit: 10,
           KeyConditionExpression: "#69240 = :69240",
           ExpressionAttributeValues: {
-            ":69240": "phoneModel"
+            ":69240": data.entityName
           },
           ExpressionAttributeNames: {
             "#69240": "pk"
@@ -112,20 +90,4 @@ export default class ModelVersionsServices {
         }).promise();
       }
     }
-
-
-     /**
-    * addFlexVersion
-    */
-    public addFlexVersion(data : any) {
-        let params = {
-            TableName: TableName,
-            Item: {
-              pk: data.pk,
-              sk: data.sk,
-              flexVersion: data.flexVersion
-            }
-        }
-        return dynamoDB.put(params).promise()
-    }  
 }

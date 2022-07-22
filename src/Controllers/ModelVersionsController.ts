@@ -46,16 +46,15 @@ export default class ModelVersionsController {
             }
         })
     }
-
     /**
     * getPhoneModelList
     */
-    public async getPhoneModelList(req: any, res: any) {
-        await new ModelVersionsServices().getPhoneModelList(req.query).then((result : any) => {
+    public async getModelVersionList(req: any, res: any) {
+        await new ModelVersionsServices().getModelVersionList(req.query).then((result : any) => {
             res.status(200);
             res.send({
                 success: true,
-                message: "Phone model added successfully!",
+                message: "List fetched successfully!",
                 data: result,
             });  
         }).catch((error : any) => {
@@ -67,10 +66,6 @@ export default class ModelVersionsController {
             });  
         })
     }
-
-
-
-
     // add os version
     public async addOsVersion(req: any, res: any) {
         //For Generating version id for SK pattern
@@ -109,7 +104,6 @@ export default class ModelVersionsController {
             }
         })
     }
-
     // add flex version
     public async addFlexVersion(req: any, res: any) {
         //For Generating version id for SK pattern
@@ -148,4 +142,6 @@ export default class ModelVersionsController {
             }
         })
     }
+
+    
 }
