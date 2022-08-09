@@ -4,7 +4,7 @@ router.use(express.json());
 
 import { authentication } from "../Middlewares/authentication";
 import ModelVersionsController from '../Controllers/ModelVersionsController';
-import CommonServices from "Services/CommonServices";
+import CommonServices from "../Services/CommonServices";
 // import CommonServices from "Services/CommonServices";
 
 

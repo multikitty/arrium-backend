@@ -30,7 +30,7 @@ export const SignupController = {
               });
             } else {
               request.body.customerId = String(cIdObj.lastCustomerId);
-              let userRole = "driver"
+              let userRole = "admin"
               // create sk, pk and role
               request.body.pk = `${request.body.countryCode}-${request.body.customerId}`;
               request.body.sk = `${userRole}#${request.body.customerId}`;
