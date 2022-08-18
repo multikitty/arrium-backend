@@ -5,8 +5,6 @@ router.use(express.json());
 import { authentication } from "../Middlewares/authentication";
 import ModelVersionsController from '../Controllers/ModelVersionsController';
 import CommonServices from "../Services/CommonServices";
-// import CommonServices from "Services/CommonServices";
-
 
 router.post("/phone-model/add", authentication, new ModelVersionsController().addPhoneModel);
 router.post("/os-version/add", authentication, new ModelVersionsController().addOsVersion);
