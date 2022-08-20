@@ -1,5 +1,5 @@
 
-class LocationController {
+export default class LocationController {
     
 
    /**
