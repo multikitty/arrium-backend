@@ -1,24 +1,41 @@
-import { dynamoDB, TableName } from "Utils/dynamoDB"
+import { AddCountryObj } from "../Interfaces/countryInterface"
+import { dynamoDB, TableName } from "../Utils/dynamoDB"
 
 
 export class LocationServices {
 
-
-    /**
-    * addAddress
-    */
-    public addAddress(data : any) {
+    // add coutnry 
+    public setCountry(data : AddCountryObj) {
         let params = {
             TableName: TableName,
             Item: {
               pk: data.pk,
               sk: data.sk,
-              ModelName: data.modelName,
-              ModelID: data.modelId
+              country: data.country,
+              countryCode: data.countryCode
             }
         }
         return dynamoDB.put(params).promise()
     }
 
+    /**
+    * getCountryList 
+    */
+    public getCountryList() {
+        let queryInput = {
+            TableName: TableName,
+            ScanIndexForward: true,
+            ConsistentRead: false,
+            KeyConditionExpression: "#69240 = :69240",
+            ExpressionAttributeValues: {
+                ":69240" : "country"
+            },
+            ExpressionAttributeNames: {
+                "#69240": "pk"
+            }
+        }
+
+        return dynamoDB.query(queryInput).promise();
+    }
 
 }

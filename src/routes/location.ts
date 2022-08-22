@@ -9,4 +9,9 @@ import { validationSchema } from "./../Middlewares/validationSchema";
 
 router.post("/country", authentication, new LocationValidation().country(), validationSchema,  new LocationController().addCountry);
 
+router.delete("/country", authentication,  new LocationController().deleteCountry);
+
+router.get("/country", authentication,  new LocationController().fetchAllCountry);
+
+
 export = router;
