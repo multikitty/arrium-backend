@@ -11,6 +11,15 @@ export default class LocationValidation {
             body("countryCode").trim().not().isEmpty().withMessage("Country code is required")
         ]
     }
+
+    public region() {
+        return [
+            body("countryCode").trim().not().isEmpty().withMessage("Country Code is required"),
+            body("regionName").trim().not().isEmpty().withMessage("Region Name is required"),
+            body("regionCode").trim().not().isEmpty().withMessage("Region Code is required"),
+            body("regionId").trim().not().isEmpty().withMessage("Region ID is required")
+        ]
+    }
    
 }
 

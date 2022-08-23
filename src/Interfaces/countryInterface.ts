@@ -5,3 +5,11 @@ export interface AddCountryObj {
     readonly country : string,
     readonly countryCode : string
 }
+
+export interface AddRegionObj {
+    readonly sk : string,
+    readonly pk : string,
+    readonly regionName : string,
+    readonly regionCode : string
+    readonly regionId : string
+}
