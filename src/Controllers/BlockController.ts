@@ -1,5 +1,5 @@
 import  moment from "moment";
-import BlockServices from "../Services/BlockServices";
+import BlockServices from "../Services/BlocksServices";
 
 export default class BlockController {
   /**
