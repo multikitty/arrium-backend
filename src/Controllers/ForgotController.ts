@@ -72,7 +72,7 @@ export const ForgotController = {
         process.env.JWT_SECRET_KEY as string,
         function (err: any, decoded: any) {
           if (err) {
-            return response.status(200).send({
+            return response.status(401).send({
               success: false,
               message: "Failed to authenticate token",
             });
@@ -115,7 +115,7 @@ export const ForgotController = {
       process.env.JWT_SECRET_KEY as string,
       function (err: any, decoded: any) {
         if (err) {
-          return response.status(200).send({
+          return response.status(401).send({
             success: false,
             message: "Failed to authenticate token",
           });

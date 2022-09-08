@@ -140,31 +140,31 @@ export default class UserServices {
   }
   // fetch user list
   async getAllUsers(data: any) {
-    if(data.nextPage) {
-      return dynamoDB
-        .scan({
-          IndexName: GSI.login,
-          TableName: TableName,
-          ConsistentRead: false,
-          ExclusiveStartKey: {
-            pk: data.pk,
-            sk: data.sk,
-            customerID: data.customerID,
-            pkEmail: data.pkEmail
-          },
-          Limit: 1,
-        })
-        .promise();
-    } else {
-      return dynamoDB
-        .scan({
-          IndexName: GSI.login,
-          TableName: TableName,
-          ConsistentRead: false,
-          Limit: 1,
-        })
-        .promise();
-    }
+    return dynamoDB
+      .scan({
+        IndexName: GSI.login,
+        TableName: TableName,
+        ConsistentRead: false,
+      })
+      .promise();
+
+    // if(data.nextPage) {
+    //   return dynamoDB
+    //     .scan({
+    //       TableName: TableName,
+    //       IndexName: GSI.login,
+    //       ConsistentRead: false,
+    //       ExclusiveStartKey: {
+    //         pk: data.pk,
+    //         sk: data.sk,
+    //         customerID: data.customerID,
+    //         pkEmail: data.pkEmail
+    //       },
+    //       Limit: 10,
+    //     })
+    //     .promise();
+    // } else { 
+    // }
   }
   // update mail verify status
   async updateEmailVerify(data: any) {
@@ -269,5 +269,3 @@ export default class UserServices {
       .promise();
   }
 }
-
-// export default new userServices();

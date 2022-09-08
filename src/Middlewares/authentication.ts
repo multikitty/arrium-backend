@@ -14,7 +14,7 @@ export const authentication = (request: any, response: any, next: any) => {
     process.env.JWT_SECRET_KEY as string,
     function (err: any, decoded: any) {
       if (err)
-        return response.status(500).send({
+        return response.status(401).send({
           success: false,
           message: "Failed to authenticate token",
         });
