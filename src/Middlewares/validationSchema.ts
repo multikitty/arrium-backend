@@ -25,8 +25,6 @@ export const validationSchema = (request: any, response: any, next: any) => {
       success: false,
       message: "Please fill the form correctly.",
       validationError: errorData,
-      // error_code: errors.array()[0].param,
-      // error_msg: errors.array()[0].msg,
     });
   } else {
     next();

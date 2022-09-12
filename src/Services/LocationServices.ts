@@ -1,4 +1,4 @@
-import { AddCountryObj, AddRegionObj } from "../Interfaces/countryInterface"
+import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj } from "../Interfaces/countryInterface"
 import { dynamoDB, TableName } from "../Utils/dynamoDB"
 
 
@@ -93,4 +93,98 @@ export class LocationServices {
         }
 
     }
+
+
+    // set station 
+    public setStation(data : AddStationObj) {
+        let params = {
+            TableName: TableName,
+            Item: {
+              pk: data.pk,
+              sk: data.sk,
+              regionName : data.regionName,
+              regionCode : data.regionCode,
+              regionID : data.regionId,
+              stationCode : data.stationCode,
+              stationName : data.stationName,
+              stationID : data.stationId,
+              stationType : data.stationType, 
+            }
+        }
+        return dynamoDB.put(params).promise()
+    }
+
+
+    // set station type
+    public setStationType(data : AddStationTypeObj) {
+        let params = {
+            TableName: TableName,
+            Item: {
+              pk: data.pk,
+              sk: data.sk,
+              stationType : data.stationType, 
+            }
+        }
+        return dynamoDB.put(params).promise()
+    }
+
+
+    /**
+    * getStationTypeList 
+    */
+    public getStationTypeList() {
+        let queryInput = {
+            TableName: TableName,
+            ScanIndexForward: true,
+            ConsistentRead: false,
+            KeyConditionExpression: "#69240 = :69240",
+            ExpressionAttributeValues: {
+                ":69240" : "stationType"
+            },
+            ExpressionAttributeNames: {
+                "#69240": "pk"
+            }
+        }
+
+        return dynamoDB.query(queryInput).promise();
+    }
+
+    
+    /**
+    * getStationList 
+    */
+    public getStationList(query : any) {
+        if(query) {
+            let queryInput = {
+                TableName: TableName,
+                ScanIndexForward: true,
+                ConsistentRead: false,
+                KeyConditionExpression: "#bef90 = :bef90 And begins_with(#bef91, :bef91)",
+                ExpressionAttributeValues: {
+                    ":bef90" : "station",
+                    ":bef91" : query
+                },
+                ExpressionAttributeNames: {
+                    "#bef90" : "pk",
+                    "#bef91" : "sk"
+                }
+            }
+            return dynamoDB.query(queryInput).promise();
+        } else {
+            let queryInput = {
+                TableName: TableName,
+                ScanIndexForward: true,
+                ConsistentRead: false,
+                KeyConditionExpression: "#69240 = :69240",
+                ExpressionAttributeValues: {
+                    ":69240" : "station"
+                },
+                ExpressionAttributeNames: {
+                    "#69240": "pk"
+                }
+            }
+            return dynamoDB.query(queryInput).promise();
+        }
+    }
+    
 }
