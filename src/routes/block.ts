@@ -8,6 +8,6 @@ import BlockController from "../Controllers/BlockController";
 // get searched blocks list
 router.get("/", authentication, new BlockController().getBlockList);
 //add blocks
-router.post("/add", authentication, new BlockController().addBlocks);
+router.post("/add", authentication, new BlockController().addBlocks.bind(new BlockController()));
 
 export = router;

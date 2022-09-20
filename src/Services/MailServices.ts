@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import  AWS from "aws-sdk";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -30,6 +31,37 @@ export default class MailServices {
       html: `<p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p>`,
     });
   }
-}
 
-// export default new mailServices();
+
+  /**
+   * sendBlockAcceptedMail
+   */
+  public sendBlockAcceptedMail(data : any) {
+    let params = {
+      Source: 'notification@arrium.io',
+      Destination: {
+        ToAddresses: [
+          data.user.userEmail
+        ],
+      },
+      ReplyToAddresses: [],
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: `
+            Dear ${data.user.userName},
+            The following block(s) have been accepted:
+            ${data.blockInfo} 
+            `,
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `Block(s) Accepted`,
+        }
+      },
+    };
+    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
+  }
+}
