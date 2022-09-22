@@ -1,10 +1,9 @@
+const _ = require('underscore');
 import  moment from "moment";
 import NotificationServices from "../Services/NotificationServices";
 import BlockServices from "../Services/BlocksServices";
 import MailServices from "../Services/MailServices";
 import UserServices from "../Services/UserServices";
-import e from "express";
-const _ = require('underscore');
 
 export default class BlockController {
   constructor() {
@@ -256,6 +255,13 @@ export default class BlockController {
     });
   }
 
-  // for sending block message
+  // /**
+  //   * blockSearchStart
+  //   */
+  // public blockSearchStart(request: any, response: any) {
+   
+
+    
+  // }
   
 }

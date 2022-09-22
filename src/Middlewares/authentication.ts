@@ -4,7 +4,7 @@ export const authentication = (request: any, response: any, next: any) => {
   var token = request.headers["x-access-token"];
 
   if (!token)
-    return response.status(500).send({
+    return response.status(401).send({
       success: false,
       message: "No token Provided",
     });
