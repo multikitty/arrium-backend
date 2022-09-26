@@ -3,8 +3,10 @@ import bcrypt from "bcryptjs";
 import MailServices from "../Services/MailServices";
 
 import UserServices from "../Services/UserServices";
+import { Request, Response } from "express";
 
 export default class UserController {
+  // get logged in user data
   async getUserData(request: any, response: any) {
     try {
       await new UserServices().getUserData(request.body).then((result) => {
@@ -70,12 +72,11 @@ export default class UserController {
       });
     }
   }
-
   /**
   * updateAmznFlexDetails
   */
-  public updateAmznFlexDetails(request: any, response : any) {
-    const result = new UserServices().updateFlexDetails(request.body)
+  public async updateAmznFlexDetails(request: any, response : any) {
+    await new UserServices().updateFlexDetails(request.body)
     .then((result : any) => {
       // handle result 
       if(result.Attributes) {
@@ -290,65 +291,99 @@ export default class UserController {
     }
   }
 
-  async updateProfile(request: any, response: any) {
+  async updateProfileDetails(req: Request, res: Response) {
     try {
-      if (request.body.fieldName === "email") {
-        await new UserServices().changeEmail(request.body).then((res) => {
-          response.status(200);
-          response.send({
-            success: true,
-            message: `${request.body.fieldName} updated successfully!`,
-          });
-        });
-      }
-
-      await new UserServices().updateProfile(request.body).then((res) => {
-        response.status(200);
-        response.send({
+      await new UserServices().updateProfile(req.body).then(async (result) => {
+        res.status(200);
+        res.send({
           success: true,
-          message: `${request.body.fieldName} updated successfully`,
+          message: `Updated successfully`,
+          data : result
+        });
+      }).catch((err) => {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong while updating your profile data.",
+          error : err
         });
       });
-    } catch (error) {
-      response.status(500);
-      response.send({
+    } catch (err) {
+      res.status(500);
+      res.send({
         success: false,
-        message: "Something went wrong while updating your profile",
+        message: "Something went wrong while updating your profile data.",
+        error : err
       });
     }
   }
 
-  async changePassword(request: any, response: any) {
+  async updatePassword(request: any, response: any) {
     try {
-      const dbPassword: any = await new UserServices().currentPassword(
+      const result: any = await new UserServices().getUserCurrentPassword(
         request.body
       );
       bcrypt
-        .compare(request.body.current_password, dbPassword.Item.password)
+        .compare(request.body.password, result?.Item?.password)
         .then((authenticated) => {
           if (authenticated) {
-            new UserServices().setNewPassword(request.body).then(() => {
+            new UserServices().setNewPassword(request.body).then((result) => {
               response.status(200);
               response.send({
-                success: false,
+                success: true,
                 message: "New Password updated successfully",
               });
-            });
+            }).catch((error) => {
+              response.status(500);
+              response.send({
+                success: false,
+                message: "Something went wrong, Please try again after sometime.",
+                error : error
+              });
+            })
           } else {
             response.status(200);
             response.send({
               success: false,
-              message: "The current password is incorrect. Please try again",
+              message: "The current password is incorrect. Please try again!",
             });
           }
-        });
+        }).catch((error) => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: "Something went wrong, Please try again after sometime.",
+            error : error
+          });
+        })
     } catch (error) {
       response.status(500);
       response.send({
         success: false,
         message: "Something went wrong while updating your password",
+        error : error
       });
     }
+  }
+
+  /**
+    * Update email
+    */
+  public async updateEmail(req: Request, res: Response) {
+    await new UserServices().updateEmail(req.body).then((result) => {
+      res.status(200);
+      res.send({
+        success: true,
+        message: "Email updated successfully, please check verification mail.",
+      });
+    }).catch((error : any) => {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });
+    })
   }
 
   async updatephoneNumber(request: any, response: any) {

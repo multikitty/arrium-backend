@@ -221,7 +221,7 @@ export default class UserServices {
       .promise();
   }
 
-  async currentPassword(data: any) {
+  async getUserCurrentPassword(data: any) {
     return dynamoDB
       .get({
         TableName: TableName,
@@ -251,7 +251,7 @@ export default class UserServices {
       })
       .promise();
   }
-
+  // for change password
   async setNewPassword(data: any) {
     return dynamoDB
       .update({
@@ -262,10 +262,31 @@ export default class UserServices {
         },
         UpdateExpression: `set password = :password`,
         ExpressionAttributeValues: {
-          ":password": bcrypt.hashSync(data.password, 10),
-        },
-        ReturnValues: "ALL_NEW",
+          ":password": bcrypt.hashSync(data.newPassword, 10),
+        }
       })
       .promise();
   }
+
+
+    /**
+     * updateEmail
+     */
+    public updateEmail(data : any) {
+      return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          sk: data.sk,
+          pk: data.pk,
+        },
+        UpdateExpression: `set email= :email, pkEmail= :pkEmail, emailVerified= :emailVerified`,
+        ExpressionAttributeValues: {
+          ":email": data.email,
+          ":pkEmail": data.email,
+          ":emailVerified": false,
+        },
+      })
+      .promise();
+    }
 }

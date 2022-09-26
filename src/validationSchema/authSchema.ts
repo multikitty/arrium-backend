@@ -124,7 +124,7 @@ export const authSchema = {
       .withMessage("Please enter a valid email address"),
   ],
 
-  resetPasswordSchema: [
+  udpatePasswordSchema: [
     body("password")
       .trim()
       .not()
@@ -138,11 +138,11 @@ export const authSchema = {
       .withMessage("Password must have at least one character uppercase")
       .matches(/\d/)
       .withMessage("Password must contain number characters"),
-    body("current_password")
+    body("newPassword")
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Password is required")
+      .withMessage("New Password is required")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters long.")
       .matches(/[a-z]/)
@@ -151,6 +151,18 @@ export const authSchema = {
       .withMessage("Password must have at least one character uppercase")
       .matches(/\d/)
       .withMessage("Password must contain number characters"),
+    body("confirmPassword")
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage("Confirm password is required")
+      .custom((value : string , { req } : any ) => {
+        if (value !== req.body.newPassword) {
+          throw new Error('Confirm Password does not match new password');
+        }
+        // Indicates the success of this synchronous custom validator
+        return true;
+      }),
   ],
 
   updatephoneNumberSchema: [
@@ -172,15 +184,13 @@ export const authSchema = {
 
   updateProfile: [
     body("fieldName")
-      .trim()
-      .not()
-      .isEmpty()
-      .withMessage("Please provide FieldName"),
+    .isIn(['firstname', 'lastname', 'tzName'])
+    .withMessage('Field Name must be firstname | lastname | tzName'),
     body("fieldValue")
       .trim()
       .not()
       .isEmpty()
-      .withMessage("Please provide FieldValue"),
+      .withMessage("Please provide value"),
   ],
 
   verficationToken: [
@@ -208,4 +218,5 @@ export const authSchema = {
       .matches(/\d/)
       .withMessage("Password must contain number characters"),
   ],
+
 };

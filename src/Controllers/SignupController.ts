@@ -70,7 +70,7 @@ export const SignupController = {
                         response.status(500);
                         response.send({
                           success: false,
-                          message:"Something went wrong, please try after sometime.dfdsfsdfsd",
+                          message:"Something went wrong, please try after sometime.",
                           error : error
                         });
                       });

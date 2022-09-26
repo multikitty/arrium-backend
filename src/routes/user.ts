@@ -31,11 +31,11 @@ router.post(
 router.post("/verify-email", authentication, new UserController().VerifyEmail);
 
 router.post(
-  "/change-password",
-  authSchema.resetPasswordSchema,
-  validationSchema,
+  "/update-password",
   authentication,
-  new UserController().changePassword
+  authSchema.udpatePasswordSchema,
+  validationSchema,
+  new UserController().updatePassword
 );
 
 router.post(
@@ -43,16 +43,24 @@ router.post(
   authSchema.updateProfile,
   validationSchema,
   authentication,
-  new UserController().updateProfile
+  new UserController().updateProfileDetails
 );
 
 router.post(
   "/update-phoneNumber",
+  authentication,
   authSchema.updatephoneNumberSchema,
   validationSchema,
-  authentication,
   new UserController().updatephoneNumber
 );
 
+
+router.post(
+  "/update-email",
+  authentication,
+  authSchema.emailSchema,
+  validationSchema,
+  new UserController().updateEmail
+);
 
 export = router;

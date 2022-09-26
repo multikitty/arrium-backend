@@ -13,23 +13,57 @@ const transporter = nodemailer.createTransport({
 
 export default class MailServices {
   async sendMailEmailVerification(data: any) {
-    return transporter.sendMail({
-      from: '"Arrium" <devscaleupally@gmail.com>', // sender address
-      to: data.email, // list of receivers
-      subject: "Your account has been created successfully, please verify your email.", // Subject line
-      text: "Please follow the below link to verify your email address.", // plain text body
-      html: `<p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>`,
-    });
+    let params = {
+      Source: 'noreply@arrium.io',
+      Destination: {
+        ToAddresses: [
+          data.email
+        ],
+      },
+      ReplyToAddresses: [],
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: `
+              <p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>
+            `,
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `Email verification.`,
+        }
+      },
+    };
+    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
   }
 
   async sendMailForgotPassword(data: any) {
-    return transporter.sendMail({
-      from: '"Arrium Testing" <devscaleupally@gmail.com>', // sender address
-      to: data.pkEmail, // list of receivers
-      subject: "Forget Password reset link", // Subject line
-      text: "Please follow the below link to reset your password", // plain text body
-      html: `<p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p>`,
-    });
+    let params = {
+      Source: 'noreply@arrium.io',
+      Destination: {
+        ToAddresses: [
+          data.pkEmail
+        ],
+      },
+      ReplyToAddresses: [],
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: `
+              <p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p></br>
+            `,
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `Password reset link.`,
+        }
+      },
+    };
+    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
   }
 
 
@@ -51,8 +85,8 @@ export default class MailServices {
             Charset: 'UTF-8',
             Data: `
             Dear ${data.user.userName},
-            The following block(s) have been accepted:
-            ${data.blockInfo} 
+            The following block(s) have been accepted: </br>
+            ${data.blockInfo} </br>
             `,
           },
         },
