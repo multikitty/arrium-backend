@@ -22,9 +22,9 @@ router.put("/update-account-info", authentication, new UserController().updateAc
 
 router.post(
   "/request-verify-email",
+  authentication,
   authSchema.emailSchema,
   validationSchema,
-  authentication,
   new UserController().sendEmailVerify
 );
 
@@ -40,9 +40,9 @@ router.post(
 
 router.post(
   "/update-profile",
+  authentication,
   authSchema.updateProfile,
   validationSchema,
-  authentication,
   new UserController().updateProfileDetails
 );
 

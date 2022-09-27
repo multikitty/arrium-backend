@@ -17,23 +17,23 @@ router.post(
 
 router.post(
   "/account-info",
+  authentication,
   authSchema.signupAccountInfoSchema,
   validationSchema,
-  authentication,
   SignupController.signupAccountInfo
 );
 router.post(
   "/otp-confirmation",
+  authentication,
   authSchema.otpConfirmationSchema,
   validationSchema,
-  authentication,
   SignupController.signupOTPConfirmation
 );
 router.post(
   "/update-amazon-flex-info",
+  authentication,
   authSchema.updateAmazonFlexSchema,
   validationSchema,
-  authentication,
   SignupController.updateAmazonFlexInfo
 );
 

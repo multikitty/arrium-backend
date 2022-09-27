@@ -371,11 +371,48 @@ export default class UserController {
     */
   public async updateEmail(req: Request, res: Response) {
     await new UserServices().updateEmail(req.body).then((result) => {
-      res.status(200);
-      res.send({
-        success: true,
-        message: "Email updated successfully, please check verification mail.",
-      });
+        //  email verification token
+        let token = jwt.sign(
+          {
+            pk: req.body.pk,
+            sk: req.body.sk,
+            userRole: req.body.role
+          },
+          process.env.JWT_SECRET_KEY as string,
+          {
+            expiresIn: 86400, // expires in 24 hours
+          }
+        );
+        // email data
+        const emailData = {
+          email: req.body.email,
+          token,
+        };
+        //send email verifcation link
+        new MailServices()
+          .sendMailEmailVerification(emailData)
+          .then((mailResponse) => {
+            if (mailResponse) {
+              res.status(200);
+              res.send({
+                success: true,
+                message: "Email updated successfully, please check verification mail.",
+              });
+            } else {
+              res.status(500);
+              res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+              });
+            }
+          }).catch((error : any) => {
+            res.status(500);
+            res.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+              error : error
+            });
+          })
     }).catch((error : any) => {
       res.status(500);
       res.send({
