@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import  AWS from "aws-sdk";
+import SqsQueueServices from "./SqsQueueServices";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -66,36 +67,50 @@ export default class MailServices {
     return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
   }
 
-
   /**
    * sendBlockAcceptedMail
    */
   public sendBlockAcceptedMail(data : any) {
-    let params = {
-      Source: 'notification@arrium.io',
-      Destination: {
-        ToAddresses: [
-          data.user.userEmail
-        ],
-      },
-      ReplyToAddresses: [],
-      Message: {
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: `
-            Dear ${data.user.userName},
-            The following block(s) have been accepted: </br>
-            ${data.blockInfo} </br>
-            `,
-          },
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: `Block(s) Accepted`,
-        }
-      },
-    };
-    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
+    const msgData = {
+      type : "mail",
+      data : {
+        to : data.user.userEmail,
+        from : 'notification@arrium.io',
+        replyTo : [],
+        subject : "Block(s) Accepted",
+        message : `
+                Dear ${data.user.userName}, </br> 
+                The following block(s) have been accepted: </br>
+                ${data.blockInfo} </br>
+              `
+      }
+    }
+    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+    // let params = {
+    //   Source: 'notification@arrium.io',
+    //   Destination: {
+    //     ToAddresses: [
+    //       data.user.userEmail
+    //     ],
+    //   },
+    //   ReplyToAddresses: [],
+    //   Message: {
+    //     Body: {
+    //       Html: {
+    //         Charset: 'UTF-8',
+    //         Data: `
+    //         Dear ${data.user.userName},
+    //         The following block(s) have been accepted: </br>
+    //         ${data.blockInfo} </br>
+    //         `,
+    //       },
+    //     },
+    //     Subject: {
+    //       Charset: 'UTF-8',
+    //       Data: `Block(s) Accepted`,
+    //     }
+    //   },
+    // };
+    // return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
   }
 }
