@@ -1,10 +1,11 @@
 import fs from "fs";
 import modelIds from "../Utils/modelVersion.json"
 import ModelVersionsServices from '../Services/ModelVersionsServices';
+import { EntitySkPk } from "../Interfaces/commonInterface";
+import CommonServices from "../Services/CommonServices";
+import { Request, Response } from "express";
 
 export default class ModelVersionsController {
-
-
     /**
     * addPhoneModel
     */
@@ -143,5 +144,31 @@ export default class ModelVersionsController {
         })
     }
 
-    
+     /**
+      * deleteModelVersion
+      */
+    public async deleteModelVersion(req: Request, res: Response) {
+        let deleteItem : EntitySkPk = {
+            sk : req.body.deleteSk,
+            pk : req.body.deletePk
+        }
+        // delete
+        await new CommonServices().deleteItem(deleteItem)
+        .then((result : any) => {
+            res.status(200);
+            res.send({
+                success: true,
+                message: "Deleted successfully!",
+                data: result,
+            });  
+        })
+        .catch((error : any) => {
+            res.status(500);
+            res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error: error
+            });
+        })
+    }   
 }

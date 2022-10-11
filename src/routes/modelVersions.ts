@@ -13,6 +13,6 @@ router.post("/flex-version/add", authentication, new ModelVersionsController().a
 
 router.get("/list", authentication, new ModelVersionsController().getModelVersionList);
 
-router.delete("/delete", authentication, new CommonServices().deleteItem);
+router.delete("/delete", authentication, new ModelVersionsController().deleteModelVersion);
 
 export = router;

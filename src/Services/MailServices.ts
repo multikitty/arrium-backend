@@ -14,57 +14,35 @@ const transporter = nodemailer.createTransport({
 
 export default class MailServices {
   async sendMailEmailVerification(data: any) {
-    let params = {
-      Source: 'noreply@arrium.io',
-      Destination: {
-        ToAddresses: [
-          data.email
-        ],
-      },
-      ReplyToAddresses: [],
-      Message: {
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: `
-              <p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>
-            `,
-          },
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: `Email verification.`,
-        }
-      },
-    };
-    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
+    const msgData = {
+      type : "mail",
+      data : {
+        to : data.email,
+        from : 'noreply@arrium.io',
+        replyTo : [],
+        subject : `Email Verification`,
+        message : `
+            <p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>
+          `
+      }
+    }
+    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
   }
 
   async sendMailForgotPassword(data: any) {
-    let params = {
-      Source: 'noreply@arrium.io',
-      Destination: {
-        ToAddresses: [
-          data.pkEmail
-        ],
-      },
-      ReplyToAddresses: [],
-      Message: {
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: `
-              <p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p></br>
-            `,
-          },
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: `Password reset link.`,
-        }
-      },
-    };
-    return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
+    const msgData = {
+      type : "mail",
+      data : {
+        to : data.pkEmail,
+        from : 'noreply@arrium.io',
+        replyTo : [],
+        subject : "Reset Password",
+        message :`
+            <p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p></br>
+          `
+      }
+    }
+    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
   }
 
   /**
@@ -86,31 +64,5 @@ export default class MailServices {
       }
     }
     return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
-    // let params = {
-    //   Source: 'notification@arrium.io',
-    //   Destination: {
-    //     ToAddresses: [
-    //       data.user.userEmail
-    //     ],
-    //   },
-    //   ReplyToAddresses: [],
-    //   Message: {
-    //     Body: {
-    //       Html: {
-    //         Charset: 'UTF-8',
-    //         Data: `
-    //         Dear ${data.user.userName},
-    //         The following block(s) have been accepted: </br>
-    //         ${data.blockInfo} </br>
-    //         `,
-    //       },
-    //     },
-    //     Subject: {
-    //       Charset: 'UTF-8',
-    //       Data: `Block(s) Accepted`,
-    //     }
-    //   },
-    // };
-    // return new AWS.SES({region : "eu-west-1"}).sendEmail(params).promise();
   }
 }

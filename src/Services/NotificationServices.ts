@@ -19,14 +19,6 @@ export default class NotificationServices {
             }
         }
         return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
-        
-        // let message = ;
-        // return new AWS.SNS({region: 'eu-west-1'}).publish({
-        //     Message : message,
-        //     PhoneNumber : data?.user?.userPhoneNumber
-        // }).promise()
     }
-
-
 
 }

@@ -392,19 +392,11 @@ export default class UserController {
         new MailServices()
           .sendMailEmailVerification(emailData)
           .then((mailResponse) => {
-            if (mailResponse) {
-              res.status(200);
-              res.send({
-                success: true,
-                message: "Email updated successfully, please check verification mail.",
-              });
-            } else {
-              res.status(500);
-              res.send({
-                success: false,
-                message: "Something went wrong, please try after sometime.",
-              });
-            }
+            res.status(200);
+            res.send({
+              success: true,
+              message: "Email updated successfully, please check verification mail.",
+            });
           }).catch((error : any) => {
             res.status(500);
             res.send({

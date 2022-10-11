@@ -17,14 +17,14 @@ export default class BlockServices {
   * getBatchNumber
   */
   public getBatchNumber(userPk : String) {
-  let params = {
-    TableName: TableName,
-    Key: {
-      pk: userPk,
-      sk: "batchnumber"
-    } 
-  }
-  return dynamoDB.get(params).promise()
+    let params = {
+      TableName: TableName,
+      Key: {
+        pk: userPk,
+        sk: "batchnumber"
+      } 
+    }
+    return dynamoDB.get(params).promise()
   }
   
   /**

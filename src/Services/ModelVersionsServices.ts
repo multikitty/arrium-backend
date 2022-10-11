@@ -56,30 +56,29 @@ export default class ModelVersionsServices {
     * Model version lists
     */
     public getModelVersionList(data : any) {
-      if(data.next_page) {
+      // if(data.next_page) {
+      //   return dynamoDB.query({
+      //     TableName: TableName,
+      //     ScanIndexForward: true,
+      //     ConsistentRead: false,
+      //     Limit: 10,
+      //     KeyConditionExpression: "#69240 = :69240",
+      //     ExpressionAttributeValues: {
+      //       ":69240": data.entityName
+      //     },
+      //     ExpressionAttributeNames: {
+      //       "#69240": "pk"
+      //     },
+      //     ExclusiveStartKey: {
+      //       pk: data.pk,
+      //       sk: data.sk,
+      //     },
+      //   }).promise();
+      // } else {
         return dynamoDB.query({
           TableName: TableName,
           ScanIndexForward: true,
           ConsistentRead: false,
-          Limit: 10,
-          KeyConditionExpression: "#69240 = :69240",
-          ExpressionAttributeValues: {
-            ":69240": data.entityName
-          },
-          ExpressionAttributeNames: {
-            "#69240": "pk"
-          },
-          ExclusiveStartKey: {
-            pk: data.pk,
-            sk: data.sk,
-          },
-        }).promise();
-      } else {
-        return dynamoDB.query({
-          TableName: TableName,
-          ScanIndexForward: true,
-          ConsistentRead: false,
-          Limit: 10,
           KeyConditionExpression: "#69240 = :69240",
           ExpressionAttributeValues: {
             ":69240": data.entityName
@@ -88,6 +87,6 @@ export default class ModelVersionsServices {
             "#69240": "pk"
           }
         }).promise();
-      }
+      // }
     }
 }

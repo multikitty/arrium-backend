@@ -56,25 +56,23 @@ export const SignupController = {
               new MailServices()
                 .sendMailEmailVerification(emailData)
                 .then((mailResponse) => {
-                  if (mailResponse) {
-                    SignupServices.signupRegistrationService(request.body)
-                      .then(() => {
-                        response.status(200);
-                        response.send({
-                          success: true,
-                          message: "User Registration Success!",
-                          data: { token },
-                        });
-                      })
-                      .catch((error) => {
-                        response.status(500);
-                        response.send({
-                          success: false,
-                          message:"Something went wrong, please try after sometime.",
-                          error : error
-                        });
+                  SignupServices.signupRegistrationService(request.body)
+                    .then(() => {
+                      response.status(200);
+                      response.send({
+                        success: true,
+                        message: "User Registration Success!",
+                        data: { token },
                       });
-                  }
+                    })
+                    .catch((error) => {
+                      response.status(500);
+                      response.send({
+                        success: false,
+                        message:"Something went wrong, please try after sometime.",
+                        error : error
+                      });
+                    });
                 })
                 .catch((error) => {
                   response.status(500);
