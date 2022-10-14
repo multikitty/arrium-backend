@@ -28,7 +28,7 @@ export default class UserServices {
       .promise();
   }
   // get amazon flex details
-  async fetchAmznFlexDetails(data: any) {
+  public async fetchAmznFlexDetails(data: any) {
     let params = {
       TableName : TableName,
       Key: {

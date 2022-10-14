@@ -8,8 +8,6 @@ import PreferencesController from '../Controllers/PreferencesController';
 
 // get user preference list
 router.get("/", authentication, new PreferencesController().getPreferencesByUser);
-//get location list
-router.get("/location", authentication, new PreferencesController().getLocationByUser);
 
 router.post("/add", authentication, new PreferencesController().addPreferencesByUser);
 

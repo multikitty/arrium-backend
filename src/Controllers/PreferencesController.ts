@@ -1,4 +1,6 @@
+import UserServices from "../Services/UserServices";
 import PreferenceServices from "../Services/PreferenceServices"
+import { LocationServices } from "../Services/LocationServices";
 
 
 export default class PreferencesController {
@@ -92,47 +94,93 @@ export default class PreferencesController {
         }        
     }
 
-    /**
-    * getLocation
-    */
-    public async getLocationByUser(req: any, res: any) {
-        await new PreferenceServices().getLocationByUser("uk").then((result : any) => {
-            res.status(200);
-            res.send({
-              success: true,
-              message: "Location list fetched successfully.",
-              data : result.Items
-            });  
-        }).catch((err: any) => {
-            res.status(500);
-            res.send({
-                success: false,
-                message: "Something went wrong, please try after sometime.",
-                error : err
-            });  
-        });
-    }   
 
     /**
     * getPreferences
     */
     public async getPreferencesByUser(req: any, res: any) {
-        await new PreferenceServices().getPreferenceByUser(req.body.pk)
-        .then((result : any) => {
-            res.status(200);
-            res.send({
-              success: true,
-              message: "Preferences list fetched successfully.",
-              data : result.Items
-            }); 
-        }).catch((err : any) => {
+        let data = {
+            pk : req.body.pk
+        }
+        await new UserServices().fetchAmznFlexDetails(data).then(async (result) => {
+            if(result.Item) {
+                let countryCode = result.Item?.country;
+                let regionCode = result.Item?.region;
+                if(regionCode && countryCode) {
+                    let queryParam = `${countryCode}#${regionCode}`;
+                    // get data 
+                    await new LocationServices().getStationList(queryParam)
+                    .then(async (result : any) => {
+                        if(result.Items.length > 0) {
+                            let stationsData = result.Items;
+                            await new PreferenceServices().getPreferenceByUser(req.body.pk)
+                            .then((result : any) => {
+                                let preferencesData = result.Items;
+                                let responseData = [];
+                                for (let i = 0; i < stationsData.length; i++) {
+                                    const station = stationsData[i];
+                                    for (let j = 0; j < preferencesData.length; j++) {
+                                        const preference = preferencesData[j];
+                                        if(preference.stationID === station.stationID) {
+                                            let data = {
+                                                station : station,
+                                                preference : preference 
+                                            }
+                                            responseData.push(data);
+                                        }
+                                    } 
+                                }
+                                res.status(200);
+                                res.send({
+                                  success: true,
+                                  message: "Preferences list fetched successfully.",
+                                  data : responseData
+                                }); 
+                            }).catch((err : any) => {
+                                res.status(500);
+                                res.send({
+                                    success: false,
+                                    message: "Something went wrong, please try after sometime.",
+                                    error : err
+                                });  
+                            });
+                        } else {
+                            res.status(500);
+                            res.send({
+                                success: false,
+                                message: "No location available.",
+                            });  
+                        }
+                    }).catch((error) => {
+                        res.status(500);
+                        res.send({
+                            success: false,
+                            message: "Something went wrong, please try after sometime.",
+                            error : error
+                        });  
+                    })
+                } else {
+                    res.status(500);
+                    res.send({
+                        success: false,
+                        message: "Please update your flex details ssss.",
+                    });  
+                }
+            } else {
+                res.status(500);
+                res.send({
+                    success: false,
+                    message: "Please update your flex details. ssswwwww",
+                });  
+            }
+        }).catch((error) => {
             res.status(500);
             res.send({
                 success: false,
                 message: "Something went wrong, please try after sometime.",
-                error : err
+                error : error
             });  
-        });
+        })
     }
 
 }
