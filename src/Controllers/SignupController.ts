@@ -175,12 +175,29 @@ export const SignupController = {
           if (result) {
             // Update account registration steps
             SignupServices.updateCurrentSteps(request.body)
-            .then((result) => {
-              response.status(200);
-              response.send({
-                success: true,
-                message: "Amazon Flex info updated successfully.",
-              });  
+            .then(async(result) => {
+              // send mail to admin here 
+              let userData = {
+                email : result?.Attributes?.email,
+                firstname : result?.Attributes?.firstname,
+                lastname : result?.Attributes?.lastname
+              }
+              // send mail to queue
+              await new MailServices().newUserSignUpMail(userData).then(() => {
+                response.status(200);
+                response.send({
+                  success: true,
+                  message: "Amazon Flex info updated successfully.",
+                });  
+              }).catch((err) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                  error : err
+                });
+              })
+             
             }).catch((err) => {
               response.status(500);
               response.send({

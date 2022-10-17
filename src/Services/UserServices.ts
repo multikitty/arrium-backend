@@ -117,7 +117,8 @@ export default class UserServices {
           #attrRole= :role, 
           accountStatus= :accountStatus,
           startDate= :startDate,
-          endDate= :endDate
+          endDate= :endDate,
+          planType= :planType
         `,
         ExpressionAttributeNames: {
           "#attrRole": 'role'
@@ -133,6 +134,7 @@ export default class UserServices {
           ":accountStatus": data.status,
           ":startDate": data.startDate,
           ":endDate": data.endDate,
+          ":planType": data.planType
         },
         ReturnValues: "ALL_NEW",
       })

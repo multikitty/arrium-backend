@@ -13,6 +13,26 @@ const transporter = nodemailer.createTransport({
 });
 
 export default class MailServices {
+  
+  async newUserSignUpMail(data: any) {
+    const msgData = {
+      type : "mail",
+      data : {
+        to : 'dipanshu.jaiswal@scaleupally.io',
+        from : 'notification@arrium.io',
+        replyTo : [],
+        subject : `Approve new user account.`,
+        message : `
+          Dear Admin,
+          A new user has provided their Amazon Flex login details at the sign up step, and are at the 'holding page' step, awaiting account setup to be completed.
+          <br/>Full Name: ${data.firstname} ${data.lastname}
+          <br/>Email Address: ${data.email}
+          `
+      }
+    }
+    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+  }
+
   async sendMailEmailVerification(data: any) {
     const msgData = {
       type : "mail",

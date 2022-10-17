@@ -17,7 +17,8 @@ export const SignupServices = {
           currentSteps: "account_info",
           customerID: data.customerId,
           startDate: (Date.now() / 1000) | 0, //time in unix,
-          accountStatus: "active"
+          accountStatus: "active",
+          planType: 'basic'
         },
         TableName: TableName,
       })

@@ -94,7 +94,6 @@ export default class PreferencesController {
         }        
     }
 
-
     /**
     * getPreferences
     */
@@ -119,16 +118,24 @@ export default class PreferencesController {
                                 let responseData = [];
                                 for (let i = 0; i < stationsData.length; i++) {
                                     const station = stationsData[i];
-                                    for (let j = 0; j < preferencesData.length; j++) {
-                                        const preference = preferencesData[j];
-                                        if(preference.stationID === station.stationID) {
-                                            let data = {
-                                                station : station,
-                                                preference : preference 
+                                    if(preferencesData.length > 0) {
+                                        for (let j = 0; j < preferencesData.length; j++) {
+                                            const preference = preferencesData[j];
+                                            if(preference.stationID === station.stationID) {
+                                                let data = {
+                                                    station : station,
+                                                    preference : preference 
+                                                }
+                                                responseData.push(data);
                                             }
-                                            responseData.push(data);
+                                        } 
+                                    } else {
+                                        let data = {
+                                            station : station,
+                                            preference : [] 
                                         }
-                                    } 
+                                        responseData.push(data);
+                                    }
                                 }
                                 res.status(200);
                                 res.send({
