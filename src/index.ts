@@ -19,6 +19,7 @@ import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
 import { StripeController } from './Controllers/StripeController';
+import { StripeServices } from './Services/StripeServices';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -42,7 +43,14 @@ app.use((req, res, next) => {
   res.status(404).send('<h1>Page not found on the server</h1>');
 });
 
-// StripeController.createCustomerStripe('ans4asif@gmail.com', 'Ans Asif')
+StripeController.createCustomerStripe('ans4asif@gmail.com', 'Asif')
+  .then((res:any)=>{
+    console.log({x:res?.id});
+  })
+  .catch((err) => console.log({ err }));
+
+
+// StripeServices.subscribeToPlan('123','333',true)
 //   .then()
 //   .catch((err) => console.log({ err }));
 app.listen(9000);

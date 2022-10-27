@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -25,6 +27,22 @@ export const StripeServices = {
     return customer;
   },
   subscribeToPlan: async (customerId: string, planId: string, isFreeTrial = false) => {
-    //subscribe customer to a Plan
+    //subscribe customer to a 
+    let data:any={
+      customer: customerId,
+      items: [
+        {
+          price: 'price_1KomCiEk2K7pH9UXw1t4Xmmg',
+        },
+      ],
+      
+    }
+    if(isFreeTrial){
+      //get 7 days after timestamp
+      const seven_days=moment().add(7,'days').unix();
+      data.trial_end= seven_days
+    }
+    const subscription = await stripe.subscriptions.create(data);
+    console.log({subscription})
   },
 };

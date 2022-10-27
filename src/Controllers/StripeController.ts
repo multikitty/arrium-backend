@@ -24,9 +24,12 @@ export const StripeController = {
   createCustomerStripe: async (email: string, name: string) => {
     try {
       const res = await StripeServices.createCustomer(email, name);
-      console.log({ res });
+      return res
     } catch (error: any) {
       throw Error(error?.message);
     }
   },
+  // subscribeToPlan:async(customerId:string,plan:string,isFreeTrial:boolean){
+    
+  // }
 };
