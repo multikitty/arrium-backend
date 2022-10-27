@@ -43,14 +43,17 @@ app.use((req, res, next) => {
   res.status(404).send('<h1>Page not found on the server</h1>');
 });
 
-StripeController.createCustomerStripe('ans4asif@gmail.com', 'Asif')
-  .then((res:any)=>{
-    console.log({x:res?.id});
-  })
-  .catch((err) => console.log({ err }));
+// StripeController.createCustomerStripe('ans4asif2@gmail.com', 'Ans4Asif')
+//   .then((res: any) => {
+//     console.log({ x: res?.id });
+//     //subscription
+//     StripeServices.subscribeToPlan(res?.id, '333', true)
+//       .then()
+//       .catch((err) => console.log({ err }));
+//   })
+//   .catch((err) => console.log({ err }));
 
-
-// StripeServices.subscribeToPlan('123','333',true)
+// StripeServices.getSubscription()
 //   .then()
 //   .catch((err) => console.log({ err }));
 app.listen(9000);

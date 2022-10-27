@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
@@ -19,30 +19,39 @@ export const StripeServices = {
     return products;
   },
   createCustomer: async (email: string, name: string) => {
-    //create customer
     const customer = await stripe.customers.create({
       email,
       name,
     });
     return customer;
   },
+  getCustomer: async (id: string) => {
+    const customer = await stripe.customers.retrieve(id);
+    return customer;
+  },
   subscribeToPlan: async (customerId: string, planId: string, isFreeTrial = false) => {
-    //subscribe customer to a 
-    let data:any={
+    //subscribe customer to a plan
+    let data: any = {
       customer: customerId,
       items: [
         {
           price: 'price_1KomCiEk2K7pH9UXw1t4Xmmg',
         },
       ],
-      
-    }
-    if(isFreeTrial){
+    };
+    if (isFreeTrial) {
       //get 7 days after timestamp
-      const seven_days=moment().add(7,'days').unix();
-      data.trial_end= seven_days
+      const seven_days = moment().add(7, 'days').unix();
+      data.trial_end = seven_days;
+      data.cancel_at = seven_days;
     }
+    console.log({ data });
     const subscription = await stripe.subscriptions.create(data);
-    console.log({subscription})
+    console.log({ subscription });
+  },
+  getSubscription: async () => {
+    // sub_1Lxbf8Ek2K7pH9UX7g5QAMlq
+    const subscription = await stripe.subscriptions.retrieve('sub_1Lxbf8Ek2K7pH9UX7g5QAMlq');
+    console.log({ subscription });
   },
 };
