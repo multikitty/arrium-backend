@@ -20,6 +20,8 @@ router.put("/flex-details/update", authentication, new UserController().updateAm
 
 router.put("/update-account-info", authentication, new UserController().updateAccountInfo);
 
+router.post("/approve-account", authentication, new UserController().updateAccountApproveStatus);
+
 router.post(
   "/request-verify-email",
   authentication,

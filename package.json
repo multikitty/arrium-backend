@@ -34,7 +34,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "moment": "^2.24.0",
-    "underscore": "^1.13.4"
+    "underscore": "^1.13.4",
+    "yarn": "^1.22.19"
   },
   "typings": "./moment.d.ts"
 }
