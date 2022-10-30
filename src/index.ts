@@ -18,7 +18,7 @@ import preference from './routes/preference';
 import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
-import { StripeController } from './Controllers/StripeController';
+import StripeController from './Controllers/StripeController';
 import { StripeServices } from './Services/StripeServices';
 
 // Testing route

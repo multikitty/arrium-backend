@@ -2,9 +2,10 @@ import moment from 'moment';
 
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
+import { dynamoDB, TableName } from '../Utils/dynamoDB';
 
-export const StripeServices = {
-  getPricingPlans: async (query: string) => {
+export class StripeServices {
+  public async getPricingPlans(query: string) {
     let products = await stripe.products.search({
       query: query,
     });
@@ -17,19 +18,22 @@ export const StripeServices = {
       return { ...prod, price: filtered_price };
     });
     return products;
-  },
-  createCustomer: async (email: string, name: string) => {
+  }
+
+  public async createCustomer(email: string, name: string) {
     const customer = await stripe.customers.create({
       email,
       name,
     });
     return customer;
-  },
-  getCustomer: async (id: string) => {
+  }
+
+  public async getCustomer(id: string) {
     const customer = await stripe.customers.retrieve(id);
     return customer;
-  },
-  subscribeToPlan: async (customerId: string, planId: string, isFreeTrial = false) => {
+  }
+
+  public async subscribeToPlan(customerId: string, planId: string, isFreeTrial = false) {
     //subscribe customer to a plan
     let data: any = {
       customer: customerId,
@@ -48,10 +52,28 @@ export const StripeServices = {
     console.log({ data });
     const subscription = await stripe.subscriptions.create(data);
     console.log({ subscription });
-  },
-  getSubscription: async () => {
+  }
+
+  public async getSubscription() {
     // sub_1Lxbf8Ek2K7pH9UX7g5QAMlq
     const subscription = await stripe.subscriptions.retrieve('sub_1Lxbf8Ek2K7pH9UX7g5QAMlq');
     console.log({ subscription });
-  },
-};
+  }
+
+  public async updateStripeClientId(data: any) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: data.pk,
+          sk: data.sk,
+        },
+        UpdateExpression: `set stripeId= :stripeId`,
+        ExpressionAttributeValues: {
+          ':stripeId': 'my_stripeId',
+        },
+        ReturnValues: 'ALL_NEW',
+      })
+      .promise();
+  }
+}
