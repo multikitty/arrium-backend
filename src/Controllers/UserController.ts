@@ -441,4 +441,30 @@ export default class UserController {
       });
     }
   }
+
+  /**
+   * updateAccountApproveStatus
+   */
+  public async updateAccountApproveStatus(req: Request, res: Response) {
+    let data = {
+      sk : req.body.userSK,
+      pk : req.body.userPK,
+      currentStep : req.body.status === true ? "finished" : "on-hold" 
+    }
+    await new UserServices().updateCurrentSteps(data).then((result) => {
+      res.status(200);
+      res.send({
+        success: true,
+        message: "Updated successfully.",
+      });
+    }).catch((error) => {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });
+    });
+  }
+
 }

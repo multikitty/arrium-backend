@@ -127,6 +127,14 @@ export default class PreferencesController {
                                                     preference : preference 
                                                 }
                                                 responseData.push(data);
+                                            } else {
+                                                let data = {
+                                                    station : station,
+                                                    preference : [] 
+                                                }
+                                                // check if station already exist
+                                                const found = responseData.some(item => item.station?.stationID === station.stationID);
+                                                if (!found) responseData.push(data);
                                             }
                                         } 
                                     } else {

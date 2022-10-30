@@ -291,4 +291,24 @@ export default class UserServices {
       })
       .promise();
     }
+
+    /**
+     * udpate current step of user
+     */
+    public updateCurrentSteps(data : any) {
+      return dynamoDB
+        .update({
+          TableName: TableName,
+          Key: {
+            pk: data.pk,
+            sk: data.sk,
+          },
+          UpdateExpression: `set currentSteps= :currentSteps`,
+          ExpressionAttributeValues: {
+            ":currentSteps": data.currentStep,
+          },
+          ReturnValues: "ALL_NEW",
+        })
+        .promise();
+    }
 }
