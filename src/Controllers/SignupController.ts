@@ -4,7 +4,7 @@ import companyIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
 import { SignupServices } from '../Services/SignupServices';
 import UserServices from '../Services/UserServices';
-import { StripeServices } from 'Services/StripeServices';
+import StripeServices from '../Services/StripeServices';
 
 export const SignupController = {
   // Signup Step 1
@@ -220,8 +220,22 @@ export const SignupController = {
         }
       });
       //create stripe Customer id
-      // const stripe_customer=await new StripeServices().createCustomer()
-      // await new StripeServices().updateStripeClientId()
+      const {
+        Item: { firstname, lastname, email },
+      }: any = await SignupServices.signupSendMailService({
+        pk: request.body.pk,
+        sk: request.body.sk,
+      });
+      console.log({ firstname, lastname, email });
+      const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`);
+      //get all areas plan id from stripe
+      await new StripeServices().subscribeToPlan(stripe_customer.id, '');
+      console.log({ stripe_customer });
+      await new StripeServices().updateStripeClientId({
+        pk: request.body.pk,
+        sk: request.body.sk,
+        stripeId: stripe_customer.id,
+      });
     } catch (error) {
       response.status(500);
       response.send({

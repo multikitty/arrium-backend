@@ -1,8 +1,9 @@
-import bcrypt from "bcryptjs";
-import { dynamoDB, TableName } from "../Utils/dynamoDB";
+import bcrypt from 'bcryptjs';
+import { dynamoDB, TableName } from '../Utils/dynamoDB';
 
 export const SignupServices = {
   signupRegistrationService: async (data: any) => {
+    console.log({ data });
     return dynamoDB
       .put({
         Item: {
@@ -14,11 +15,11 @@ export const SignupServices = {
           refCode: data.refCode,
           role: data.role,
           emailVerified: false,
-          currentSteps: "account_info",
+          currentSteps: 'account_info',
           customerID: data.customerId,
           startDate: (Date.now() / 1000) | 0, //time in unix,
-          accountStatus: "active",
-          planType: 'basic'
+          accountStatus: 'active',
+          planType: 'basic',
         },
         TableName: TableName,
       })
@@ -26,6 +27,8 @@ export const SignupServices = {
   },
 
   AccountInfoService: async (data: any) => {
+    console.log({ data });
+
     return dynamoDB
       .update({
         TableName: TableName,
@@ -35,20 +38,22 @@ export const SignupServices = {
         },
         UpdateExpression: `set firstname = :firstname, lastname= :lastname, countryCode= :countryCode, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
-          ":firstname": data.firstname,
-          ":lastname": data.lastname,
-          ":countryCode": data.countryCode,
-          ":dialCode": data.dialCode,
-          ":phoneNumber": data.phoneNumber,
-          ":tzName": data.tzName,
-          ":currentSteps": "otp",
+          ':firstname': data.firstname,
+          ':lastname': data.lastname,
+          ':countryCode': data.countryCode,
+          ':dialCode': data.dialCode,
+          ':phoneNumber': data.phoneNumber,
+          ':tzName': data.tzName,
+          ':currentSteps': 'otp',
         },
-        ReturnValues: "ALL_NEW",
+        ReturnValues: 'ALL_NEW',
       })
       .promise();
   },
 
   SignupOTPConfirmationService: async (data: any) => {
+    console.log({ data });
+
     return dynamoDB
       .update({
         TableName: TableName,
@@ -58,25 +63,27 @@ export const SignupServices = {
         },
         UpdateExpression: `set phoneVerified = :phoneVerified, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
-          ":phoneVerified": true,
-          ":currentSteps": "amazon_flex",
+          ':phoneVerified': true,
+          ':currentSteps': 'amazon_flex',
         },
-        ReturnValues: "ALL_NEW",
+        ReturnValues: 'ALL_NEW',
       })
       .promise();
   },
 
   updateAmazonFlexInfoService: async (data: any) => {
-    return dynamoDB.put({
-      Item: {
-        pk: data.pk,
-        sk: data.sk,
-        amznFlexUser : data.amznFlexUser,
-        amznFlexPassword : data.amznFlexPassword,
-      },
-      TableName: TableName,
-    })
-    .promise();
+    console.log({ data });
+    return dynamoDB
+      .put({
+        Item: {
+          pk: data.pk,
+          sk: data.sk,
+          amznFlexUser: data.amznFlexUser,
+          amznFlexPassword: data.amznFlexPassword,
+        },
+        TableName: TableName,
+      })
+      .promise();
   },
 
   updateCurrentSteps: async (data: any) => {
@@ -89,9 +96,9 @@ export const SignupServices = {
         },
         UpdateExpression: `set currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
-          ":currentSteps": "finished",
+          ':currentSteps': 'finished',
         },
-        ReturnValues: "ALL_NEW",
+        ReturnValues: 'ALL_NEW',
       })
       .promise();
   },
@@ -104,7 +111,7 @@ export const SignupServices = {
           pk: data.pk,
           sk: data.sk,
         },
-        AttributesToGet: ["firstname", "lastname", "email"],
+        AttributesToGet: ['firstname', 'lastname', 'email'],
       })
       .promise();
   },

@@ -1,4 +1,4 @@
-import { StripeServices } from '../Services/StripeServices';
+import StripeServices from '../Services/StripeServices';
 export default class StripeController {
   async getPricingPlans(req: any, res: any) {
     const { getAll = false, active = true, name = '' } = req.query;

@@ -3,9 +3,28 @@ import moment from 'moment';
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
 import { dynamoDB, TableName } from '../Utils/dynamoDB';
-
-export class StripeServices {
-  public async getPricingPlans(query: string) {
+import { PricingPlan } from 'Interfaces/stripeInterfaces';
+export default class StripeServices {
+  public async getPricingPlans(data: PricingPlan) {
+    const { active = true, plan_type, name, getAll = true } = data;
+    let query = 'active:true';
+    if (!getAll) {
+      if (!active) {
+        query = 'active:false';
+      } else if (plan_type && !active) {
+        query = `active:false AND metadata['plan_type']:'${plan_type}`;
+      } else if (plan_type && active) {
+        query = `active:true AND metadata['plan_type']:'${plan_type}`;
+      } else if (name && !active) {
+        query = `active:false AND metadata['name']:'${name}`;
+      } else if (name && active) {
+        query = `active:false AND metadata['name']:'${name}`;
+      } else if (plan_type && name && !active) {
+        query = `active:false AND metadata['plan_type']:'${plan_type} AND metadata['name']:'${name}`;
+      } else if (plan_type && name && active) {
+        query = `active:true AND metadata['plan_type']:'${plan_type} AND metadata['name']:'${name}`;
+      }
+    }
     let products = await stripe.products.search({
       query: query,
     });
@@ -70,7 +89,7 @@ export class StripeServices {
         },
         UpdateExpression: `set stripeId= :stripeId`,
         ExpressionAttributeValues: {
-          ':stripeId': 'my_stripeId',
+          ':stripeId': data.stripeId,
         },
         ReturnValues: 'ALL_NEW',
       })
