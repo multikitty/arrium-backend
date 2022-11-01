@@ -1,21 +1,9 @@
 import StripeServices from '../Services/StripeServices';
 export default class StripeController {
   async getPricingPlans(req: any, res: any) {
-    const { getAll = false, active = true, name = '' } = req.query;
-    let query = 'active:"true"';
+    const { getAll = false, active = true, name = '', plan_type } = req.query;
     try {
-      if (getAll) {
-        query = '';
-      } else if (!active) {
-        query = 'active:"false"';
-      } else if (name) {
-        if (!active) {
-          query = `active:"false" AND name:\"${name}\"`;
-        } else {
-          query = `active:"true" AND name:\"${name}\"`;
-        }
-      }
-      const data = await new StripeServices().getPricingPlans(query);
+      const data = await new StripeServices().getPricingPlans({ getAll, active, name, plan_type });
       return res.status(200).json({ data, error: false, message: 'Successfully fetched pricing plans' });
     } catch (err: any) {
       return res.status(500).json({ error: true, message: err?.message });

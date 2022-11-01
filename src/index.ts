@@ -18,9 +18,6 @@ import preference from './routes/preference';
 import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
-import StripeController from './Controllers/StripeController';
-import StripeServices from './Services/StripeServices';
-import CommonServices from './Services/CommonServices';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -44,26 +41,4 @@ app.use((req, res, next) => {
   res.status(404).send('<h1>Page not found on the server</h1>');
 });
 
-// StripeController.createCustomerStripe('ans4asif2@gmail.com', 'Ans4Asif')
-//   .then((res: any) => {
-//     console.log({ x: res?.id });
-//     //subscription
-//     StripeServices.subscribeToPlan(res?.id, '333', true)
-//       .then()
-//       .catch((err) => console.log({ err }));
-//   })
-//   .catch((err) => console.log({ err }));
-
-// StripeServices.getSubscription()
-//   .then()
-//   .catch((err) => console.log({ err }));
-
-// new CommonServices()
-//   .deleteItem({ sk: 'driver#900017', pk: 'UK-900017' })
-//   .then((res) => {
-//     console.log({ res });
-//   })
-//   .catch((err: any) => {
-//     console.log({ err });
-//   });
 app.listen(9000);

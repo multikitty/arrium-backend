@@ -184,23 +184,28 @@ export const SignupController = {
                 firstname: result?.Attributes?.firstname,
                 lastname: result?.Attributes?.lastname,
               };
-              // send mail to queue
-              await new MailServices()
-                .newUserSignUpMail(userData)
-                .then(() => {
-                  response.status(200);
-                  response.send({
-                    success: true,
-                    message: 'Amazon Flex info updated successfully.',
-                  });
-                })
-                .catch((err) => {
-                  response.status(500);
-                  response.send({
-                    success: false,
-                    message: 'Something went wrong, please try after sometime.',
-                    error: err,
-                  });
+              //create stripe Customer id
+              await new StripeServices()
+                .subscribeToFreeTrial({ pk: request.body.pk, sk: request.body.sk })
+                .then(async () => {
+                  // send mail to queue
+                  await new MailServices()
+                    .newUserSignUpMail(userData)
+                    .then(() => {
+                      response.status(200);
+                      response.send({
+                        success: true,
+                        message: 'Amazon Flex info updated successfully.',
+                      });
+                    })
+                    .catch((err) => {
+                      response.status(500);
+                      response.send({
+                        success: false,
+                        message: 'Something went wrong, please try after sometime.',
+                        error: err,
+                      });
+                    });
                 });
             })
             .catch((err) => {
@@ -218,23 +223,6 @@ export const SignupController = {
             message: 'Something went wrong, please try after sometime.',
           });
         }
-      });
-      //create stripe Customer id
-      const {
-        Item: { firstname, lastname, email },
-      }: any = await SignupServices.signupSendMailService({
-        pk: request.body.pk,
-        sk: request.body.sk,
-      });
-      console.log({ firstname, lastname, email });
-      const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`);
-      //get all areas plan id from stripe
-      await new StripeServices().subscribeToPlan(stripe_customer.id, '');
-      console.log({ stripe_customer });
-      await new StripeServices().updateStripeClientId({
-        pk: request.body.pk,
-        sk: request.body.sk,
-        stripeId: stripe_customer.id,
       });
     } catch (error) {
       response.status(500);
