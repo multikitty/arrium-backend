@@ -3,7 +3,6 @@ import { dynamoDB, TableName } from '../Utils/dynamoDB';
 
 export const SignupServices = {
   signupRegistrationService: async (data: any) => {
-    console.log({ data });
     return dynamoDB
       .put({
         Item: {
@@ -27,8 +26,6 @@ export const SignupServices = {
   },
 
   AccountInfoService: async (data: any) => {
-    console.log({ data });
-
     return dynamoDB
       .update({
         TableName: TableName,
@@ -52,8 +49,6 @@ export const SignupServices = {
   },
 
   SignupOTPConfirmationService: async (data: any) => {
-    console.log({ data });
-
     return dynamoDB
       .update({
         TableName: TableName,
@@ -72,7 +67,6 @@ export const SignupServices = {
   },
 
   updateAmazonFlexInfoService: async (data: any) => {
-    console.log({ data });
     return dynamoDB
       .put({
         Item: {

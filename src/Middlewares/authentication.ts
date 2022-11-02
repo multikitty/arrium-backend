@@ -10,7 +10,6 @@ export const authentication = (request: any, response: any, next: any) => {
     });
 
   jwt.verify(token, process.env.JWT_SECRET_KEY as string, function (err: any, decoded: any) {
-    console.log({ decoded });
     if (err)
       return response.status(401).send({
         success: false,

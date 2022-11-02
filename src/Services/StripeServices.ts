@@ -84,12 +84,13 @@ export default class StripeServices {
       data.cancel_at = seven_days;
     }
     const subscription = await stripe.subscriptions.create(data);
+    //TODO WITHOUT FREE TRIAL
   }
 
   public async getSubscription() {
     // sub_1Lxbf8Ek2K7pH9UX7g5QAMlq
     const subscription = await stripe.subscriptions.retrieve('sub_1Lxbf8Ek2K7pH9UX7g5QAMlq');
-    console.log({ subscription });
+    return subscription;
   }
 
   public async updateStripeClientId(data: any) {
@@ -109,33 +110,9 @@ export default class StripeServices {
       .promise();
   }
 
-  public async subscribeToFreeTrial(data: FreeTrial) {
-    const { pk, sk } = data;
-    //create stripe Customer id
-    const {
-      Item: { firstname, lastname, email },
-    }: any = await SignupServices.signupSendMailService({
-      pk,
-      sk,
-    });
-    const stripe_customer = await this.createCustomer(email, `${firstname} ${lastname}`);
-    //get all areas plan id from stripe
-    let plans = await this.getPricingPlans({
-      active: true,
-      getAll: false,
-      plan_type: 'Basic',
-      name: 'All Areas',
-    });
-    if (!plans?.length) {
-      throw Error('Plan not found');
-    }
-    plans = plans[0]?.default_price;
-    await this.subscribeToPlan({ customerId: stripe_customer.id, planId: plans, isFreeTrial: true });
-    const user = await this.updateStripeClientId({
-      pk,
-      sk,
-      stripeId: stripe_customer.id,
-    });
-    return user;
+  public async constructEvent(data: any) {
+    const { payload, signature, secret } = data;
+
+    return stripe.webhooks.constructEvent({ payload, signature, secret });
   }
 }

@@ -15,3 +15,17 @@
 #     ports:
 #       - '9000:9000'
 #     command: npm run dev
+
+  version: '3.7'
+  services:
+
+    stripe:
+      image: stripe/stripe-cli
+      container_name: stripe-cli
+      command: "listen --api-key ${STRIPE_SECRET} --device-name arrium --forward-to http://localhost:9000/v1/stripe/webhooks"
+      extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      env_file:
+      - .env
+  
+  
