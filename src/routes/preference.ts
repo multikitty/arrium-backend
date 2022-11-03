@@ -7,8 +7,8 @@ import { authentication } from "./../Middlewares/authentication";
 import PreferencesController from '../Controllers/PreferencesController';
 
 // get user preference list
-router.get("/", authentication, new PreferencesController().getPreferencesByUser);
+router.get("/", authentication("driver"), new PreferencesController().getPreferencesByUser);
 
-router.post("/add", authentication, new PreferencesController().addPreferencesByUser);
+router.post("/add", authentication("driver"), new PreferencesController().addPreferencesByUser);
 
 export = router;

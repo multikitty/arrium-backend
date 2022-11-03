@@ -1,3 +1,4 @@
+const _ = require('underscore');
 import UserServices from "../Services/UserServices";
 import PreferenceServices from "../Services/PreferenceServices"
 import { LocationServices } from "../Services/LocationServices";
@@ -45,8 +46,13 @@ export default class PreferencesController {
         // loop through block list
         for (let i = 0; i < preferenceList.length; i++) {
             const listItem = preferenceList[i];
-            // create sort key
-            let sortKey = `availability#${getWeekDayNumber(listItem.day)}#${listItem.day}#${listItem.stationCode}`;
+            let sortKey;
+            if(listItem.day) {
+                // create sort key
+                sortKey = `availability#${getWeekDayNumber(listItem.day)}#${listItem.day}#${listItem.stationCode}`;
+            } else {
+                sortKey = `availability#${listItem.stationCode}`;
+            }
             // Create block item object
             let prefItem = {
                 PutRequest: {
@@ -119,24 +125,20 @@ export default class PreferencesController {
                                 for (let i = 0; i < stationsData.length; i++) {
                                     const station = stationsData[i];
                                     if(preferencesData.length > 0) {
-                                        for (let j = 0; j < preferencesData.length; j++) {
-                                            const preference = preferencesData[j];
-                                            if(preference.stationID === station.stationID) {
-                                                let data = {
-                                                    station : station,
-                                                    preference : preference 
-                                                }
-                                                responseData.push(data);
-                                            } else {
-                                                let data = {
-                                                    station : station,
-                                                    preference : [] 
-                                                }
-                                                // check if station already exist
-                                                const found = responseData.some(item => item.station?.stationID === station.stationID);
-                                                if (!found) responseData.push(data);
+                                        let matchedPreference = _.findWhere(preferencesData, {stationID: station.stationID});
+                                        if(matchedPreference) {
+                                            let data = {
+                                                station : station,
+                                                preference : matchedPreference 
                                             }
-                                        } 
+                                            responseData.push(data);
+                                        } else {
+                                            let data = {
+                                                station : station,
+                                                preference : [] 
+                                            }
+                                            responseData.push(data);
+                                        }
                                     } else {
                                         let data = {
                                             station : station,
