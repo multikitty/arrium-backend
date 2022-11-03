@@ -24,6 +24,15 @@ app.get('/', (req: Request, res: Response) => {
   res.send('<h1>Hello welcome to arrium api collection :)</h1>');
 });
 
+app.use(
+  '/v1/stripe/webhooks',
+  express.json({
+    verify: (req: any, res, buf) => {
+      req.rawBody = buf.toString();
+    },
+  })
+);
+app.use(express.json());
 //Routes Defined Here
 app.use('/v1/signin', signin);
 app.use('/v1/signup', signup);

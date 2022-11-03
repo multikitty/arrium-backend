@@ -67,7 +67,7 @@ export default class StripeServices {
   }
 
   public async subscribeToPlan(payload: Plan) {
-    const { customerId, planId, isFreeTrial } = payload;
+    const { customerId, planId, isFreeTrial, billing_cycle_anchor } = payload;
     //subscribe customer to a plan
     let data: any = {
       customer: customerId,
@@ -82,8 +82,12 @@ export default class StripeServices {
       const seven_days = moment().add(7, 'days').unix();
       data.trial_end = seven_days;
       data.cancel_at = seven_days;
+    } else {
+      data.billing_cycle_anchor = billing_cycle_anchor;
     }
+    console.log({ data });
     const subscription = await stripe.subscriptions.create(data);
+    return subscription;
     //TODO WITHOUT FREE TRIAL
   }
 
@@ -112,7 +116,17 @@ export default class StripeServices {
 
   public async constructEvent(data: any) {
     const { payload, signature, secret } = data;
+    const ev = stripe.webhooks.constructEvent(payload, signature, secret);
+    return ev;
+  }
 
-    return stripe.webhooks.constructEvent({ payload, signature, secret });
+  public async createInvoice(data: any) {
+    const { customerId, subscription } = data;
+    const payload = {
+      customer: customerId,
+      subscription,
+    };
+    const invoice = await stripe.invoices.create(payload);
+    return invoice;
   }
 }

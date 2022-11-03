@@ -8,7 +8,8 @@ export interface PricingPlan {
 export interface Plan {
   customerId: string;
   planId: string;
-  isFreeTrial: boolean;
+  isFreeTrial?: boolean;
+  billing_cycle_anchor?: number;
 }
 
 export interface FreeTrial {

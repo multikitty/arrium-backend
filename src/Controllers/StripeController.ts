@@ -1,6 +1,8 @@
 import { FreeTrial } from 'Interfaces/stripeInterfaces';
+import moment from 'moment';
 import { SignupServices } from '../Services/SignupServices';
 import StripeServices from '../Services/StripeServices';
+
 export default class StripeController {
   async getPricingPlans(req: any, res: any) {
     const { getAll = false, active = true, name = '', plan_type } = req.query;
@@ -22,15 +24,29 @@ export default class StripeController {
   }
 
   async handleStripeEvents(req: any, res: any) {
-    const secret = 'whsec_5c8ab2ae2abfa7702530c569e177ebc2f569c7fa99442085bb87996b468398aa';
-    const payload = req.body;
+    const secret = 'whsec_gBHiboRyWj46FTEFxmsD68uS6HCQKTRV';
+    const payload = req.rawBody;
     const signature = req.headers['stripe-signature'];
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
+      const event_type = event?.type;
       console.log({ event_type: event?.type });
       console.log({ event_object: event?.data?.object });
-    } catch (error) {
-      console.log({ error });
+      switch (event_type) {
+        case 'customer.subscription.deleted':
+          /*check if current ended subscription is of free trial
+            if free trial and not subscribed to any other subscription then change status inactive
+
+          */
+
+          console.log({ t: event?.object });
+          break;
+        default:
+          throw Error(`Unhandled Event ${event?.type}`);
+      }
+    } catch (error: any) {
+      console.log({ error: error?.message });
+      res.end();
     }
   }
 
@@ -62,5 +78,30 @@ export default class StripeController {
       stripeId: stripe_customer.id,
     });
     return user;
+  }
+  public async onSelectPlan(req: any, res: any) {
+    const { id } = req.params;
+    //get user from req.user
+    const customerId = 'cus_MjG1DZdnDypH5E';
+    const customer = await new StripeServices().createCustomer('ans4asif@gmail.com', 'John Doe');
+    try {
+      const data = {
+        customerId: customer.id,
+        planId: id,
+        billing_cycle_anchor: moment().add(7, 'days').unix(),
+      };
+      //subscribe to plan
+      const subscription = await new StripeServices().subscribeToPlan(data);
+      return res.status(200).json({
+        success: true,
+        subscription,
+        message: 'Successfully subscribe to Plan',
+      });
+      //create pro-ratd invoice
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: 'Something went wrong, please try after sometime.', error: error });
+    }
   }
 }
