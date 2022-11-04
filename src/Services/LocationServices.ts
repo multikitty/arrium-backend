@@ -100,15 +100,23 @@ export class LocationServices {
         let params = {
             TableName: TableName,
             Item: {
-              pk: data.pk,
-              sk: data.sk,
-              regionName : data.regionName,
-              regionCode : data.regionCode,
-              regionID : data.regionId,
-              stationCode : data.stationCode,
-              stationName : data.stationName,
-              stationID : data.stationId,
-              stationType : data.stationType, 
+                pk: data.pk,
+                sk: data.sk,
+                regionName : data.regionName,
+                regionCode : data.regionCode,
+                regionID : data.regionId,
+                stationCode : data.stationCode,
+                stationName : data.stationName,
+                stationID : data.stationId,
+                stationType : data.stationType, 
+                address1 : data.address1,
+                address2 : data.address2,
+                address3 : data.address3,
+                city : data.city,
+                state : data.state,
+                postalCode : data.postalCode,
+                latitude : data.latitude,
+                longitude : data.longitude
             }
         }
         return dynamoDB.put(params).promise()

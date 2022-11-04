@@ -47,7 +47,7 @@ export const authSchema = {
       .withMessage("Password must have at least one character uppercase")
       .matches(/\d/)
       .withMessage("Password must contain number characters"),
-    body("countryCode")
+    body("country")
       .trim()
         .not()
         .isEmpty()

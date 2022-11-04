@@ -177,7 +177,15 @@ export default class LocationController {
          stationName : req.body.stationName,
          stationCode : req.body.stationCode,
          stationId : req.body.stationId,
-         stationType : req.body.stationType
+         stationType : req.body.stationType,
+         address1 : req.body.address1,
+         address2 : req.body.address2,
+         address3 : req.body.address3,
+         city : req.body.city,
+         state : req.body.state,
+         postalCode : req.body.postalCode,
+         latitude : req.body.latitude,
+         longitude : req.body.longitude
       }
 
       await new LocationServices().setStation(stationData)

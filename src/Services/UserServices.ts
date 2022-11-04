@@ -97,6 +97,31 @@ export default class UserServices {
     return dynamoDB.update(params).promise()
   }
 
+  // update user's regionCode and countryCode
+  async updateUserCountryRegion(data: any) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: data.userPk,
+          sk: data.userSk,
+        },
+        UpdateExpression: `SET 
+            country= :country,
+            #attrRegion= :region
+          `,
+        ExpressionAttributeNames: {
+          "#attrRegion": "region"
+        },
+        ExpressionAttributeValues: {
+          ":country" : data.country,
+          ":region" : data.region 
+        },
+        ReturnValues: "ALL_NEW",
+      })
+      .promise();
+  }
+
   //update user account info 
   async updateAccountInfo(data: any) {
     return dynamoDB
@@ -118,10 +143,13 @@ export default class UserServices {
           accountStatus= :accountStatus,
           startDate= :startDate,
           endDate= :endDate,
-          planType= :planType
+          planType= :planType,
+          country= :country,
+          #attrRegion= :region
         `,
         ExpressionAttributeNames: {
-          "#attrRole": 'role'
+          "#attrRole": 'role',
+          "#attrRegion": 'region'
         },
         ExpressionAttributeValues: {
           ":firstname": data.firstname,
@@ -134,7 +162,9 @@ export default class UserServices {
           ":accountStatus": data.status,
           ":startDate": data.startDate,
           ":endDate": data.endDate,
-          ":planType": data.planType
+          ":planType": data.planType,
+          ":country" : data.country,
+          ":region" : data.region 
         },
         ReturnValues: "ALL_NEW",
       })

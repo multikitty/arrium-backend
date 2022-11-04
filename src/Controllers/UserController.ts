@@ -75,17 +75,43 @@ export default class UserController {
   /**
   * updateAmznFlexDetails
   */
-  public async updateAmznFlexDetails(request: any, response : any) {
+  public async updateAmznFlexDetails(request: Request, response : Response) {
     await new UserServices().updateFlexDetails(request.body)
-    .then((result : any) => {
+    .then(async (result : any) => {
       // handle result 
       if(result.Attributes) {
-        response.status(200);
-        response.send({
-          success: true,
-          message: "Configuration details updated successfully.",
-          data: result.Attributes
-        });
+        const responseData = result.Attributes; 
+        // udpate changes in user entity
+        let countryRegionData = {
+          userPk : request.body.userPk,
+          userSk : request.body.userSk,
+          country : result.Attributes.country,
+          region : result.Attributes.region
+        }
+        await new UserServices().updateUserCountryRegion(countryRegionData)
+        .then((result) => {
+          if(result) {
+            response.status(200);
+            response.send({
+              success: true,
+              message: "Configuration details updated successfully.",
+              data: responseData
+            });
+          } else {
+            response.status(500);
+            response.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+            });
+          }
+        }).catch((error : any) => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error : error
+          });
+        })
       } else {
         response.status(500);
         response.send({

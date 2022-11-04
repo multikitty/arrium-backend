@@ -19,6 +19,8 @@ export const SignupServices = {
           startDate: (Date.now() / 1000) | 0, //time in unix,
           accountStatus: 'active',
           planType: 'basic',
+          region : "",
+          country: ""
         },
         TableName: TableName,
       })
@@ -33,11 +35,11 @@ export const SignupServices = {
           sk: data.sk,
           pk: data.pk,
         },
-        UpdateExpression: `set firstname = :firstname, lastname= :lastname, countryCode= :countryCode, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
+        UpdateExpression: `set firstname = :firstname, lastname= :lastname, country= :country, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
           ':firstname': data.firstname,
           ':lastname': data.lastname,
-          ':countryCode': data.countryCode,
+          ':country': data.country,
           ':dialCode': data.dialCode,
           ':phoneNumber': data.phoneNumber,
           ':tzName': data.tzName,

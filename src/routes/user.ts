@@ -6,6 +6,7 @@ import { authSchema } from "./../validationSchema/authSchema";
 import { validationSchema } from "./../Middlewares/validationSchema";
 import { authentication } from "./../Middlewares/authentication";
 import UserController from "./../Controllers/UserController";
+import FlexValidation from "../validationSchema/flexValidation";
 
 //get User Details
 router.get("/", authentication("driver"), new UserController().getUserData);
@@ -16,7 +17,7 @@ router.get("/get", authentication("admin"), new UserController().getUserByPkSk);
 
 router.get("/flex-details/:pk", authentication("admin"), new UserController().getAmznFlexDetails);
 
-router.put("/flex-details/update", authentication("admin"), new UserController().updateAmznFlexDetails);
+router.put("/flex-details/update", authentication("admin"), new FlexValidation().flexDetails, validationSchema,  new UserController().updateAmznFlexDetails);
 
 router.put("/update-account-info", authentication("admin"), new UserController().updateAccountInfo);
 
