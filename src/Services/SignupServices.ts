@@ -20,7 +20,7 @@ export const SignupServices = {
           accountStatus: 'active',
           planType: 'basic',
           region : "",
-          country: ""
+          country: data.country
         },
         TableName: TableName,
       })

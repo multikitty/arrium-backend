@@ -13,15 +13,15 @@ export default class FlexValidation {
             body("devSerialNumber").trim().toUpperCase().not().isEmpty().withMessage("Station Code is required"),
             body("osVersion").trim().not().isEmpty().withMessage("Station ID is required"),
             body("flexVersion").trim().not().isEmpty().withMessage("Station Type is required"),
-            body("awsReg1").trim().not().isEmpty().withMessage("Station Name is required"),
-            body("cogId1").trim().toUpperCase().not().isEmpty().withMessage("Station Code is required"),
-            body("awsReg2").trim().not().isEmpty().withMessage("Station ID is required"),
-            body("cogId2").trim().not().isEmpty().withMessage("Station Type is required"),
+            // body("awsReg1").trim().not().isEmpty().withMessage("Station Name is required"),
+            // body("cogId1").trim().toUpperCase().not().isEmpty().withMessage("Station Code is required"),
+            // body("awsReg2").trim().not().isEmpty().withMessage("Station ID is required"),
+            // body("cogId2").trim().not().isEmpty().withMessage("Station Type is required"),
             body("amznId").trim().not().isEmpty().withMessage("Station Name is required"),
             body("flexId").trim().toUpperCase().not().isEmpty().withMessage("Station Code is required"),
             body("country").trim().not().isEmpty().withMessage("Station ID is required"),
             body("region").trim().not().isEmpty().withMessage("Station Type is required"),
-            body("blockType").trim().not().isEmpty().withMessage("Station Type is required")
+            body("stationType").trim().not().isEmpty().withMessage("Station Type is required")
         ]
     }    
 }

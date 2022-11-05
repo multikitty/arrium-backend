@@ -39,7 +39,7 @@ export default class UserServices {
     return dynamoDB.get(params).promise();
   }
   
-  /**
+  /** 
   * updateFlexDetails
   */
   public updateFlexDetails(data: any) {
@@ -65,9 +65,7 @@ export default class UserServices {
         amznID= :amznId,
         flexID= :flexId,
         country= :country,
-        #attrRegion= :region, 
-        planName= :planName,
-        blockType= :blockType
+        #attrRegion= :region
       `,
       ExpressionAttributeNames: {
         "#attrRegion": 'region'
@@ -88,9 +86,7 @@ export default class UserServices {
         ":amznId": data.amznId,
         ":flexId": data.flexId,
         ":country": data.country,
-        ":region": data.region,
-        ":planName": data.planName,
-        ":blockType": data.blockType,
+        ":region": data.region
       },
       ReturnValues: "ALL_NEW",
     }
@@ -107,14 +103,14 @@ export default class UserServices {
           sk: data.userSk,
         },
         UpdateExpression: `SET 
-            country= :country,
+            flexCountry= :flexCountry,
             #attrRegion= :region
           `,
         ExpressionAttributeNames: {
           "#attrRegion": "region"
         },
         ExpressionAttributeValues: {
-          ":country" : data.country,
+          ":flexCountry" : data.country,
           ":region" : data.region 
         },
         ReturnValues: "ALL_NEW",
@@ -144,12 +140,10 @@ export default class UserServices {
           startDate= :startDate,
           endDate= :endDate,
           planType= :planType,
-          country= :country,
-          #attrRegion= :region
+          stationType= :stationType,
         `,
         ExpressionAttributeNames: {
-          "#attrRole": 'role',
-          "#attrRegion": 'region'
+          "#attrRole": 'role'
         },
         ExpressionAttributeValues: {
           ":firstname": data.firstname,
@@ -163,8 +157,7 @@ export default class UserServices {
           ":startDate": data.startDate,
           ":endDate": data.endDate,
           ":planType": data.planType,
-          ":country" : data.country,
-          ":region" : data.region 
+          ":stationType": data.stationType,
         },
         ReturnValues: "ALL_NEW",
       })
