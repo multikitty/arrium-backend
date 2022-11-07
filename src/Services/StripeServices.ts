@@ -67,7 +67,16 @@ export default class StripeServices {
   }
 
   public async subscribeToPlan(payload: Plan) {
-    const { customerId, planId, isFreeTrial, billing_cycle_anchor } = payload;
+    const {
+      customerId,
+      planId,
+      isFreeTrial,
+      billing_cycle_anchor,
+      collection_method,
+      proration_behavior,
+      due_date,
+      days_until_due,
+    } = payload;
     //subscribe customer to a plan
     let data: any = {
       customer: customerId,
@@ -84,6 +93,10 @@ export default class StripeServices {
       data.cancel_at = seven_days;
     } else {
       data.billing_cycle_anchor = billing_cycle_anchor;
+      data.collection_method = collection_method;
+      data.days_until_due = days_until_due;
+      data.proration_behavior = proration_behavior;
+      // data.due_date = due_date;
     }
     console.log({ data });
     const subscription = await stripe.subscriptions.create(data);
@@ -97,6 +110,10 @@ export default class StripeServices {
     return subscription;
   }
 
+  public async createSubscriptionSchedule(data: any) {
+    const subscriptionSchedule = await stripe.subscriptionSchedules.create(data);
+    return subscriptionSchedule;
+  }
   public async updateStripeClientId(data: any) {
     return dynamoDB
       .update({
@@ -121,12 +138,23 @@ export default class StripeServices {
   }
 
   public async createInvoice(data: any) {
-    const { customerId, subscription } = data;
-    const payload = {
-      customer: customerId,
-      subscription,
-    };
-    const invoice = await stripe.invoices.create(payload);
+    console.log({ invoice_data: data });
+    const invoice = await stripe.invoices.create(data);
+    return invoice;
+  }
+
+  public async updateInvoiceItem(id: string, data: any) {
+    const invoiceItem = await stripe.invoiceItems.update(id, data);
+    return invoiceItem;
+  }
+  public async createInvoiceItem(data: any) {
+    console.log({ invoiceitem_data: data });
+    const invoice = await stripe.invoiceItems.create(data);
+    return invoice;
+  }
+  public async updateInvoice(id: string, data: any) {
+    console.log({ invoiceitem_data: data });
+    const invoice = await stripe.invoices.update(id, data);
     return invoice;
   }
 }

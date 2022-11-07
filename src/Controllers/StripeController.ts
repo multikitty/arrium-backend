@@ -30,8 +30,8 @@ export default class StripeController {
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
-      console.log({ event_type: event?.type });
-      console.log({ event_object: event?.data?.object });
+      // console.log({ event_type: event?.type });
+      // console.log({ event_object: event?.data?.object });
       switch (event_type) {
         case 'customer.subscription.deleted':
           /*check if current ended subscription is of free trial
@@ -39,7 +39,7 @@ export default class StripeController {
 
           */
 
-          console.log({ t: event?.object });
+          // console.log({ t: event?.object });
           break;
         default:
           throw Error(`Unhandled Event ${event?.type}`);
@@ -82,19 +82,79 @@ export default class StripeController {
   public async onSelectPlan(req: any, res: any) {
     const { id } = req.params;
     //get user from req.user
-    const customerId = 'cus_MjG1DZdnDypH5E';
-    const customer = await new StripeServices().createCustomer('ans4asif@gmail.com', 'John Doe');
+    // const customer = { id: 'cus_MklJSIHYrQRmxK' };
+    const customer = await new StripeServices().createCustomer('cin@gmail.com', 'cin Doe');
     try {
+      var a = moment().add(7, 'days');
+      var b = moment().endOf('month');
+      // console.log({ a, b });
+      const days_due = Math.abs(a.diff(b, 'days')) + 7;
       const data = {
         customerId: customer.id,
         planId: id,
-        billing_cycle_anchor: moment().add(7, 'days').unix(),
+        billing_cycle_anchor: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
+        collection_method: 'send_invoice',
+        // days_until_due: days_due,
+        // days_until_due: 23,
+        due_date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
+        proration_behavior: 'create_prorations',
+      };
+      const scheduleData = {
+        customer: customer.id,
+        start_date: moment().subtract(2, 'days').unix(),
+        end_behavior: 'release',
+        phases: [
+          {
+            items: [
+              {
+                price: id,
+              },
+            ],
+            // iterations: 12,
+          },
+        ],
       };
       //subscribe to plan
       const subscription = await new StripeServices().subscribeToPlan(data);
+      console.log({ subscriptionId: subscription?.id, subscript_ivoice_id: subscription.latest_invoice });
+      const invoice_id = subscription.latest_invoice;
+      const up_data = {
+        due_date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
+      };
+      console.log({ date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')) });
+      // const updateInvoice = await new StripeServices().updateInvoice(invoice_id, up_data);
+      //invoice
+      const invoiceData = {
+        customer: customer.id,
+        collection_method: 'send_invoice',
+        due_date: moment().add(1, 'month').startOf('month').startOf('day').unix(),
+        // subscription: subscription.id,
+        // days_until_due: days_due,
+        // days_until_due: 23,
+      };
+
+      const invoiceItemData = {
+        customer: customer.id,
+        // invoice: invoice.id,
+        price: id,
+        // due_date: moment().endOf('month').unix(),
+        period: {
+          start: moment().add(7, 'days').unix(),
+          end: moment().endOf('month').unix(),
+        },
+      };
+      // const invoice_item = await new StripeServices().createInvoiceItem(invoiceItemData);
+      // const invoice = await new StripeServices().createInvoice(invoiceData);
+
+      // console.log({ invoiceid: invoice.id });
+      // const scheduleSubsc = await new StripeServices().createSubscriptionSchedule(scheduleData);
       return res.status(200).json({
         success: true,
         subscription,
+        // scheduleSubsc,
+        // invoice,
+        // invoice_item,
+        // updateInvoice,
         message: 'Successfully subscribe to Plan',
       });
       //create pro-ratd invoice

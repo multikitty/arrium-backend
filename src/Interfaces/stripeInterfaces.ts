@@ -8,8 +8,13 @@ export interface PricingPlan {
 export interface Plan {
   customerId: string;
   planId: string;
+  collection_method?: string;
   isFreeTrial?: boolean;
   billing_cycle_anchor?: number;
+  days_until_due?: any;
+  period?: { start: number; end: number };
+  due_date?: number;
+  proration_behavior?: string;
 }
 
 export interface FreeTrial {
