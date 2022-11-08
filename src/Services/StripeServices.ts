@@ -157,4 +157,13 @@ export default class StripeServices {
     const invoice = await stripe.invoices.update(id, data);
     return invoice;
   }
+  public async getPlan(id: string) {
+    const plan = await stripe.plans.retrieve(id);
+    return plan;
+  }
+
+  public async getProduct(id: string) {
+    const product = await stripe.products.retrieve(id);
+    return product;
+  }
 }
