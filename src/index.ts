@@ -18,6 +18,7 @@ import preference from './routes/preference';
 import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
+import sesTemplates from './routes/sesTemplates';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -44,6 +45,8 @@ app.use('/v1/model-versions', modelVersions);
 app.use('/v1/location', location);
 app.use('/v1/automation-tool', automationTool);
 app.use('/v1/stripe', stripe);
+app.use('/v1/templates', sesTemplates);
+
 
 // Handling 404 Page Not Found
 app.use((req, res, next) => {
