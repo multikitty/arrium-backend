@@ -6,8 +6,8 @@ import { authentication } from "./../Middlewares/authentication";
 import BlockController from "../Controllers/BlockController";
 
 // get searched blocks list
-router.get("/", authentication, new BlockController().getBlockList);
+router.get("/", authentication("driver"), new BlockController().getBlockList);
 //add blocks
-router.post("/add", authentication, new BlockController().addBlocks.bind(new BlockController()));
+router.post("/add", authentication("driver"), new BlockController().addBlocks.bind(new BlockController()));
 
 export = router;

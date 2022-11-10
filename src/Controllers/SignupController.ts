@@ -35,7 +35,7 @@ export const SignupController = {
                 request.body.customerId = String(cIdObj.lastCustomerId);
                 let userRole = 'driver';
                 // create sk, pk and role
-                request.body.pk = `${request.body.countryCode}-${request.body.customerId}`;
+                request.body.pk = `${request.body.country}-${request.body.customerId}`;
                 request.body.sk = `${userRole}#${request.body.customerId}`;
                 request.body.role = userRole;
                 //  email verification token
