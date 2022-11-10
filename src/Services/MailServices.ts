@@ -1,17 +1,4 @@
-import nodemailer from "nodemailer";
-import  AWS from "aws-sdk";
 import SqsQueueServices from "./SqsQueueServices";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.MAIL_USERNAME, // generated ethereal user
-    pass: process.env.MAIL_PASSWORD, // generated ethereal password
-  },
-});
-
 export default class MailServices {
   
   async newUserSignUpMail(data: any) {

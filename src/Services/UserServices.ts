@@ -39,7 +39,7 @@ export default class UserServices {
     return dynamoDB.get(params).promise();
   }
   
-  /**
+  /** 
   * updateFlexDetails
   */
   public updateFlexDetails(data: any) {
@@ -65,9 +65,7 @@ export default class UserServices {
         amznID= :amznId,
         flexID= :flexId,
         country= :country,
-        #attrRegion= :region, 
-        planName= :planName,
-        blockType= :blockType
+        #attrRegion= :region
       `,
       ExpressionAttributeNames: {
         "#attrRegion": 'region'
@@ -88,13 +86,36 @@ export default class UserServices {
         ":amznId": data.amznId,
         ":flexId": data.flexId,
         ":country": data.country,
-        ":region": data.region,
-        ":planName": data.planName,
-        ":blockType": data.blockType,
+        ":region": data.region
       },
       ReturnValues: "ALL_NEW",
     }
     return dynamoDB.update(params).promise()
+  }
+
+  // update user's regionCode and countryCode
+  async updateUserCountryRegion(data: any) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: data.userPk,
+          sk: data.userSk,
+        },
+        UpdateExpression: `SET 
+            flexCountry= :flexCountry,
+            #attrRegion= :region
+          `,
+        ExpressionAttributeNames: {
+          "#attrRegion": "region"
+        },
+        ExpressionAttributeValues: {
+          ":flexCountry" : data.country,
+          ":region" : data.region 
+        },
+        ReturnValues: "ALL_NEW",
+      })
+      .promise();
   }
 
   //update user account info 
@@ -118,7 +139,8 @@ export default class UserServices {
           accountStatus= :accountStatus,
           startDate= :startDate,
           endDate= :endDate,
-          planType= :planType
+          planType= :planType,
+          stationType= :stationType,
         `,
         ExpressionAttributeNames: {
           "#attrRole": 'role'
@@ -134,7 +156,8 @@ export default class UserServices {
           ":accountStatus": data.status,
           ":startDate": data.startDate,
           ":endDate": data.endDate,
-          ":planType": data.planType
+          ":planType": data.planType,
+          ":stationType": data.stationType,
         },
         ReturnValues: "ALL_NEW",
       })

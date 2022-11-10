@@ -6,25 +6,26 @@ import { authSchema } from "./../validationSchema/authSchema";
 import { validationSchema } from "./../Middlewares/validationSchema";
 import { authentication } from "./../Middlewares/authentication";
 import UserController from "./../Controllers/UserController";
+import FlexValidation from "../validationSchema/flexValidation";
 
 //get User Details
-router.get("/", authentication, new UserController().getUserData);
+router.get("/", authentication("driver"), new UserController().getUserData);
 
-router.get("/list", authentication, new UserController().listAllUsers);
+router.get("/list", authentication("admin"), new UserController().listAllUsers);
 // get user by sk and pk for admin
-router.get("/get", authentication, new UserController().getUserByPkSk);
+router.get("/get", authentication("admin"), new UserController().getUserByPkSk);
 
-router.get("/flex-details/:pk", authentication, new UserController().getAmznFlexDetails);
+router.get("/flex-details/:pk", authentication("admin"), new UserController().getAmznFlexDetails);
 
-router.put("/flex-details/update", authentication, new UserController().updateAmznFlexDetails);
+router.put("/flex-details/update", authentication("admin"), new FlexValidation().flexDetails, validationSchema,  new UserController().updateAmznFlexDetails);
 
-router.put("/update-account-info", authentication, new UserController().updateAccountInfo);
+router.put("/update-account-info", authentication("admin"), new UserController().updateAccountInfo);
 
-router.post("/approve-account", authentication, new UserController().updateAccountApproveStatus);
+router.post("/approve-account", authentication("admin"), new UserController().updateAccountApproveStatus);
 
 router.post(
   "/request-verify-email",
-  authentication,
+  authentication("driver"),
   authSchema.emailSchema,
   validationSchema,
   new UserController().sendEmailVerify
@@ -34,7 +35,7 @@ router.post("/verify-email", authentication, new UserController().VerifyEmail);
 
 router.post(
   "/update-password",
-  authentication,
+  authentication("driver"),
   authSchema.udpatePasswordSchema,
   validationSchema,
   new UserController().updatePassword
@@ -42,7 +43,7 @@ router.post(
 
 router.post(
   "/update-profile",
-  authentication,
+  authentication("driver"),
   authSchema.updateProfile,
   validationSchema,
   new UserController().updateProfileDetails
@@ -50,7 +51,7 @@ router.post(
 
 router.post(
   "/update-phoneNumber",
-  authentication,
+  authentication("driver"),
   authSchema.updatephoneNumberSchema,
   validationSchema,
   new UserController().updatephoneNumber
@@ -59,7 +60,7 @@ router.post(
 
 router.post(
   "/update-email",
-  authentication,
+  authentication("driver"),
   authSchema.emailSchema,
   validationSchema,
   new UserController().updateEmail

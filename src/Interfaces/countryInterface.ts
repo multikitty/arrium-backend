@@ -29,4 +29,12 @@ export interface AddStationObj {
     readonly stationName : string,
     readonly stationId : string,
     readonly stationType : string,
+    readonly address1 : string
+    readonly address2 : string,
+    readonly address3 : string
+    readonly city : string,
+    readonly state : string,
+    readonly postalCode : string,
+    readonly latitude : string,
+    readonly longitude : string,
 }
