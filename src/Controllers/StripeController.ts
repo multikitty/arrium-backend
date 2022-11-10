@@ -98,22 +98,25 @@ export default class StripeController {
       };
       const scheduleData = {
         customer: customer.id,
-        start_date: moment().add(2, 'days').unix(), //start date of subsc schedule
+        // start_date: moment().add(2, 'days').unix(), //start date of subsc schedule
+        start_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+          .endOf('day')
+          .unix(),
         end_behavior: 'release',
         phases: [
-          {
-            items: [
-              {
-                price: id,
-              },
-            ],
-            proration_behavior: 'create_prorations',
-            // start_date: moment().add(2, 'days').unix(),
-            end_date: moment().endOf('month').unix(),
-            invoice_settings: { days_until_due: 22 },
+          // {
+          //   items: [
+          //     {
+          //       price: id,
+          //     },
+          //   ],
+          //   proration_behavior: 'create_prorations',
+          //   // start_date: moment().add(2, 'days').unix(),
+          //   end_date: moment().endOf('month').unix(),
+          //   invoice_settings: { days_until_due: 22 },
 
-            collection_method: 'send_invoice',
-          },
+          //   collection_method: 'send_invoice',
+          // },
           {
             items: [
               {
@@ -148,7 +151,7 @@ export default class StripeController {
         currency: plan.currency,
         description: product.name,
         period: {
-          start: moment().add(2, 'days').unix(),
+          start: moment().add(2, 'days').unix(),//free trial end-date
           end: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
             .endOf('day')
             .unix(),

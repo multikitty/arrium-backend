@@ -184,23 +184,27 @@ export const SignupController = {
                 firstname: result?.Attributes?.firstname,
                 lastname: result?.Attributes?.lastname,
               };
-              // send mail to queue
-              await new MailServices()
-                .newUserSignUpMail(userData)
-                .then(() => {
-                  response.status(200);
-                  response.send({
-                    success: true,
-                    message: 'Amazon Flex info updated successfully.',
+
+              //free trial
+
+              await new StripeServices()
+                .createCustomer(userData.email, `${userData.firstname} ${userData.lastname}`)
+                .then(async (customr) => {
+                  const plans = await new StripeServices().getPricingPlans({
+                    active: true,
+                    plan_type: 'Basic',
+                    name: 'All Areas',
+                    getAll: false,
                   });
+                  const data = {
+                    planId: plans?.data[0]?.price?.id,
+                    customerId: customr?.id,
+                    isFreeTrial: true,
+                  };
+                  await new StripeServices().subscribeToPlan({ data });
                 })
                 .catch((err) => {
-                  response.status(500);
-                  response.send({
-                    success: false,
-                    message: 'Something went wrong, please try after sometime.',
-                    error: err,
-                  });
+                  console.log(err);
                 });
             })
             .catch((err) => {
