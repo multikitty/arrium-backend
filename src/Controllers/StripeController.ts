@@ -182,4 +182,11 @@ export default class StripeController {
         .json({ success: false, message: 'Something went wrong, please try after sometime.', error: error });
     }
   }
+
+  public async getInvoices(req:any,res:any){
+    const {sk,pk}=req.body
+    const user=(await new UserServices().getUserData({sk,pk}))?.Item
+    
+    // const invoices=await new StripeServices().getInvoices()
+  }
 }

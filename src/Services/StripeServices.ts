@@ -166,4 +166,8 @@ export default class StripeServices {
     const product = await stripe.products.retrieve(id);
     return product;
   }
+
+  public async getInvoices(stripeId:string){
+    // const invoices=await stripe.invoice()
+  }
 }
