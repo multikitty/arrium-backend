@@ -472,7 +472,7 @@ export default class UserController {
    * updateAccountApproveStatus
    */
   public async updateAccountApproveStatus(req: Request, res: Response) {
-   
+    
   }
 
 }

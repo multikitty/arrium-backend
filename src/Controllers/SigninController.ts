@@ -29,12 +29,40 @@ export const SigninController = {
                 });
                 result.Items[0]['token'] = token;
                 delete result.Items[0].password;
-                response.status(200);
-                response.send({
-                  success: true,
-                  message: 'Getting login data!',
-                  data: result.Items[0],
-                });
+
+                // user data 
+                const userData = result.Items[0];
+                // get flex details
+                let params = {
+                  pk : result.Items[0].pk
+                }
+                await new UserServices().fetchAmznFlexDetails(params).then((result : any) => {
+                  if(result.Item) {
+                    let responseData = {
+                      userData : userData,
+                      flexData : result.Item 
+                    }
+                    response.status(200);
+                    response.send({
+                      success: true,
+                      message: 'Getting login data!',
+                      data: responseData,
+                    });
+                  } else {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: "Something went wrong, please try after sometime."
+                    });  
+                  }
+                }).catch((error) => {
+                  response.status(500);
+                  response.send({
+                    success: false,
+                    message: "Something went wrong, please try after sometime.",
+                    error : error
+                  });  
+                }); 
               } else {
                 response.status(200);
                 response.send({
