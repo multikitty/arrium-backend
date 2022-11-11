@@ -88,7 +88,7 @@ export default class StripeServices {
     };
     if (isFreeTrial) {
       //get 7 days after timestamp
-      const seven_days = moment().add(7, 'days').unix();
+      const seven_days = moment().add(7, 'days').endOf('day').unix();
       data.trial_end = seven_days;
       data.cancel_at = seven_days;
     } else {
