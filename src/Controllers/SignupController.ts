@@ -4,7 +4,6 @@ import companyIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
 import { SignupServices } from '../Services/SignupServices';
 import UserServices from '../Services/UserServices';
-import StripeServices from '../Services/StripeServices';
 import StripeController from './StripeController';
 
 export const SignupController = {

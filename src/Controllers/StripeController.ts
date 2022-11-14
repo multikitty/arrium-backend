@@ -31,22 +31,18 @@ export default class StripeController {
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
-      // console.log({ event_type: event?.type });
-      // console.log({ event_object: event?.data?.object });
       switch (event_type) {
         case 'customer.subscription.deleted':
           /*check if current ended subscription is of free trial
             if free trial and not subscribed to any other subscription then change status inactive
 
           */
-
-          // console.log({ t: event?.object });
           break;
         default:
           throw Error(`Unhandled Event ${event?.type}`);
       }
+      return res.status(200);
     } catch (error: any) {
-      console.log({ error: error?.message });
       res.end();
     }
   }
@@ -88,92 +84,104 @@ export default class StripeController {
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    console.log({ user });
-    const customer = { id: 'cus_MmFmzIoo37naDl' };
-    // const customer = await new StripeServices().createCustomer('bninz@gmail.com', 'bninz Doe');
+    if (!user?.stripeId) {
+      return res.status(400).json({ success: false, message: 'User stripeId not found' });
+    }
     try {
-      // var a = moment().add(7, 'days');
-      // var b = moment().endOf('month');
+      const subscriptions = (
+        await new StripeServices().getCustomerSubscriptions({
+          customer: user.stripeId,
+          status: 'all',
+        })
+      )?.data;
+      const free_trial = subscriptions?.filter((itm: any) => itm?.metadata?.is_free_trial)[0];
+      const free_trial_end_date = free_trial?.canceled_at;
+      const end_month = moment(new Date(moment().endOf('month').endOf('day').format('YYYY-MM-DD hh:mm:ss')));
+      const days_difference = Math.abs(end_month.diff(moment.unix(free_trial_end_date), 'days'));
       // const days_due = Math.abs(a.diff(b, 'days')) + 7;
       // const data = {
-      //   customerId: customer.id,
+      //   customerId: user.stripeId,
       //   planId: id,
       //   billing_cycle_anchor: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
       //   collection_method: 'send_invoice',
       //   due_date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
       //   proration_behavior: 'create_prorations',
       // };
-      // const scheduleData = {
-      //   customer: customer.id,
-      //   // start_date: moment().add(2, 'days').unix(), //start date of subsc schedule
-      //   start_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
-      //     .endOf('day')
-      //     .unix(),
-      //   end_behavior: 'release',
-      //   phases: [
-      //     // {
-      //     //   items: [
-      //     //     {
-      //     //       price: id,
-      //     //     },
-      //     //   ],
-      //     //   proration_behavior: 'create_prorations',
-      //     //   // start_date: moment().add(2, 'days').unix(),
-      //     //   end_date: moment().endOf('month').unix(),
-      //     //   invoice_settings: { days_until_due: 22 },
+      const scheduleData = {
+        customer: user.stripeId,
+        start_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+          .endOf('day')
+          .unix(), //start date of subsc schedule
+        // start_date:free_trial_end_date,
+        end_behavior: 'release',
+        phases: [
+          // {
+          //   items: [
+          //     {
+          //       price: id,
+          //     },
+          //   ],
+          //   proration_behavior: 'create_prorations',
+          //   // start_date: moment().add(2, 'days').unix(),
+          //   end_date: moment().endOf('month').unix(),
+          //   invoice_settings: { days_until_due: 22 },
 
-      //     //   collection_method: 'send_invoice',
-      //     // },
-      //     {
-      //       items: [
-      //         {
-      //           price: id,
-      //         },
-      //       ],
-      //       proration_behavior: 'create_prorations',
-      //       collection_method: 'send_invoice',
-      //       invoice_settings: { days_until_due: 7 },
-
-      //       // start_date:moment().add(2, 'days').unix(),
-      //       // end_date:moment().endOf('month').unix(),
-      //     },
-      //   ],
-      // };
+          //   collection_method: 'send_invoice',
+          // },
+          {
+            items: [
+              {
+                price: id,
+              },
+            ],
+            proration_behavior: 'create_prorations',
+            collection_method: 'send_invoice',
+            invoice_settings: { days_until_due: 0 },
+            // start_date:moment().add(2, 'days').unix(),
+            // end_date:moment().endOf('month').unix(),
+          },
+        ],
+      };
 
       // //invoice
-      // const invoiceData = {
-      //   customer: customer.id,
-      //   collection_method: 'send_invoice',
-      //   due_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
-      //     .endOf('day')
-      //     .unix(),
-      // };
-
-      // let plan = await new StripeServices().getPlan(id);
-      // plan.amount = (plan.amount / 30) * 20;
-      // const product = await new StripeServices().getProduct(plan.product);
-      // const invoiceItemData = {
-      //   customer: customer.id,
-      //   unit_amount_decimal: plan.amount,
-      //   currency: plan.currency,
-      //   description: product.name,
-      //   period: {
-      //     start: moment().add(2, 'days').unix(), //free trial end-date
-      //     end: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
-      //       .endOf('day')
-      //       .unix(),
-      //   },
-      // };
-      // const invoice_item = await new StripeServices().createInvoiceItem(invoiceItemData);
-      // const invoice = await new StripeServices().createInvoice(invoiceData);
-
-      // console.log({ scheduleData });
-      // const scheduleSubsc = await new StripeServices().createSubscriptionSchedule(scheduleData);
+      const invoiceData = {
+        customer: user.stripeId,
+        collection_method: 'send_invoice',
+        due_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+          .endOf('day')
+          .unix(),
+      };
+      let plan = free_trial?.items?.data[0]?.plan;
+      plan.amount = (plan.amount / 30) * days_difference;
+      const product = await new StripeServices().getProduct(plan.product);
+      const invoiceItemData = {
+        customer: user.stripeId,
+        unit_amount_decimal: plan.amount,
+        currency: plan.currency,
+        description: product.name,
+        period: {
+          start: free_trial_end_date, //free trial end-date
+          end: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+            .endOf('day')
+            .unix(),
+        },
+      };
+      const invoice_item = await new StripeServices().createInvoiceItem(invoiceItemData);
+      const invoice = await new StripeServices().createInvoice(invoiceData);
+      if (invoice?.id) {
+        await new StripeServices().finalizeInvoice(invoice?.id);
+      }
+      const scheduleSubsc = await new StripeServices().createSubscriptionSchedule(scheduleData);
+      // const upcoming_invoice = await new StripeServices().getCustomerUpcomingInvoices(user.stripeId);
       return res.status(200).json({
         success: true,
-        // scheduleSubsc,
-        // invoice,
-        // invoice_item,
+        scheduleSubsc,
+        invoice,
+        invoice_item,
+        subscriptions,
+        invoiceData,
+        invoiceItemData,
+
         message: 'Successfully subscribe to Plan',
       });
     } catch (error) {
@@ -183,10 +191,24 @@ export default class StripeController {
     }
   }
 
-  public async getInvoices(req:any,res:any){
-    const {sk,pk}=req.body
-    const user=(await new UserServices().getUserData({sk,pk}))?.Item
-    
-    // const invoices=await new StripeServices().getInvoices()
+  public async getInvoices(req: any, res: any) {
+    const { sk, pk } = req.body;
+    try {
+      const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+      // const user = { stripeId: 'cus_MmGRnFLxM7rmJl' };
+      if (!user?.stripeId) {
+        return res
+          .status(404)
+          .json({ success: false, message: 'Something went wrong', error: 'User Stripe Id not found' });
+      }
+      const data = {
+        customer: user?.stripeId,
+        limit: 10,
+      };
+      const invoices = await new StripeServices().getInvoices(data);
+      return res?.status(200).json({ success: true, invoices, message: 'Successfully fetched invoices' });
+    } catch (error) {
+      return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
+    }
   }
 }

@@ -21,3 +21,9 @@ export interface FreeTrial {
   pk: string;
   sk: string;
 }
+
+export interface RetrieveInvoices {
+  customer: string;
+  limit?: number;
+  getAll?: boolean;
+}

@@ -3,8 +3,7 @@ import moment from 'moment';
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
 import { dynamoDB, TableName } from '../Utils/dynamoDB';
-import { Plan, PricingPlan, FreeTrial } from 'Interfaces/stripeInterfaces';
-import { SignupServices } from './SignupServices';
+import { Plan, PricingPlan, FreeTrial, RetrieveInvoices } from 'Interfaces/stripeInterfaces';
 export default class StripeServices {
   public async getPricingPlans(data: PricingPlan) {
     let { active = true, plan_type, name, getAll = true } = data;
@@ -91,6 +90,9 @@ export default class StripeServices {
       const seven_days = moment().add(7, 'days').endOf('day').unix();
       data.trial_end = seven_days;
       data.cancel_at = seven_days;
+      data.metadata = {
+        is_free_trial: true,
+      };
     } else {
       data.billing_cycle_anchor = billing_cycle_anchor;
       data.collection_method = collection_method;
@@ -98,7 +100,6 @@ export default class StripeServices {
       data.proration_behavior = proration_behavior;
       // data.due_date = due_date;
     }
-    console.log({ data });
     const subscription = await stripe.subscriptions.create(data);
     return subscription;
     //TODO WITHOUT FREE TRIAL
@@ -138,7 +139,6 @@ export default class StripeServices {
   }
 
   public async createInvoice(data: any) {
-    console.log({ invoice_data: data });
     const invoice = await stripe.invoices.create(data);
     return invoice;
   }
@@ -148,12 +148,10 @@ export default class StripeServices {
     return invoiceItem;
   }
   public async createInvoiceItem(data: any) {
-    console.log({ invoiceitem_data: data });
     const invoice = await stripe.invoiceItems.create(data);
     return invoice;
   }
   public async updateInvoice(id: string, data: any) {
-    console.log({ invoiceitem_data: data });
     const invoice = await stripe.invoices.update(id, data);
     return invoice;
   }
@@ -167,7 +165,39 @@ export default class StripeServices {
     return product;
   }
 
-  public async getInvoices(stripeId:string){
-    // const invoices=await stripe.invoice()
+  public async getInvoices(data: RetrieveInvoices) {
+    let query = { customer: data.customer, limit: data?.limit ?? 10 };
+    if (data?.getAll) {
+      data.limit = 100;
+    }
+    const invoices = await stripe.invoices.list(query);
+    return invoices;
+  }
+
+  public async getStripeCustomer(id: string) {
+    const customer = await stripe.customers.retrieve(id);
+    return customer;
+  }
+  public async getCustomerSubscriptions(data: any) {
+    const { customer, status } = data;
+
+    let payload: any = {
+      customer,
+      status,
+    };
+    const subscriptions = await stripe.subscriptions.list(payload);
+    return subscriptions;
+  }
+
+  public async getCustomerUpcomingInvoices(id: string) {
+    const invoice = await stripe.invoices.retrieveUpcoming({
+      customer: id,
+    });
+    return invoice;
+  }
+
+  public async finalizeInvoice(id: string) {
+    const invoice = await stripe.invoices.finalizeInvoice(id, { auto_advance: false });
+    return invoice;
   }
 }
