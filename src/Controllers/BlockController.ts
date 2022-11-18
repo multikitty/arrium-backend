@@ -1,9 +1,12 @@
 const _ = require('underscore');
+const axios = require('axios');
+
 import  moment from "moment";
 import NotificationServices from "../Services/NotificationServices";
 import BlockServices from "../Services/BlocksServices";
 import MailServices from "../Services/MailServices";
 import UserServices from "../Services/UserServices";
+import { Request, response, Response } from "express";
 export default class BlockController {
  
   /**
@@ -45,7 +48,7 @@ export default class BlockController {
     let batchNumber = 1;
     let userDetails = null;
     let blockList = request.body.blockItems;
-   
+    
     // fetch user details
     await new UserServices().getUserData(request.body).then((result) => {
       if (result.Item) {
@@ -81,6 +84,7 @@ export default class BlockController {
           let blockList = request.body.blockItems;
           let batchSize = 25;
           let batchItemsList = [];
+          let allBlocksData : any[] = [];
           let failedItems : any[] = []
           // loop through block list
           for (let i = 0; i < blockList.length; i++) {
@@ -128,6 +132,27 @@ export default class BlockController {
                 },
               },
             };
+            // add block items to all block data array
+            let blockData = {
+              pk: request.body.pk,
+              sk: blockSk,
+              bDay: blockDay,
+              bDate: newBlockDate,
+              Status: block.status,
+              duration: duration,
+              price: block.price,
+              bStartTime: startTime,
+              bEndTime: endTime,
+              stationCode: block.stationCode,
+              stationName: block.stationName,
+              currency: block.currency,
+              offerID: block.offerId,
+              surgeMultiplier: block.surgeMultiplier,
+              projectedTips: block.projectedTips,
+              priorityOffer: block.priorityOffer,
+              expDate: block.bEndTime
+            }
+            allBlocksData.push(blockData)
             // add block item in array
             batchItemsList.push(blockItem)
             if(batchItemsList.length === batchSize || i+1 === blockList.length) {
@@ -145,6 +170,9 @@ export default class BlockController {
                   // Update batch number
                   await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
                     if(result.Attributes) {
+                      // update frontend client with socket io event
+                      request.app.get("socketService").emit('block-data-udpated', {data : allBlocksData});
+                      // success response
                       response.status(200);
                       response.send({
                         success: true,
@@ -252,13 +280,73 @@ export default class BlockController {
     });
   }
 
-  // /**
-  //   * blockSearchStart
-  //   */
-  // public blockSearchStart(request: any, response: any) {
-   
-
-    
-  // }
+  /**
+    * blockSearchStart
+    */
+  public async blockSearchStart(req : Request, res : Response) {
+    await  axios.post(`${process.env.AUTMATION_TOOL_BASE_URL}run-task/`, {
+      user_pk : req.body.pk,
+      user_sk : req.body.sk
+    }, {
+      headers: {
+        'Authorization': `${process.env.AUTOMATION_TOOL_KEY}` //python app api key
+      }
+    }).then((result : any) => {
+      if(result.data.status === true &&  result?.data?.data?.status_code === 100 || result?.data?.data?.status_code === 102) {
+        res.status(200);
+        res.send({
+          success: true,
+          message: "Search started!",
+          taskStatus : result.data.data.status_code, 
+          taskId : result?.data?.data?.task_id 
+        });  
+      } else {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
+    }).catch((error : any) => {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });  
+    });
+  }
+  
+  /**
+    * blockSearchStop
+    */
+  public async blockSearchStop(req : Request, res : Response) {
+    await  axios.get(`${process.env.AUTMATION_TOOL_BASE_URL}stop-task/${req.params.taskId}`, {
+      headers: {
+        'Authorization': `${process.env.AUTOMATION_TOOL_KEY}` //python app api key
+      }
+    }).then((result : any) => {
+      if(result.data.status === true) {
+        res.status(200);
+        res.send({
+          success: true,
+          message: "Search stopped!"
+        });  
+      } else {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
+    }).catch((error : any) => {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });  
+    });
+  }
   
 }
