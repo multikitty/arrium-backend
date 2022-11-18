@@ -184,8 +184,8 @@ export const authSchema = {
 
   updateProfile: [
     body("fieldName")
-    .isIn(['firstname', 'lastname', 'tzName'])
-    .withMessage('Field Name must be firstname | lastname | tzName'),
+    .isIn(['firstname', 'lastname', 'tzName', "amzCustomerId"])
+    .withMessage('Field Name must be any of them firstname | lastname | tzName | amzCustomerId'),
     body("fieldValue")
       .trim()
       .not()

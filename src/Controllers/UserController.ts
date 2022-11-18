@@ -470,8 +470,48 @@ export default class UserController {
   /**
    * updateAccountApproveStatus
    */
-  public async updateAccountApproveStatus(req: Request, res: Response) {
-    
+  public async sendAccountSetupMail(req: Request, res: Response) {
+    let data = {
+      sk : req.body.userSK,
+      pk : req.body.userPK
+    }
+    // fetch user details
+    await new UserServices().getUserData(data).then(async (result) => {
+      if (result.Item) {
+        // Set user details
+        let userDetails = {
+          userName : result.Item.firstname,
+          userEmail : result.Item.email
+        }
+        await new MailServices().accountSetupMail(userDetails).then((result) => {
+          res.status(200);
+          res.send({
+            success: true,
+            message: "Account configured mail sent.",
+          });
+        }).catch((error) => {
+          res.status(500);
+          res.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error : error
+          });
+        });
+      } else {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong, please try after sometime."
+        });
+      }
+    }).catch((error : any) => {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error : error
+      });
+    })  
   }
 
 }

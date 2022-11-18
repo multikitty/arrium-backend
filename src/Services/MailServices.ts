@@ -20,6 +20,23 @@ export default class MailServices {
     return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
   }
 
+  async accountSetupMail(data: any) {
+    const msgData = {
+      type : "mail",
+      data : {
+        to : data.userEmail,
+        from : 'notification@arrium.io',
+        replyTo : [],
+        subject : `Account Configured`,
+        message : `
+            Dear ${data.userName}, <br/>
+            Your account has been configured and you can begin using Arrium to start booking your blocks with Amazon Flex.
+          `
+      }
+    }
+    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+  }
+
   async sendMailEmailVerification(data: any) {
     const msgData = {
       type : "mail",

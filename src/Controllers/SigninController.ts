@@ -49,11 +49,16 @@ export const SigninController = {
                       data: responseData,
                     });
                   } else {
-                    response.status(500);
+                    let responseData = {
+                      userData : userData,
+                      flexData : []
+                    }
+                    response.status(200);
                     response.send({
-                      success: false,
-                      message: "Something went wrong, please try after sometime."
-                    });  
+                      success: true,
+                      message: 'Getting login data!',
+                      data: responseData,
+                    }); 
                   }
                 }).catch((error) => {
                   response.status(500);
