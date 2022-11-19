@@ -21,7 +21,7 @@ router.put("/flex-details/update", authentication("admin"), new FlexValidation()
 
 router.put("/update-account-info", authentication("admin"), new UserController().updateAccountInfo);
 
-router.post("/approve-account", authentication("admin"), new UserController().updateAccountApproveStatus);
+router.post("/approve-account", authentication("admin"), new UserController().sendAccountSetupMail);
 
 router.post(
   "/request-verify-email",

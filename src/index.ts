@@ -1,5 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
+// socket io
+const http = require("http")
+const socketio = require("socket.io")
 //config env
 import dotenv from 'dotenv';
 dotenv.config();
@@ -48,9 +51,26 @@ app.use('/v1/stripe', stripe);
 app.use('/v1/templates', sesTemplates);
 
 
+
 // Handling 404 Page Not Found
 app.use((req, res, next) => {
   res.status(404).send('<h1>Page not found on the server</h1>');
+}); 
+
+// Create server
+const httpServer  = http.createServer(app)
+// socket io testing 
+export const server = new socketio.Server(httpServer, {
+  cors : {
+    origin : "*"
+  }
+})
+
+//check client connection
+server.on("connection", (socket : any) => {
+  //Socket is a Link to the Client 
+  console.log("New Client is Connected!");
+  app.set("socketService", socket);
 });
 
-app.listen(9000);
+httpServer.listen(9000);
