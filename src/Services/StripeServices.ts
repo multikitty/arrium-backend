@@ -5,8 +5,19 @@ const stripe = Stripe(process.env.STRIPE_SECRET);
 import { dynamoDB, TableName } from '../Utils/dynamoDB';
 import { Plan, PricingPlan, FreeTrial, RetrieveInvoices } from 'Interfaces/stripeInterfaces';
 export default class StripeServices {
+  private getCountry(country: string) {
+    switch (country) {
+      case 'United Kingdom':
+        return 'gbp';
+      case 'United Kingdom':
+        return 'gbp';
+      default:
+        return 'gbp';
+    }
+  }
   public async getPricingPlans(data: PricingPlan) {
-    let { active = true, plan_type, name, getAll = true } = data;
+    let { active = true, plan_type = 'basic', name, getAll = true, country } = data;
+    const currency = this.getCountry(country);
     if (typeof active == 'string') {
       if (active == 'true') {
         active = true;
@@ -19,43 +30,48 @@ export default class StripeServices {
       if (!active) {
         query = `active:"false"`;
       }
-      if (plan_type && !active) {
-        query = `active:"false" AND metadata["plan_type"]:"${plan_type}"`;
-      }
-      if (plan_type && active) {
-        query = `active:"true" AND metadata["plan_type"]:"${plan_type}"`;
-      }
+
       if (name && !active) {
         query = `active:"false" AND metadata["name"]:"${name}"`;
       }
       if (name && active) {
         query = `active:"true" AND metadata["name"]:"${name}"`;
       }
-      if (plan_type && name && !active) {
-        query = `active:"false" AND metadata["plan_type"]:"${plan_type}" AND metadata["name"]:"${name}"`;
-      }
-      if (plan_type && name && active) {
-        query = `active:"true" AND metadata["plan_type"]:"${plan_type}" AND metadata["name"]:"${name}"`;
-      }
     }
     let products = await stripe.products.search({
       query: query,
     });
-    let prices = await stripe.prices.list({
-      limit: 50,
+
+    let prices = await stripe.prices.search({
+      query: `active:\'true\' AND metadata[\'plan type\']:"${plan_type}" AND currency:"${currency}"`,
     });
     prices = prices?.data?.map((itm: any) => ({ ...itm, converted_amount: itm?.unit_amount / 100 }));
     products = products?.data?.map((prod: any) => {
-      const filtered_price = prices?.filter((itm: any) => itm?.id === prod?.default_price)[0];
-      return { ...prod, price: filtered_price };
+      const filtered_price = prices?.filter((itm: any) => itm?.product === prod?.id)[0];
+      const structured_data = {
+        prod_id: prod.id,
+        prod_name: prod?.name,
+        active: prod?.active,
+        prod_description: prod?.description,
+        prod_meta: prod?.metadata,
+        price: {
+          id: filtered_price?.id,
+          currency: filtered_price?.currency,
+          meta_data: filtered_price?.metadata ?? { 'plan type': null },
+          amount: filtered_price?.converted_amount,
+        },
+      };
+      return structured_data;
     });
+    products = products?.filter((prod: any) => prod?.price?.meta_data['plan type'] === plan_type);
     return products;
   }
 
-  public async createCustomer(email: string, name: string) {
+  public async createCustomer(email: string, name: string, customerId: number) {
     const customer = await stripe.customers.create({
       email,
       name,
+      invoice_prefix: `00${customerId}`,
     });
     return customer;
   }

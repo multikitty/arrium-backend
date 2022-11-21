@@ -5,19 +5,34 @@ import { SignupServices } from '../Services/SignupServices';
 import StripeServices from '../Services/StripeServices';
 
 export default class StripeController {
-  async getPricingPlans(req: any, res: any) {
-    const { getAll = false, active = true, name = '', plan_type } = req.query;
+  async createStripeCustomer(req: any, res: any) {
+    const { sk, pk } = req.body;
     try {
-      const data = await new StripeServices().getPricingPlans({ getAll, active, name, plan_type });
+      const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+      const stripeCust = await new StripeServices().createCustomer(
+        'nina@arrium.com',
+        'Nina Williams',
+        exis_user?.customerID
+      );
+      const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeId', fieldValue: stripeCust?.id });
+      return res.status(200).json({ exis_user, stripeCust, cus });
+    } catch (err) {
+      return res.status(500).json({ error: err, message: 'Something went wrong' });
+    }
+  }
+  async getPricingPlans(req: any, res: any) {
+    const { getAll = false, active = true, name = '', plan_type, country } = req.query;
+    try {
+      const data = await new StripeServices().getPricingPlans({ getAll, active, name, plan_type, country });
       return res.status(200).json({ data, error: false, message: 'Successfully fetched pricing plans' });
     } catch (err: any) {
       return res.status(500).json({ error: true, message: err?.message });
     }
   }
 
-  async createCustomerStripe(email: string, name: string) {
+  async createCustomerStripe(email: string, name: string, customerId: number) {
     try {
-      const res = await new StripeServices().createCustomer(email, name);
+      const res = await new StripeServices().createCustomer(email, name, customerId);
       return res;
     } catch (error: any) {
       throw Error(error?.message);
@@ -39,7 +54,7 @@ export default class StripeController {
           */
           break;
         default:
-          throw Error(`Unhandled Event ${event?.type}`);
+        // throw Error(`Unhandled Event ${event?.type}`);
       }
       return res.status(200);
     } catch (error: any) {
@@ -51,29 +66,35 @@ export default class StripeController {
     const { pk, sk } = data;
     //create stripe Customer id
     const {
-      Item: { firstname, lastname, email },
-    }: any = await SignupServices.signupSendMailService({
+      Item: { firstname, lastname, email, customerID },
+    }: any = await new UserServices().getUserData({
       pk,
       sk,
     });
-    const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`);
+    console.log({ firstname, lastname, customerID, email });
+    const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
     //get all areas plan id from stripe
-    let plans = await new StripeServices().getPricingPlans({
+    let plans: any = await new StripeServices().getPricingPlans({
       active: true,
       getAll: false,
-      plan_type: 'Basic',
+      plan_type: 'basic',
       name: 'All Areas',
+      country: 'UK',
     });
+    console.log({ plans });
     if (!plans?.length) {
       throw Error('Plan not found');
     }
-    plans = plans[0]?.default_price;
+    plans = plans[0]?.price?.id;
+    console.log({ planid: plans });
     await new StripeServices().subscribeToPlan({ customerId: stripe_customer.id, planId: plans, isFreeTrial: true });
+
     const user = await new StripeServices().updateStripeClientId({
       pk,
       sk,
       stripeId: stripe_customer.id,
     });
+    console.log({ user });
     return user;
   }
   public async onSelectPlan(req: any, res: any) {
@@ -193,6 +214,7 @@ export default class StripeController {
 
   public async getInvoices(req: any, res: any) {
     const { sk, pk } = req.body;
+    const { page } = req.params;
     try {
       const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
       // const user = { stripeId: 'cus_MmGRnFLxM7rmJl' };
@@ -204,9 +226,30 @@ export default class StripeController {
       const data = {
         customer: user?.stripeId,
         limit: 10,
+        page: 1,
       };
+      if (page > 1) {
+        data.page = Number(page);
+      }
       const invoices = await new StripeServices().getInvoices(data);
-      return res?.status(200).json({ success: true, invoices, message: 'Successfully fetched invoices' });
+      const invoices_data = invoices?.data?.map((invoice: any) => {
+        const data = {
+          id: invoice?.id,
+          description: invoice?.lines?.data[0]?.description,
+          amount_due: invoice?.amount_due ? invoice?.amount_due / 100 : 0,
+          due_date: invoice?.due_date ? moment.unix(invoice?.due_date).format('MMM DD,YYYY') : null,
+          paid_at: invoice?.status_transitions?.paid_at
+            ? moment.unix(invoice?.status_transitions?.paid_at).format('MMM DD,YYYY')
+            : null,
+          invoice_url: invoice?.hosted_invoice_url,
+          paid_status: invoice?.paid ? 'paid' : invoice,
+          period_start: invoice?.period_start ? moment.unix(invoice?.period_start).format('MMM DD,YYYY') : null,
+          period_end: invoice?.period_end ? moment.unix(invoice?.period_end).format('MMM DD,YYYY') : null,
+        };
+        return data;
+      });
+      const response = { invoices_data, has_more: invoices?.has_more };
+      return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
     }

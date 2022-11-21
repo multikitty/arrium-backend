@@ -1,8 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 // socket io
-const http = require("http")
-const socketio = require("socket.io")
+const http = require('http');
+const socketio = require('socket.io');
 //config env
 import dotenv from 'dotenv';
 dotenv.config();
@@ -22,6 +22,7 @@ import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
 import sesTemplates from './routes/sesTemplates';
+import StripeController from './Controllers/StripeController';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -50,27 +51,34 @@ app.use('/v1/automation-tool', automationTool);
 app.use('/v1/stripe', stripe);
 app.use('/v1/templates', sesTemplates);
 
-
-
 // Handling 404 Page Not Found
 app.use((req, res, next) => {
   res.status(404).send('<h1>Page not found on the server</h1>');
-}); 
+});
 
 // Create server
-const httpServer  = http.createServer(app)
-// socket io testing 
+const httpServer = http.createServer(app);
+// socket io testing
 export const server = new socketio.Server(httpServer, {
-  cors : {
-    origin : "*"
-  }
-})
+  cors: {
+    origin: '*',
+  },
+});
 
 //check client connection
-server.on("connection", (socket : any) => {
-  //Socket is a Link to the Client 
-  console.log("New Client is Connected!");
-  app.set("socketService", socket);
+server.on('connection', (socket: any) => {
+  //Socket is a Link to the Client
+  console.log('New Client is Connected!');
+  app.set('socketService', socket);
 });
+
+// new StripeController()
+//   .subscribeToFreeTrial({ sk: 'driver#900030', pk: 'UK-900030' })
+//   .then((res) => {
+//     console.log({ res });
+//   })
+//   .catch((err) => {
+//     console.log({ err });
+//   });
 
 httpServer.listen(9000);

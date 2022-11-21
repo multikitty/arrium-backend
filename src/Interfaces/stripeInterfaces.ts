@@ -3,6 +3,7 @@ export interface PricingPlan {
   getAll: boolean;
   plan_type?: string;
   active: boolean | string;
+  country: string;
 }
 
 export interface Plan {
