@@ -71,7 +71,7 @@ export default class StripeServices {
     const customer = await stripe.customers.create({
       email,
       name,
-      invoice_prefix: `00${customerId}`,
+      invoice_prefix: customerId,
     });
     return customer;
   }

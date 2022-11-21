@@ -70,7 +70,6 @@ export default class StripeController {
       }
       return res.status(200);
     } catch (error: any) {
-      console.log({error})
       res.end();
     }
   }
@@ -84,7 +83,6 @@ export default class StripeController {
       pk,
       sk,
     });
-    console.log({ firstname, lastname, customerID, email });
     const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
     //get all areas plan id from stripe
     let plans: any = await new StripeServices().getPricingPlans({
@@ -94,12 +92,10 @@ export default class StripeController {
       name: 'All Areas',
       country: 'UK',
     });
-    console.log({ plans });
     if (!plans?.length) {
       throw Error('Plan not found');
     }
     plans = plans[0]?.price?.id;
-    console.log({ planid: plans });
     await new StripeServices().subscribeToPlan({ customerId: stripe_customer.id, planId: plans, isFreeTrial: true });
 
     const user = await new StripeServices().updateStripeClientId({
@@ -107,7 +103,6 @@ export default class StripeController {
       sk,
       stripeId: stripe_customer.id,
     });
-    console.log({ user });
     return user;
   }
   public async onSelectPlan(req: any, res: any) {
@@ -227,10 +222,9 @@ export default class StripeController {
 
   public async getInvoices(req: any, res: any) {
     const { sk, pk } = req.body;
-    const { page } = req.params;
+    const { page=1 } = req.query;
     try {
       const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
-      // const user = { stripeId: 'cus_MmGRnFLxM7rmJl' };
       if (!user?.stripeId) {
         return res
           .status(404)
@@ -239,15 +233,18 @@ export default class StripeController {
       const data = {
         customer: user?.stripeId,
         limit: 10,
-        page: 1,
+        page:Number(page),
       };
       if (page > 1) {
         data.page = Number(page);
       }
       const invoices = await new StripeServices().getInvoices(data);
+
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
+          invoice_no:invoice?.number,
+          stripe_id:invoice?.customer,
           description: invoice?.lines?.data[0]?.description,
           amount_due: invoice?.amount_due ? invoice?.amount_due / 100 : 0,
           due_date: invoice?.due_date ? moment.unix(invoice?.due_date).format('MMM DD,YYYY') : null,
@@ -256,12 +253,56 @@ export default class StripeController {
             : null,
           invoice_url: invoice?.hosted_invoice_url,
           paid_status: invoice?.paid ? 'paid' : invoice,
-          period_start: invoice?.period_start ? moment.unix(invoice?.period_start).format('MMM DD,YYYY') : null,
-          period_end: invoice?.period_end ? moment.unix(invoice?.period_end).format('MMM DD,YYYY') : null,
+          period_start: invoice?.lines?.data[0]?.period?.start ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY') : null,
+          period_end:invoice?.lines?.data[0]?.period?.end ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY') : null,
         };
         return data;
       });
-      const response = { invoices_data, has_more: invoices?.has_more };
+      const response = { data:invoices_data, has_more: invoices?.has_more,invoices};
+      return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
+    } catch (error) {
+      return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
+    }
+  }
+  public async getInvoicesAdmin(req: any, res: any) {
+    const { stripeId } = req.params;
+    const { page=1 } = req.query;
+    try {
+      let user:any = (await new UserServices().getUserByStripeId({ stripeId}))?.Items
+      user=user[0]
+      if (!user?.stripeId) {
+        return res
+          .status(404)
+          .json({ success: false, message: 'Something went wrong', error: 'User Stripe Id not found' });
+      }
+      const data = {
+        customer: user?.stripeId,
+        limit: 10,
+        page: Number(page),
+      };
+      if (page > 1) {
+        data.page = Number(page);
+      }
+      const invoices = await new StripeServices().getInvoices(data);
+      const invoices_data = invoices?.data?.map((invoice: any) => {
+        const data = {
+          id: invoice?.id,
+          invoice_no:invoice?.number,
+          stripe_id:invoice?.customer,
+          description: invoice?.lines?.data[0]?.description,
+          amount_due: invoice?.amount_due ? invoice?.amount_due / 100 : 0,
+          due_date: invoice?.due_date ? moment.unix(invoice?.due_date).format('MMM DD,YYYY') : null,
+          paid_at: invoice?.status_transitions?.paid_at
+            ? moment.unix(invoice?.status_transitions?.paid_at).format('MMM DD,YYYY')
+            : null,
+          invoice_url: invoice?.hosted_invoice_url,
+          paid_status: invoice?.paid ? 'paid' : invoice,
+          period_start: invoice?.lines?.data[0]?.period?.start ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY') : null,
+          period_end:invoice?.lines?.data[0]?.period?.end ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY') : null,
+        };
+        return data;
+      });
+      const response = { invoices_data, has_more: invoices?.has_more,invoices };
       return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });

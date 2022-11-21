@@ -22,7 +22,6 @@ import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
 import sesTemplates from './routes/sesTemplates';
-import StripeController from './Controllers/StripeController';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -71,14 +70,5 @@ server.on('connection', (socket: any) => {
   console.log('New Client is Connected!');
   app.set('socketService', socket);
 });
-
-// new StripeController()
-//   .subscribeToFreeTrial({ sk: 'driver#900030', pk: 'UK-900030' })
-//   .then((res) => {
-//     console.log({ res });
-//   })
-//   .catch((err) => {
-//     console.log({ err });
-//   });
 
 httpServer.listen(9000);
