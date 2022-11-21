@@ -20,6 +20,7 @@ export const SignupServices = {
           accountStatus: 'active',
           planType: 'basic',
           region : "",
+          otp : "",
           country: data.country
         },
         TableName: TableName,
@@ -35,7 +36,7 @@ export const SignupServices = {
           sk: data.sk,
           pk: data.pk,
         },
-        UpdateExpression: `set firstname = :firstname, lastname= :lastname, country= :country, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
+        UpdateExpression: `set firstname = :firstname, lastname= :lastname, country= :country, otp= :otp, dialCode= :dialCode, phoneNumber= :phoneNumber, tzName = :tzName, currentSteps= :currentSteps`,
         ExpressionAttributeValues: {
           ':firstname': data.firstname,
           ':lastname': data.lastname,
@@ -43,6 +44,7 @@ export const SignupServices = {
           ':dialCode': data.dialCode,
           ':phoneNumber': data.phoneNumber,
           ':tzName': data.tzName,
+          ':otp': data.otp,
           ':currentSteps': 'otp',
         },
         ReturnValues: 'ALL_NEW',
@@ -107,7 +109,7 @@ export const SignupServices = {
           pk: data.pk,
           sk: data.sk,
         },
-        AttributesToGet: ['firstname', 'lastname', 'email'],
+        AttributesToGet: ['firstname', 'lastname', 'email', 'otp'],
       })
       .promise();
   },

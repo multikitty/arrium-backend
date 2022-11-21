@@ -4,7 +4,7 @@ import companyIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
 import { SignupServices } from '../Services/SignupServices';
 import UserServices from '../Services/UserServices';
-import StripeServices from '../Services/StripeServices';
+import NotificationServices from '../Services/NotificationServices';
 
 export const SignupController = {
   // Signup Step 1
@@ -109,12 +109,23 @@ export const SignupController = {
   // Signup Step 2
   signupAccountInfo: async (request: any, response: any) => {
     try {
-      await SignupServices.AccountInfoService(request.body).then((result) => {
-        response.status(200);
-        response.send({
-          success: true,
-          message: 'Account information updated successfully',
-        });
+      // generate otp
+      request.body.otp = Math.floor(Math.random() * 9000 + 1000);
+      let userPhone = request.body.dialCode+""+request.body.phoneNumber
+      await SignupServices.AccountInfoService(request.body).then(async (result) => {
+        await new NotificationServices().sendOTPSMS({otp : request.body.otp, userPhoneNumber : userPhone }).then(() => {
+          response.status(200);
+          response.send({
+            success: true,
+            message: 'Account information updated successfully',
+          });
+        }).catch(() => {
+          response.status(500);
+          response.send({
+            success: false,
+            message: 'Something went wrong, please try after sometime.',
+          });
+        })
       });
     } catch (error) {
       response.status(500);
@@ -129,13 +140,31 @@ export const SignupController = {
   // Signup Step 3
   signupOTPConfirmation: async (request: any, response: any) => {
     try {
-      if (request.body.otp === '1234') {
-        await SignupServices.SignupOTPConfirmationService(request.body).then((result) => {
-          if (result) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: 'OTP verified successfully!',
+      // fetch user details
+      await new UserServices().getUserData(request.body).then(async (result) => {
+        if (result.Item) {
+          if(Number(result.Item.otp) === Number(request.body.otp)) {
+            await SignupServices.SignupOTPConfirmationService(request.body).then((result) => {
+              if (result) {
+                response.status(200);
+                response.send({
+                  success: true,
+                  message: 'OTP verified successfully!',
+                });
+              } else {
+                response.status(200);
+                response.send({
+                  success: false,
+                  message: 'Something went wrong, please try after sometime.',
+                });
+              }
+            }).catch((error) => {
+              response.status(500);
+              response.send({
+                success: false,
+                message: 'Something went wrong, please try after sometime.',
+                error: error,
+              });
             });
           } else {
             response.status(200);
@@ -144,14 +173,15 @@ export const SignupController = {
               message: 'Incorrect OTP. Please try again, or go back to re-enter your number',
             });
           }
-        });
-      } else {
-        response.status(200);
+        }
+      }).catch((error) => {
+        response.status(500);
         response.send({
           success: false,
-          message: 'Incorrect OTP. Please try again, or go back to re-enter your number',
+          message: 'Something went wrong, please try after sometime.',
+          error: error,
         });
-      }
+      })
     } catch (error) {
       response.status(500);
       response.send({
