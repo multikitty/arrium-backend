@@ -46,18 +46,31 @@ export default class StripeController {
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
+      const data=event?.data?.object
+      const stripeId=data?.customer;
+      console.log({event_type,data})
+
       switch (event_type) {
         case 'customer.subscription.deleted':
           /*check if current ended subscription is of free trial
             if free trial and not subscribed to any other subscription then change status inactive
 
           */
+        //  const trial_end=data?.trial_end
+         const trial_end=data?.start_date
+         console.log({t:moment.unix(trial_end)})
+
+         if(moment.unix(trial_end) <= moment()){
+          //show plan page
+          // const user=await new UserServices().getUserData()
+         }
           break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
       }
       return res.status(200);
     } catch (error: any) {
+      console.log({error})
       res.end();
     }
   }
