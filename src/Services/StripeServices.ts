@@ -15,6 +15,15 @@ export default class StripeServices {
         return 'gbp';
     }
   }
+  public getPaidStatus(data: any) {
+    const { due_date, paid } = data;
+    if (paid) {
+      return 'paid';
+    } else if (!paid && moment().unix() > due_date) {
+      return 'due';
+    }
+    return 'overdue';
+  }
   public async getPricingPlans(data: PricingPlan) {
     let { active = true, plan_type = 'basic', name, getAll = true, country } = data;
     const currency = this.getCountry(country);
@@ -68,10 +77,11 @@ export default class StripeServices {
   }
 
   public async createCustomer(email: string, name: string, customerId: number) {
+    console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
       name,
-      invoice_prefix: customerId,
+      invoice_prefix: `${Math.floor(Math.random() * 100 + 1)}${customerId}`,
     });
     return customer;
   }

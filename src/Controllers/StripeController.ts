@@ -10,8 +10,8 @@ export default class StripeController {
     try {
       const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
       const stripeCust = await new StripeServices().createCustomer(
-        'nina@arrium.com',
-        'Nina Williams',
+        'zeus@arrium.com',
+        'Zeus Thunder',
         exis_user?.customerID
       );
       const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeId', fieldValue: stripeCust?.id });
@@ -46,9 +46,9 @@ export default class StripeController {
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
-      const data=event?.data?.object
-      const stripeId=data?.customer;
-      console.log({event_type,data})
+      const data = event?.data?.object;
+      const stripeId = data?.customer;
+      console.log({ event_type, data });
 
       switch (event_type) {
         case 'customer.subscription.deleted':
@@ -56,14 +56,28 @@ export default class StripeController {
             if free trial and not subscribed to any other subscription then change status inactive
 
           */
-        //  const trial_end=data?.trial_end
-         const trial_end=data?.start_date
-         console.log({t:moment.unix(trial_end)})
+          //  const trial_end=data?.trial_end
+          const trial_end = data?.start_date;
+          console.log({ t: moment.unix(trial_end) });
 
-         if(moment.unix(trial_end) <= moment()){
-          //show plan page
-          // const user=await new UserServices().getUserData()
-         }
+          if (moment.unix(trial_end) <= moment()) {
+            //show plan page
+            // const user=await new UserServices().getUserData()
+          }
+          break;
+        case 'invoice.created':
+          console.log({ lines: data?.lines?.data, price_obj: data?.lines?.data[0]?.price });
+          const plan_type = data?.lines?.data[0]?.price?.metadata['plan type'];
+          const productId = data?.lines?.data[0]?.price?.product;
+          const product = await new StripeServices().getProduct(productId);
+          const invoice_data = {
+            // Basic: All Areas (1st December 2022 - 31st December 2022)
+            description: `${plan_type?.capitalize()}: ${product?.name} (${moment
+              .unix(data?.lines?.data[0]?.period?.start)
+              .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
+          };
+          console.log({ invoice_data });
+          await new StripeServices().updateInvoice(data?.id, invoice_data);
           break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
@@ -181,6 +195,7 @@ export default class StripeController {
           .unix(),
       };
       let plan = free_trial?.items?.data[0]?.plan;
+      console.log({ plan });
       plan.amount = (plan.amount / 30) * days_difference;
       const product = await new StripeServices().getProduct(plan.product);
       const invoiceItemData = {
@@ -222,7 +237,7 @@ export default class StripeController {
 
   public async getInvoices(req: any, res: any) {
     const { sk, pk } = req.body;
-    const { page=1 } = req.query;
+    const { page = 1 } = req.query;
     try {
       const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
       if (!user?.stripeId) {
@@ -233,7 +248,7 @@ export default class StripeController {
       const data = {
         customer: user?.stripeId,
         limit: 10,
-        page:Number(page),
+        page: Number(page),
       };
       if (page > 1) {
         data.page = Number(page);
@@ -243,8 +258,8 @@ export default class StripeController {
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
-          invoice_no:invoice?.number,
-          stripe_id:invoice?.customer,
+          invoice_no: invoice?.number,
+          stripe_id: invoice?.customer,
           description: invoice?.lines?.data[0]?.description,
           amount_due: invoice?.amount_due ? invoice?.amount_due / 100 : 0,
           due_date: invoice?.due_date ? moment.unix(invoice?.due_date).format('MMM DD,YYYY') : null,
@@ -252,13 +267,17 @@ export default class StripeController {
             ? moment.unix(invoice?.status_transitions?.paid_at).format('MMM DD,YYYY')
             : null,
           invoice_url: invoice?.hosted_invoice_url,
-          paid_status: invoice?.paid ? 'paid' : invoice,
-          period_start: invoice?.lines?.data[0]?.period?.start ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY') : null,
-          period_end:invoice?.lines?.data[0]?.period?.end ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY') : null,
+          paid_status: new StripeServices().getPaidStatus({ paid: invoice?.paid, due_date: invoice?.due_date }),
+          period_start: invoice?.lines?.data[0]?.period?.start
+            ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY')
+            : null,
+          period_end: invoice?.lines?.data[0]?.period?.end
+            ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')
+            : null,
         };
         return data;
       });
-      const response = { data:invoices_data, has_more: invoices?.has_more,invoices};
+      const response = { data: invoices_data, has_more: invoices?.has_more, invoices };
       return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
@@ -266,10 +285,10 @@ export default class StripeController {
   }
   public async getInvoicesAdmin(req: any, res: any) {
     const { stripeId } = req.params;
-    const { page=1 } = req.query;
+    const { page = 1 } = req.query;
     try {
-      let user:any = (await new UserServices().getUserByStripeId({ stripeId}))?.Items
-      user=user[0]
+      let user: any = (await new UserServices().getUserByStripeId({ stripeId }))?.Items;
+      user = user[0];
       if (!user?.stripeId) {
         return res
           .status(404)
@@ -287,8 +306,8 @@ export default class StripeController {
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
-          invoice_no:invoice?.number,
-          stripe_id:invoice?.customer,
+          invoice_no: invoice?.number,
+          stripe_id: invoice?.customer,
           description: invoice?.lines?.data[0]?.description,
           amount_due: invoice?.amount_due ? invoice?.amount_due / 100 : 0,
           due_date: invoice?.due_date ? moment.unix(invoice?.due_date).format('MMM DD,YYYY') : null,
@@ -296,13 +315,17 @@ export default class StripeController {
             ? moment.unix(invoice?.status_transitions?.paid_at).format('MMM DD,YYYY')
             : null,
           invoice_url: invoice?.hosted_invoice_url,
-          paid_status: invoice?.paid ? 'paid' : invoice,
-          period_start: invoice?.lines?.data[0]?.period?.start ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY') : null,
-          period_end:invoice?.lines?.data[0]?.period?.end ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY') : null,
+          paid_status: new StripeServices().getPaidStatus({ paid: invoice?.paid, due_date: invoice?.due_date }),
+          period_start: invoice?.lines?.data[0]?.period?.start
+            ? moment.unix(invoice?.lines?.data[0]?.period?.start).format('MMM DD,YYYY')
+            : null,
+          period_end: invoice?.lines?.data[0]?.period?.end
+            ? moment.unix(invoice?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')
+            : null,
         };
         return data;
       });
-      const response = { invoices_data, has_more: invoices?.has_more,invoices };
+      const response = { invoices_data, has_more: invoices?.has_more, invoices };
       return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
