@@ -171,7 +171,7 @@ export default class BlockController {
                   await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
                     if(result.Attributes) {
                       // update frontend client with socket io event
-                      request.app.get("socketService").emit(`block-data-updated`, {data : allBlocksData, userPk : request.body.pk});
+                      request.app.get("socketService").emit("block-data-updated", {data : allBlocksData, userPk : request.body.pk});
                       // success response
                       response.status(200);
                       response.send({
