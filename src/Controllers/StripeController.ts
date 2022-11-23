@@ -70,14 +70,17 @@ export default class StripeController {
           const plan_type = data?.lines?.data[0]?.price?.metadata['plan type'];
           const productId = data?.lines?.data[0]?.price?.product;
           const product = await new StripeServices().getProduct(productId);
+          console.log({ plan_type, product: product?.name });
+          // console.log({ plan_type2: plan_type?.capitalize() });
           const invoice_data = {
             // Basic: All Areas (1st December 2022 - 31st December 2022)
-            description: `${plan_type?.capitalize()}: ${product?.name} (${moment
+            description: `${plan_type}: ${product?.name} (${moment
               .unix(data?.lines?.data[0]?.period?.start)
               .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
           };
           console.log({ invoice_data });
-          await new StripeServices().updateInvoice(data?.id, invoice_data);
+          const up_invoice = await new StripeServices().updateInvoice(data?.id, invoice_data);
+          console.log({ up_invoice });
           break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
@@ -90,34 +93,43 @@ export default class StripeController {
 
   public async subscribeToFreeTrial(data: FreeTrial) {
     const { pk, sk } = data;
-    //create stripe Customer id
-    const {
-      Item: { firstname, lastname, email, customerID },
-    }: any = await new UserServices().getUserData({
-      pk,
-      sk,
-    });
-    const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
-    //get all areas plan id from stripe
-    let plans: any = await new StripeServices().getPricingPlans({
-      active: true,
-      getAll: false,
-      plan_type: 'basic',
-      name: 'All Areas',
-      country: 'UK',
-    });
-    if (!plans?.length) {
-      throw Error('Plan not found');
-    }
-    plans = plans[0]?.price?.id;
-    await new StripeServices().subscribeToPlan({ customerId: stripe_customer.id, planId: plans, isFreeTrial: true });
+    try {
+      const {
+        Item: { firstname, lastname, email, customerID },
+      }: any = await new UserServices().getUserData({
+        pk,
+        sk,
+      });
+      console.log({ firstname, lastname, email, customerID });
+      const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
+      //get all areas plan id from stripe
+      let plans: any = await new StripeServices().getPricingPlans({
+        active: true,
+        getAll: false,
+        plan_type: 'basic',
+        name: 'All Areas',
+        country: 'UK',
+      });
+      if (!plans?.length) {
+        throw Error('Plan not found');
+      }
+      plans = plans[0]?.price?.id;
+      const subscription = await new StripeServices().subscribeToPlan({
+        customerId: stripe_customer.id,
+        planId: plans,
+        isFreeTrial: true,
+      });
 
-    const user = await new StripeServices().updateStripeClientId({
-      pk,
-      sk,
-      stripeId: stripe_customer.id,
-    });
-    return user;
+      console.log({ subscription, sub_itm: subscription?.items?.data[0] });
+      const user = await new StripeServices().updateStripeClientId({
+        pk,
+        sk,
+        stripeId: stripe_customer.id,
+      });
+      return user;
+    } catch (err) {
+      console.log({ err });
+    }
   }
   public async onSelectPlan(req: any, res: any) {
     const { id } = req.params;

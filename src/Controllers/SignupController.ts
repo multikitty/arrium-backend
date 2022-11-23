@@ -184,47 +184,24 @@ export const SignupController = {
                 firstname: result?.Attributes?.firstname,
                 lastname: result?.Attributes?.lastname,
               };
-              //free trial
-              await new StripeController()
-                .subscribeToFreeTrial({ pk: request.body?.pk, sk: request.body?.sk })
-                .then(async () => {
-                  // // send mail to queue
-                  await new MailServices()
-                    .newUserSignUpMail(userData)
-                    .then(() => {
-                      response.status(200);
-                      response.send({
-                        success: true,
-                        message: 'Amazon Flex info updated successfully.',
-                      });
-                    })
-                    .catch((err) => {
-                      response.status(500);
-                      response.send({
-                        success: false,
-                        message: 'Something went wrong, please try after sometime.',
-                        error: err,
-                      });
-                    });
+              // send mail to queue
+              await new MailServices()
+                .newUserSignUpMail(userData)
+                .then(() => {
+                  response.status(200);
+                  response.send({
+                    success: true,
+                    message: 'Amazon Flex info updated successfully.',
+                  });
+                })
+                .catch((err) => {
+                  response.status(500);
+                  response.send({
+                    success: false,
+                    message: 'Something went wrong, please try after sometime.',
+                    error: err,
+                  });
                 });
-              // // send mail to queue
-              // await new MailServices()
-              //   .newUserSignUpMail(userData)
-              //   .then(() => {
-              //     response.status(200);
-              //     response.send({
-              //       success: true,
-              //       message: 'Amazon Flex info updated successfully.',
-              //     });
-              //   })
-              //   .catch((err) => {
-              //     response.status(500);
-              //     response.send({
-              //       success: false,
-              //       message: 'Something went wrong, please try after sometime.',
-              //       error: err,
-              //     });
-              //   });
             })
             .catch((err) => {
               response.status(500);

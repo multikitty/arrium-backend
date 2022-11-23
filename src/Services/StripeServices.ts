@@ -82,6 +82,7 @@ export default class StripeServices {
       email,
       name,
       invoice_prefix: `${Math.floor(Math.random() * 100 + 1)}${customerId}`,
+      // invoice_prefix: customerId,
     });
     return customer;
   }
@@ -116,6 +117,9 @@ export default class StripeServices {
       const seven_days = moment().add(7, 'days').endOf('day').unix();
       data.trial_end = seven_days;
       data.cancel_at = seven_days;
+      data.pause_collection = {
+        behavior: 'keep_as_draft',
+      };
       data.metadata = {
         is_free_trial: true,
       };
