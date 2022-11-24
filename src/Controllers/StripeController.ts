@@ -119,7 +119,7 @@ export default class StripeController {
         planId: plans,
         isFreeTrial: true,
       });
-
+      const invoice=await new StripeServices().updateInvoice(subscription.latest_invoice,{description:'invoice -desc'})
       console.log({ subscription, sub_itm: subscription?.items?.data[0] });
       const user = await new StripeServices().updateStripeClientId({
         pk,
