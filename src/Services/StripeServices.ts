@@ -142,6 +142,14 @@ export default class StripeServices {
     const subscriptionSchedule = await stripe.subscriptionSchedules.create(data);
     return subscriptionSchedule;
   }
+
+  public async updateSubscription(subscriptionId:string,data: any) {
+    const subscription = await stripe.subscriptions.update(
+      subscriptionId,
+     data
+    );
+    return subscription
+  }
   public async updateStripeClientId(data: any) {
     return dynamoDB
       .update({
