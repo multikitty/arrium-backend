@@ -17,7 +17,7 @@ router.get("/get", authentication("admin"), new UserController().getUserByPkSk);
 
 router.get("/flex-details/:pk", authentication("admin"), new UserController().getAmznFlexDetails);
 
-router.put("/flex-details/update", authentication("admin"), new FlexValidation().flexDetails, validationSchema,  new UserController().updateAmznFlexDetails);
+router.put("/flex-details/update", authentication("admin"), new UserController().updateAmznFlexDetails);
 
 router.put("/update-account-info", authentication("admin"), new UserController().updateAccountInfo);
 

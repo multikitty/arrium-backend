@@ -6,7 +6,7 @@ export default class SqsQueueServices {
     /**
         * sendMessageInNotificationQueue
     */
-    public sendMessageInNotificationQueue(data : SQSNotificationParams) {
+    public async sendMessageInNotificationQueue(data : SQSNotificationParams) {
         const sqs = new AWS.SQS({apiVersion: '2012-11-05', region : "eu-west-1"});
         const params = {
             MessageBody: JSON.stringify({
@@ -18,8 +18,10 @@ export default class SqsQueueServices {
         // send data to SQS
         sqs.sendMessage(params, (err, data) => {
             if (err) {
+                return true
               console.log("Error", err);
             } else {
+                return false
               console.log("Successfully added message", data.MessageId);
             }
         });

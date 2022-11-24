@@ -183,14 +183,14 @@ export default class PreferencesController {
                     res.status(500);
                     res.send({
                         success: false,
-                        message: "Please update your flex details ssss.",
+                        message: "Please update your flex details.",
                     });  
                 }
             } else {
                 res.status(500);
                 res.send({
                     success: false,
-                    message: "Please update your flex details. ssswwwww",
+                    message: "Please update your flex details.",
                 });  
             }
         }).catch((error) => {

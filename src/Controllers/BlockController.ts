@@ -72,7 +72,7 @@ export default class BlockController {
             this.sendAcceptedBlockNotification({blockInfo : block, user : userDetails})
           }
         }
-       
+        
         // Get current batch number
         new BlockServices().getBatchNumber(request.body.pk).then( async (result : any) => {
           // generate new batch number
@@ -104,7 +104,7 @@ export default class BlockController {
             let now = moment(startDateTime); 
             let end = moment(endDateTime);
             let difference = moment.duration(end.diff(now));
-            let duration : string = String(difference.asHours());
+            let duration : string = String((difference.asHours()).toFixed(2));
             duration = `${duration} Hours`;
             // create sort key for block
             let blockSk = `block#${batchNumber}#${bDate}#${block.bStartTime}#${block.bEndTime}#${block.offerId}`;
@@ -171,7 +171,7 @@ export default class BlockController {
                   await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
                     if(result.Attributes) {
                       // update frontend client with socket io event
-                      request.app.get("socketService").emit('block-data-udpated', {data : allBlocksData});
+                      request.app.get("socketService").emit("block-data-updated", {data : allBlocksData, userPk : request.body.pk});
                       // success response
                       response.status(200);
                       response.send({

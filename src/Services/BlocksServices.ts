@@ -59,7 +59,7 @@ export default class BlockServices {
       KeyConditionExpression: `#bef90 = :bef90 And begins_with(#bef91, :bef91)`,
       ExpressionAttributeValues: {
         ":bef90": data.userPk,
-        ":bef91": `block#${data.batch}#`
+        ":bef91": `block#`
       },
       "ExpressionAttributeNames": {
         "#bef90": "pk",

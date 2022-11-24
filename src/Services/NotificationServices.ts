@@ -21,4 +21,20 @@ export default class NotificationServices {
         return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
     }
 
+    /**
+        * sendOTP
+        */
+    public async sendOTPSMS(data : any) {
+        const msgData = {
+            type: "text_message",
+            data: {
+                phoneNumber : data?.userPhoneNumber, 
+                message: `
+                    Your OTP for verification is ${data.otp}
+                `
+            }
+        }
+        return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+    }
+
 }

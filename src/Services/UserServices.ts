@@ -139,24 +139,24 @@ export default class UserServices {
           startDate= :startDate,
           endDate= :endDate,
           planType= :planType,
-          stationType= :stationType,
+          stationType= :stationType
         `,
         ExpressionAttributeNames: {
           '#attrRole': 'role',
         },
         ExpressionAttributeValues: {
-          ':firstname': data.firstname,
-          ':lastname': data.lastname,
-          ':phoneNumber': data.phoneNumber,
-          ':email': data.email,
-          ':emailVerified': data.emailVerified,
-          ':tzName': data.tzName,
-          ':role': data.userRole,
-          ':accountStatus': data.status,
-          ':startDate': data.startDate,
-          ':endDate': data.endDate,
-          ':planType': data.planType,
-          ':stationType': data.stationType,
+          ":firstname": data.firstname,
+          ":lastname": data.lastname,
+          ":phoneNumber": data.phoneNumber,
+          ":email": data.email,
+          ":emailVerified": data.emailVerified,
+          ":tzName": data.tzName,
+          ":role": data.userRole,
+          ":accountStatus": data.status,
+          ":startDate": data.startDate,
+          ":endDate": data.endDate,
+          ":planType": data.planType,
+          ":stationType": data.stationType
         },
         ReturnValues: 'ALL_NEW',
       })
@@ -168,7 +168,7 @@ export default class UserServices {
       .scan({
         IndexName: GSI.login,
         TableName: TableName,
-        ConsistentRead: false,
+        ConsistentRead: false
       })
       .promise();
 
@@ -218,7 +218,7 @@ export default class UserServices {
         },
         UpdateExpression: `set ${data.fieldName} = :fieldName`,
         ExpressionAttributeValues: {
-          ':fieldName': data.fieldValue,
+          ":fieldName": data.fieldValue
         },
         ReturnValues: 'ALL_NEW', //will return all Attributes in response
       })

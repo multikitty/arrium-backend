@@ -150,7 +150,7 @@ export default class StripeServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set stripeId= :stripeId`,
+        UpdateExpression: `set stripeID= :stripeId`,
         ExpressionAttributeValues: {
           ':stripeId': data.stripeId,
         },
