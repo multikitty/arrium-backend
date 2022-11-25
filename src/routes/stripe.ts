@@ -9,7 +9,7 @@ router.post('/select-plan/:id', authentication('driver'), new StripeController()
 router.get('/get-invoices', authentication('driver'), new StripeController().getInvoices);
 router.get(
   '/get-invoices-admin',
-  // authentication('admin'),
+  authentication('admin'),
   new StripeController().getInvoicesAdmin
 );
 router.post('/webhooks', new StripeController().handleStripeEvents);
