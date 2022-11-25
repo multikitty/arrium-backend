@@ -332,16 +332,4 @@ export default class UserServices {
       })
       .promise();
   }
-
-  public async getUserByStripeId(data: any) {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression: "stripeId = :val",
-        ExpressionAttributeValues: {":val": data.stripeId},
-        Limit: 1,
-      
-      })
-      .promise();
-  }
 }

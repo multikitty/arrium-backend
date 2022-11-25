@@ -8,7 +8,7 @@ router.get('/pricing-plans', authentication('driver'), new StripeController().ge
 router.post('/select-plan/:id', authentication('driver'), new StripeController().onSelectPlan);
 router.get('/get-invoices', authentication('driver'), new StripeController().getInvoices);
 router.get(
-  '/get-invoices-admin/:stripeId',
+  '/get-invoices-admin',
   // authentication('admin'),
   new StripeController().getInvoicesAdmin
 );
