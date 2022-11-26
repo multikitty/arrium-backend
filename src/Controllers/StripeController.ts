@@ -298,7 +298,7 @@ export default class StripeController {
     }
   }
   public async getInvoicesAdmin(req: any, res: any) {
-    const { sk, pk } = req.params;
+    const { sk, pk } = req.query;
     const { page = 1 } = req.query;
     try {
       let user: any = (await new UserServices().getUserData({ sk, pk }))?.Item;

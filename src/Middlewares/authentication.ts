@@ -9,7 +9,6 @@ export const authentication = (userRole?: string) => {
         success: false,
         message: 'No token Provided',
       });
-    console.log({ token });
     jwt.verify(token, process.env.JWT_SECRET_KEY as string, function (err: any, decoded: any) {
       if (err)
         return response.status(401).send({
