@@ -223,18 +223,19 @@ export default class StripeController {
       //   due_date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
       //   proration_behavior: 'create_prorations',
       // };
+      const end2=moment.unix(free_trial?.trial_end).endOf('month').startOf('month').startOf('day').add(1,'d').startOf('day')
+      const end3=moment(end2).add(1, 'months').endOf('day').format('YYYY-MM-DD hh:mm:ss')
+      const end99=new Date(end3)
+      const end4=moment(new Date(end99)).startOf('month')
+      const end5=moment(end3).startOf('month').startOf('day').add(1,'d').startOf('day')
+      
       console.log({
         dat: free_trial.trial_end,
+        end2,end3,end4,
+        end99,
+        end5,
         trial_end: moment.unix(free_trial?.trial_end).toDate(),
-        shcedu_str: moment.unix(free_trial?.trial_end).endOf('month'),
-        shcedu_str1: moment.unix(free_trial?.trial_end).endOf('month').format('YYYY-MM-DD'),
-        shcedu_str11: moment(new Date(moment.unix(free_trial?.trial_end).endOf('month').format('YYYY-MM-DD'))),
-        shcedu_str12: moment(new Date(moment.unix(free_trial?.trial_end).endOf('month').format('YYYY-MM-DD'))).add(
-          1,
-          'months'
-        ),
-        shcedu_str2: moment(moment.unix(free_trial?.trial_end).endOf('month')).add(1, 'months'),
-        shcedu_str3: moment(moment.unix(free_trial?.trial_end).endOf('month')).add(1, 'months').startOf('month'),
+    
       });
       const scheduleData = {
         customer: user.stripeId,
