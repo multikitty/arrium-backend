@@ -117,7 +117,9 @@ export default class StripeServices {
       const seven_days = moment().add(7, 'days').endOf('day').unix();
       data.trial_end = seven_days;
       data.cancel_at = seven_days;
-       data.metadata = {
+      data.collection_method = collection_method;
+      data.days_until_due = 0;
+      data.metadata = {
         is_free_trial: true,
       };
     } else {
@@ -132,9 +134,8 @@ export default class StripeServices {
     //TODO WITHOUT FREE TRIAL
   }
 
-  public async getSubscription() {
-    // sub_1Lxbf8Ek2K7pH9UX7g5QAMlq
-    const subscription = await stripe.subscriptions.retrieve('sub_1Lxbf8Ek2K7pH9UX7g5QAMlq');
+  public async getSubscription(id: string) {
+    const subscription = await stripe.subscriptions.retrieve(id);
     return subscription;
   }
 
@@ -143,12 +144,9 @@ export default class StripeServices {
     return subscriptionSchedule;
   }
 
-  public async updateSubscription(subscriptionId:string,data: any) {
-    const subscription = await stripe.subscriptions.update(
-      subscriptionId,
-     data
-    );
-    return subscription
+  public async updateSubscription(subscriptionId: string, data: any) {
+    const subscription = await stripe.subscriptions.update(subscriptionId, data);
+    return subscription;
   }
   public async updateStripeClientId(data: any) {
     return dynamoDB
@@ -158,7 +156,7 @@ export default class StripeServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set stripeID= :stripeId`,
+        UpdateExpression: `set stripeId= :stripeId`,
         ExpressionAttributeValues: {
           ':stripeId': data.stripeId,
         },
@@ -233,6 +231,11 @@ export default class StripeServices {
 
   public async finalizeInvoice(id: string) {
     const invoice = await stripe.invoices.finalizeInvoice(id, { auto_advance: false });
+    return invoice;
+  }
+
+  public async payInvoice(id: string) {
+    const invoice = await stripe.invoices.pay(id);
     return invoice;
   }
 }
