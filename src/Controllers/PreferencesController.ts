@@ -8,7 +8,6 @@ import { SchedulePreferenceObj } from "Interfaces/preferencesInterface";
 
 
 export default class PreferencesController {
-
     /**
     * addPreferencesByUser
     */
@@ -43,6 +42,7 @@ export default class PreferencesController {
         }
         // add preferences
         let preferenceList = req.body.preferences;
+        let preferredDays = req.body.days;
         let batchSize = 25;
         let batchItemsList = [];
         let failedItems : any[] = []
@@ -50,33 +50,62 @@ export default class PreferencesController {
         for (let i = 0; i < preferenceList.length; i++) {
             const listItem = preferenceList[i];
             let sortKey;
-            if(listItem.day) {
-                // create sort key
-                sortKey = `availability#${getWeekDayNumber(listItem.day)}#${listItem.day}#${listItem.stationCode}`;
-            } else {
-                sortKey = `availability#${listItem.stationCode}`;
-            }
-            // Create block item object
-            let prefItem = {
-                PutRequest: {
-                    Item: {
-                        pk: req.body.pk,
-                        sk: sortKey,
-                        regionID : listItem.regionId,
-                        stationID : listItem.stationId,
-                        bDay : listItem.day,
-                        tta: listItem.tta,
-                        minPay : listItem.minPay,
-                        minHourlyRate : listItem.minHourlyRate,
-                        bStartTime : listItem.startTime,
-                        bEndTime : listItem.endTime,
-                        active : listItem.active
-                    },
-                }
-            };
 
-            // add block item in array
-            batchItemsList.push(prefItem)
+            // check for preffered days
+            if(preferredDays.length) {
+                for (let j = 0; j < preferredDays.length; j++) {
+                    const day = preferredDays[j];
+                    if(day.active) {
+                        // create sort key
+                        sortKey = `availability#${getWeekDayNumber(day.value)}#${day.value}#${listItem.stationCode}`;
+                        // Create block item object
+                        let prefItem = {
+                            PutRequest: {
+                                Item: {
+                                    pk: req.body.pk,
+                                    sk: sortKey,
+                                    regionID : listItem.regionId,
+                                    stationID : listItem.stationId,
+                                    bDay : day.value,
+                                    tta: listItem.tta,
+                                    minPay : listItem.minPay,
+                                    minHourlyRate : listItem.minHourlyRate,
+                                    bStartTime : listItem.startTime,
+                                    bEndTime : listItem.endTime,
+                                    active : listItem.active
+                                },
+                            }
+                        };
+                        // add block item in array
+                        batchItemsList.push(prefItem)
+                    }
+                }
+            } else {
+                // create sort key
+                sortKey = `availability#${listItem.stationCode}`;
+                // Create block item object
+                let prefItem = {
+                    PutRequest: {
+                        Item: {
+                            pk: req.body.pk,
+                            sk: sortKey,
+                            regionID : listItem.regionId,
+                            stationID : listItem.stationId,
+                            bDay : "",
+                            tta: listItem.tta,
+                            minPay : listItem.minPay,
+                            minHourlyRate : listItem.minHourlyRate,
+                            bStartTime : listItem.startTime,
+                            bEndTime : listItem.endTime,
+                            active : listItem.active
+                        },
+                    }
+                };
+                // add block item in array
+                batchItemsList.push(prefItem)
+            }
+
+            // insert batch
             if(batchItemsList.length === batchSize || i+1 === preferenceList.length) {
                 // execute batch write operation
                 await new PreferenceServices().insertPreferences(batchItemsList).then(async (result: any) => {
@@ -106,7 +135,7 @@ export default class PreferencesController {
     /**
     * getPreferences
     */
-    public async getPreferencesByUser(req: any, res: any) {
+    public async getPreferencesByUser(req: Request, res: Response) {
         let data = {
             pk : req.body.pk
         }
@@ -121,7 +150,11 @@ export default class PreferencesController {
                     .then(async (result : any) => {
                         if(result.Items.length > 0) {
                             let stationsData = result.Items;
-                            await new PreferenceServices().getPreferenceByUser(req.body.pk)
+                            let prefParams = {
+                                userPK : req.body.pk,
+                                day : req.query.day
+                            }
+                            await new PreferenceServices().getPreferenceByUser(prefParams)
                             .then((result : any) => {
                                 let preferencesData = result.Items;
                                 let responseData = [];
@@ -202,7 +235,6 @@ export default class PreferencesController {
             });  
         })
     }
-
 
     /**
         * schedulePreferences
