@@ -225,26 +225,6 @@ export default class UserServices {
       .promise();
   }
 
-  async changeEmail(data: any) {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          sk: data.sk,
-          pk: data.pk,
-        },
-        UpdateExpression: `set email = :email, emailVerified = :emailVerified, sk = :sk, pk = :pk`,
-        ExpressionAttributeValues: {
-          ':email': data.fieldValue,
-          ':emailVerified': 'unverified',
-          ':sk': `login#${data.fieldValue}`,
-          ':pk': `u#${data.fieldValue}`,
-        },
-        ReturnValues: 'ALL_NEW',
-      })
-      .promise();
-  }
-
   async getUserCurrentPassword(data: any) {
     return dynamoDB
       .get({
