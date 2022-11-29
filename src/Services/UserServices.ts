@@ -145,18 +145,18 @@ export default class UserServices {
           '#attrRole': 'role',
         },
         ExpressionAttributeValues: {
-          ":firstname": data.firstname,
-          ":lastname": data.lastname,
-          ":phoneNumber": data.phoneNumber,
-          ":email": data.email,
-          ":emailVerified": data.emailVerified,
-          ":tzName": data.tzName,
-          ":role": data.userRole,
-          ":accountStatus": data.status,
-          ":startDate": data.startDate,
-          ":endDate": data.endDate,
-          ":planType": data.planType,
-          ":stationType": data.stationType
+          ':firstname': data.firstname,
+          ':lastname': data.lastname,
+          ':phoneNumber': data.phoneNumber,
+          ':email': data.email,
+          ':emailVerified': data.emailVerified,
+          ':tzName': data.tzName,
+          ':role': data.userRole,
+          ':accountStatus': data.status,
+          ':startDate': data.startDate,
+          ':endDate': data.endDate,
+          ':planType': data.planType,
+          ':stationType': data.stationType,
         },
         ReturnValues: 'ALL_NEW',
       })
@@ -168,7 +168,7 @@ export default class UserServices {
       .scan({
         IndexName: GSI.login,
         TableName: TableName,
-        ConsistentRead: false
+        ConsistentRead: false,
       })
       .promise();
 
@@ -218,29 +218,9 @@ export default class UserServices {
         },
         UpdateExpression: `set ${data.fieldName} = :fieldName`,
         ExpressionAttributeValues: {
-          ":fieldName": data.fieldValue
+          ':fieldName': data.fieldValue,
         },
         ReturnValues: 'ALL_NEW', //will return all Attributes in response
-      })
-      .promise();
-  }
-
-  async changeEmail(data: any) {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          sk: data.sk,
-          pk: data.pk,
-        },
-        UpdateExpression: `set email = :email, emailVerified = :emailVerified, sk = :sk, pk = :pk`,
-        ExpressionAttributeValues: {
-          ':email': data.fieldValue,
-          ':emailVerified': 'unverified',
-          ':sk': `login#${data.fieldValue}`,
-          ':pk': `u#${data.fieldValue}`,
-        },
-        ReturnValues: 'ALL_NEW',
       })
       .promise();
   }
@@ -329,18 +309,6 @@ export default class UserServices {
           ':currentSteps': data.currentStep,
         },
         ReturnValues: 'ALL_NEW',
-      })
-      .promise();
-  }
-
-  public async getUserByStripeId(data: any) {
-    return dynamoDB
-      .scan({
-        TableName: TableName,
-        FilterExpression: "stripeId = :val",
-        ExpressionAttributeValues: {":val": data.stripeId},
-        Limit: 1,
-      
       })
       .promise();
   }

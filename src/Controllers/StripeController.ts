@@ -54,11 +54,27 @@ export default class StripeController {
         case 'customer.subscription.deleted':
           /*check if current ended subscription is of free trial
             if free trial and not subscribed to any other subscription then change status inactive
-
           */
+          console.log('**user');
+          //TODO get user by stripeId
+          const user = (await new UserServices().getUserData({ sk: 'driver#900034', pk: 'UK-900034' }))?.Item;
+          console.log({ user, t: data?.trial_end, s: data?.ended_at });
+          // should be true trial_end
+          if (stripeId && !data?.trial_end && user && data?.ended_at) {
+            const subscriptions = (
+              await new StripeServices().getCustomerSubscriptions({
+                customer: user.stripeId,
+                status: 'all',
+              })
+            )?.data;
+            console.log('&****', { subscriptions });
+            //set user status inactive if not selected a plan
+
+            //show plan page
+          }
           //  const trial_end=data?.trial_end
           const trial_end = data?.start_date;
-          console.log({ t: moment.unix(trial_end) });
+          // console.log({ t: moment.unix(trial_end) });
 
           if (moment.unix(trial_end) <= moment()) {
             //show plan page
@@ -67,26 +83,36 @@ export default class StripeController {
           break;
         case 'invoice.created':
           console.log({ lines: data?.lines?.data, price_obj: data?.lines?.data[0]?.price });
-          const plan_type = data?.lines?.data[0]?.price?.metadata['plan type'];
-          const productId = data?.lines?.data[0]?.price?.product;
-          const product = await new StripeServices().getProduct(productId);
-          console.log({ plan_type, product: product?.name });
-          // console.log({ plan_type2: plan_type?.capitalize() });
-          const invoice_data = {
-            // Basic: All Areas (1st December 2022 - 31st December 2022)
-            description: `${plan_type}: ${product?.name} (${moment
-              .unix(data?.lines?.data[0]?.period?.start)
-              .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
-          };
-          console.log({ invoice_data });
-          const up_invoice = await new StripeServices().updateInvoice(data?.id, invoice_data);
-          console.log({ up_invoice });
+          if (!data?.paid) {
+            const plan_type = data?.lines?.data[0]?.price?.metadata['plan type'];
+            const productId = data?.lines?.data[0]?.price?.product;
+            const product = await new StripeServices().getProduct(productId);
+            const invoice_id = data.id;
+            const invoice_data = {
+              description: `${plan_type[0].toUpperCase() + plan_type.slice(1)}: ${product?.name} (${moment
+                .unix(data?.lines?.data[0]?.period?.start)
+                .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
+            };
+
+            console.log({ invoice_data });
+            const up_invoice = await new StripeServices().updateInvoice(data?.id, invoice_data);
+            if (data?.subscription) {
+              const sub_id = data.subscription;
+              const subscription = await new StripeServices().getSubscription(sub_id);
+              //changing status of free trial invoice
+              if (subscription?.trial_end) {
+                await new StripeServices().payInvoice(invoice_id);
+              }
+            }
+            console.log({ up_invoice });
+          }
           break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
       }
       return res.status(200);
     } catch (error: any) {
+      console.log({ error });
       res.end();
     }
   }
@@ -113,14 +139,42 @@ export default class StripeController {
       if (!plans?.length) {
         throw Error('Plan not found');
       }
+      console.log({ plan: plans[0] });
       plans = plans[0]?.price?.id;
+      ///
+      const subs_schedule_data = {
+        customer: stripe_customer.id,
+        metadata: {
+          is_free_trial: true,
+        },
+        start_date: moment().add(10, 's').unix(),
+        end_behavior: 'cancel',
+        phases: [
+          {
+            trial: true,
+            end_date: moment().add(7, 'd').endOf('day').unix(),
+            items: [
+              {
+                price: plans,
+                quantity: 1,
+              },
+            ],
+          },
+        ],
+      };
+      ///
       const subscription = await new StripeServices().subscribeToPlan({
         customerId: stripe_customer.id,
         planId: plans,
         isFreeTrial: true,
+        collection_method: 'send_invoice',
       });
-
+      // const invoice = await new StripeServices().updateInvoice(subscription.latest_invoice, {
+      //   description: 'invoice -desc',
+      // });
       console.log({ subscription, sub_itm: subscription?.items?.data[0] });
+      console.log({ subs_schedule_data });
+      // const schedule_subscription = await new StripeServices().createSubscriptionSchedule(subs_schedule_data);
       const user = await new StripeServices().updateStripeClientId({
         pk,
         sk,
@@ -140,9 +194,13 @@ export default class StripeController {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
     if (!user?.stripeId) {
-      return res.status(400).json({ success: false, message: 'User stripeId not found' });
+      return res.status(404).json({ success: false, message: 'User stripeId not found' });
     }
     try {
+      const plan = await new StripeServices().getPlan(id);
+      if (!plan) {
+        return res.status(404).json({ success: false, message: 'Plan not found' });
+      }
       const subscriptions = (
         await new StripeServices().getCustomerSubscriptions({
           customer: user.stripeId,
@@ -151,7 +209,10 @@ export default class StripeController {
       )?.data;
       const free_trial = subscriptions?.filter((itm: any) => itm?.metadata?.is_free_trial)[0];
       const free_trial_end_date = free_trial?.canceled_at;
-      const end_month = moment(new Date(moment().endOf('month').endOf('day').format('YYYY-MM-DD hh:mm:ss')));
+      const end_month = moment(
+        new Date(moment.unix(free_trial?.canceled_at).endOf('month').endOf('day').format('YYYY-MM-DD hh:mm:ss'))
+      );
+      console.log({ end_month: moment.unix(free_trial?.canceled_at).endOf('month') });
       const days_difference = Math.abs(end_month.diff(moment.unix(free_trial_end_date), 'days'));
       // const days_due = Math.abs(a.diff(b, 'days')) + 7;
       // const data = {
@@ -162,9 +223,32 @@ export default class StripeController {
       //   due_date: moment(moment().add(1, 'M').startOf('month').format('YYYY-MM-DD hh:mm:ss')).unix(),
       //   proration_behavior: 'create_prorations',
       // };
+      const end2=moment.unix(free_trial?.trial_end).endOf('month').startOf('month').startOf('day').add(1,'d').startOf('day')
+      const end3=moment(end2).add(1, 'months').endOf('day').format('YYYY-MM-DD hh:mm:ss')
+      const end99=new Date(end3)
+      const end4=moment(new Date(end99)).startOf('month')
+      const end5=moment(end3).startOf('month').startOf('day').add(1,'d').startOf('day')
+      
+      console.log({
+        dat: free_trial.trial_end,
+        end2,end3,end4,
+        end99,
+        end5,
+        trial_end: moment.unix(free_trial?.trial_end).toDate(),
+    
+      });
       const scheduleData = {
         customer: user.stripeId,
-        start_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+        start_date: moment(
+          new Date(
+            moment
+              .unix(free_trial?.canceled_at)
+              .endOf('month')
+              .add(1, 'month')
+              .startOf('month')
+              .format('YYYY-MM-DD hh:mm:ss')
+          )
+        )
           .endOf('day')
           .unix(), //start date of subsc schedule
         // start_date:free_trial_end_date,
@@ -202,38 +286,74 @@ export default class StripeController {
       const invoiceData = {
         customer: user.stripeId,
         collection_method: 'send_invoice',
-        due_date: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+        due_date: moment(
+          new Date(
+            moment
+              .unix(free_trial?.canceled_at)
+              .endOf('month')
+              .add(1, 'month')
+              .startOf('month')
+              .format('YYYY-MM-DD hh:mm:ss')
+          )
+        )
           .endOf('day')
           .unix(),
       };
-      let plan = free_trial?.items?.data[0]?.plan;
+      // let plan = free_trial?.items?.data[0]?.plan;
       console.log({ plan });
-      plan.amount = (plan.amount / 30) * days_difference;
+      plan.amount = ((plan.amount / 30) * days_difference)?.toFixed(2);
+      console.log({ amount: plan.amount, days_difference });
       const product = await new StripeServices().getProduct(plan.product);
+      console.log({ product });
       const invoiceItemData = {
         customer: user.stripeId,
         unit_amount_decimal: plan.amount,
         currency: plan.currency,
-        description: product.name,
+        description: `${product.name[0].toUpperCase() + product.name.slice(1)}: ${product?.name} (${moment
+          .unix(free_trial_end_date)
+          .format('MMM DD,YYYY')} - ${moment(
+          moment(
+            new Date(
+              moment
+                .unix(free_trial?.canceled_at)
+                .add(1, 'month')
+                .endOf('month')
+                .startOf('month')
+                .format('YYYY-MM-DD hh:mm:ss')
+            )
+          )
+            .endOf('day')
+            .unix()
+        ).format('MMM DD,YYYY')})`,
         period: {
           start: free_trial_end_date, //free trial end-date
-          end: moment(new Date(moment().add(1, 'month').startOf('month').format('YYYY-MM-DD hh:mm:ss')))
+          end: moment(
+            new Date(
+              moment
+                .unix(free_trial?.canceled_at)
+                .add(1, 'month')
+                .endOf('month')
+                .startOf('month')
+                .format('YYYY-MM-DD hh:mm:ss')
+            )
+          )
             .endOf('day')
             .unix(),
         },
       };
-      const invoice_item = await new StripeServices().createInvoiceItem(invoiceItemData);
-      const invoice = await new StripeServices().createInvoice(invoiceData);
-      if (invoice?.id) {
-        await new StripeServices().finalizeInvoice(invoice?.id);
-      }
-      const scheduleSubsc = await new StripeServices().createSubscriptionSchedule(scheduleData);
+      // const invoice_item = await new StripeServices().createInvoiceItem(invoiceItemData);
+      // const invoice = await new StripeServices().createInvoice(invoiceData);
+      // if (invoice?.id) {
+      //   await new StripeServices().finalizeInvoice(invoice?.id);
+      // }
+      // const scheduleSubsc = await new StripeServices().createSubscriptionSchedule(scheduleData);
       // const upcoming_invoice = await new StripeServices().getCustomerUpcomingInvoices(user.stripeId);
       return res.status(200).json({
         success: true,
-        scheduleSubsc,
-        invoice,
-        invoice_item,
+        free_trial,
+        // scheduleSubsc,
+        // invoice,
+        // invoice_item,
         subscriptions,
         invoiceData,
         invoiceItemData,
@@ -296,11 +416,10 @@ export default class StripeController {
     }
   }
   public async getInvoicesAdmin(req: any, res: any) {
-    const { stripeId } = req.params;
+    const { sk, pk } = req.query;
     const { page = 1 } = req.query;
     try {
-      let user: any = (await new UserServices().getUserByStripeId({ stripeId }))?.Items;
-      user = user[0];
+      let user: any = (await new UserServices().getUserData({ sk, pk }))?.Item;
       if (!user?.stripeId) {
         return res
           .status(404)
