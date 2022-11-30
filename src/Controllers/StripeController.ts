@@ -43,6 +43,7 @@ export default class StripeController {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
     const payload = req.rawBody;
     const signature = req.headers['stripe-signature'];
+    console.log({payload})
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
@@ -383,9 +384,21 @@ export default class StripeController {
    * after 5 days
    * @returns
    */
-  public disableCustomersFiveDays = () => {
+  public disableCustomersFiveDays = async() => {
     try {
-      //get unpaid invoices
+      //get all users
+      //check if user has stripeId
+      //get "open" invoices of that customer
+      //if invoices not paid then disable account
+      const users:any=(await new UserServices().getAllUsers({}))?.Items
+      console.log({users})
+      if(users?.length){
+        for(let user in users){
+          if(user?.stripeID){
+            console.log({stripeId:user?.stripeID})
+          }
+        }
+      }
     } catch (err) {
       return err;
     }

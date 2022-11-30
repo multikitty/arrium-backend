@@ -10,7 +10,6 @@ dotenv.config();
 const app: Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.json());
 //Import Routes File
 import signup from './routes/signup';
 import signin from './routes/signin';
@@ -23,6 +22,7 @@ import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
 import sesTemplates from './routes/sesTemplates';
+import StripeController from './Controllers/StripeController';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -37,6 +37,8 @@ app.use(
     },
   })
 );
+app.use(express.json());
+
 //Routes Defined Here
 app.use('/v1/signin', signin);
 app.use('/v1/signup', signup);
@@ -69,4 +71,10 @@ server.on('connection', (socket: any) => {
   console.log('New Client is Connected!');
   app.set('socketService', socket);
 });
+
+ new StripeController().disableCustomersFiveDays().then((res)=>{
+  console.log({res})
+ }).catch((err)=>{
+    console.log(err)
+ })
 httpServer.listen(9000);
