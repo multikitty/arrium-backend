@@ -23,6 +23,10 @@ router.put("/update-account-info", authentication("admin"), new UserController()
 
 router.post("/approve-account", authentication("admin"), new UserController().sendAccountSetupMail);
 
+router.get("/list-by-role", authentication("admin"), new UserController().fetchUserByRole);
+
+router.post("/add-user", authentication("admin"), new UserController().addUser);
+
 router.post(
   "/request-verify-email",
   authentication("driver"),

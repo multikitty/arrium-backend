@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { AddUserObj } from '../Interfaces/userInterface';
 import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
 
 export default class UserServices {
@@ -130,6 +131,7 @@ export default class UserServices {
           firstname = :firstname, 
           lastname= :lastname, 
           phoneNumber= :phoneNumber, 
+          dialCode= :dialCode,
           email= :email,
           pkEmail= :email,  
           emailVerified= :emailVerified, 
@@ -148,6 +150,7 @@ export default class UserServices {
           ':firstname': data.firstname,
           ':lastname': data.lastname,
           ':phoneNumber': data.phoneNumber,
+          ":dialCode": data.dialCode,
           ':email': data.email,
           ':emailVerified': data.emailVerified,
           ':tzName': data.tzName,
@@ -311,5 +314,61 @@ export default class UserServices {
         ReturnValues: 'ALL_NEW',
       })
       .promise();
+  }
+
+  // Get user list by role
+  /**
+    * getUserByRole
+    */
+  public async getUserByRole(role : string | string[] | undefined) {
+    let queryInput = {
+      TableName: TableName,
+      IndexName: GSI.userByRole,
+      ConsistentRead: false,
+      ScanIndexForward: true,
+      KeyConditionExpression: "#8dca0 = :8dca0",
+      ExpressionAttributeValues: {
+        ":8dca0": role
+      },
+      ExpressionAttributeNames: {
+        "#8dca0": "role"
+      }
+    }
+    return await dynamoDB.query(queryInput).promise();
+  }
+
+  // add user 
+  /**
+    * insertUser
+    */
+  public insertUser(data : AddUserObj) {
+    return dynamoDB
+    .put({
+      Item: {
+        pk: data.userPK,
+        sk: data.userSK,
+        firstname : data.firstname, 
+        lastname : data.lastname, 
+        phoneNumber: data.phoneNumber, 
+        dialCode : data.dialCode,
+        email: data.email,
+        pkEmail: data.email,
+        emailVerified: data.emailVerified,
+        tzName : data.tzName,
+        role: data.userRole,
+        accountStatus: data.status,
+        startDate: data.startDate,
+        endDate : data.endDate,
+        country: data.country,
+        customerID: data.customerId,
+        password: bcrypt.hashSync(Math.random().toString(20).substring(2), 10),
+        currentSteps: 'finished',
+        planType: 'basic',
+        region : "",
+        otp : "",
+      },
+      TableName: TableName,
+    })
+    .promise();
   }
 }
