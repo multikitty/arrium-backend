@@ -10,6 +10,7 @@ dotenv.config();
 const app: Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.json());
 //Import Routes File
 import signup from './routes/signup';
 import signin from './routes/signin';
@@ -22,13 +23,12 @@ import location from './routes/location';
 import automationTool from './routes/automationTool';
 import stripe from './routes/stripe';
 import sesTemplates from './routes/sesTemplates';
-import StripeController from './Controllers/StripeController';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
   res.send('<h1>Hello welcome to arrium api collection :)</h1>');
 });
-
+// stripe webhook
 app.use(
   '/v1/stripe/webhooks',
   express.json({
@@ -37,7 +37,6 @@ app.use(
     },
   })
 );
-app.use(express.json());
 //Routes Defined Here
 app.use('/v1/signin', signin);
 app.use('/v1/signup', signup);
@@ -64,18 +63,10 @@ export const server = new socketio.Server(httpServer, {
     origin: '*',
   },
 });
-
 //check client connection
 server.on('connection', (socket: any) => {
   //Socket is a Link to the Client
   console.log('New Client is Connected!');
   app.set('socketService', socket);
 });
-// new StripeController()
-//   .subscribeToFreeTrial({ sk: 'driver#900037', pk: 'UK-900037' })
-//   .then()
-//   .catch((err) => {
-//     console.log({ err });
-//   });
-
 httpServer.listen(9000);
