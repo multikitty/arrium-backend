@@ -71,5 +71,11 @@ server.on('connection', (socket: any) => {
   console.log('New Client is Connected!');
   app.set('socketService', socket);
 });
+// new StripeController()
+//   .subscribeToFreeTrial({ sk: 'driver#900037', pk: 'UK-900037' })
+//   .then()
+//   .catch((err) => {
+//     console.log({ err });
+//   });
 
 httpServer.listen(9000);

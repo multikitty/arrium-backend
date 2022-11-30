@@ -148,6 +148,12 @@ export default class StripeServices {
     const subscription = await stripe.subscriptions.update(subscriptionId, data);
     return subscription;
   }
+  public async getSubscriptionSchedules(stripeId: string) {
+    const subscriptionSchedules = await stripe.subscriptionSchedules.list({
+      customer: stripeId,
+    });
+    return subscriptionSchedules;
+  }
   public async updateStripeClientId(data: any) {
     return dynamoDB
       .update({
@@ -156,9 +162,9 @@ export default class StripeServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set stripeId= :stripeId`,
+        UpdateExpression: `set stripeID= :stripeID`,
         ExpressionAttributeValues: {
-          ':stripeId': data.stripeId,
+          ':stripeID': data.stripeID,
         },
         ReturnValues: 'ALL_NEW',
       })
