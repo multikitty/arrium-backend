@@ -61,7 +61,7 @@ export default class StripeController {
           const user = (await new UserServices().getUserData({ sk: 'driver#900037', pk: 'UK-900037' }))?.Item;
           console.log({ user, t: data?.trial_end, s: data?.ended_at });
           // should be true trial_end
-          if (stripeId && !data?.trial_end && user && data?.ended_at) {
+          if (stripeId && data?.trial_end && user && data?.ended_at) {
             let scheduled_subscriptions = (await new StripeServices().getSubscriptionSchedules(user.stripeID))?.data;
             if (scheduled_subscriptions?.length) {
               scheduled_subscriptions = scheduled_subscriptions.filter((itm: any) => itm?.status !== 'canceled');
@@ -77,18 +77,9 @@ export default class StripeController {
               }
             }
             console.log('&****', { scheduled_subscriptions });
-            //set user status inactive if not selected a plan
-
             //show plan page
           }
-          //  const trial_end=data?.trial_end
-          const trial_end = data?.start_date;
-          // console.log({ t: moment.unix(trial_end) });
-
-          if (moment.unix(trial_end) <= moment()) {
-            //show plan page
-            // const user=await new UserServices().getUserData()
-          }
+       
           break;
         case 'invoice.created':
           if (!data?.paid) {
@@ -102,7 +93,7 @@ export default class StripeController {
                 .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
             };
 
-            const up_invoice = await new StripeServices().updateInvoice(data?.id, invoice_data);
+             await new StripeServices().updateInvoice(data?.id, invoice_data);
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(sub_id);
@@ -179,8 +170,10 @@ export default class StripeController {
         stripeID: stripe_customer.id,
       });
       return user;
-    } catch (err) {
+    } catch (err:any) {
       console.log({ err });
+       throw Error(`Something went wrong! ${err?.message}`);
+
     }
   }
   public async onSelectPlan(req: any, res: any) {

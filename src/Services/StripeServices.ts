@@ -244,4 +244,13 @@ export default class StripeServices {
     const invoice = await stripe.invoices.pay(id);
     return invoice;
   }
+
+  public async getUserByStripeId(id:string){
+    return dynamoDB.get({
+      TableName: TableName,
+      Key:{
+        stripeID:id
+      }
+    }).promise()
+  }
 }
