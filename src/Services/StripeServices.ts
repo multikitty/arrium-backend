@@ -207,7 +207,7 @@ export default class StripeServices {
   public async getInvoices(data: RetrieveInvoices) {
     let query = { customer: data.customer, limit: data?.limit ?? 10 };
     if (data?.getAll) {
-      data.limit = 100;
+      data.limit = 99999999;
     }
     const invoices = await stripe.invoices.list(query);
     return invoices;

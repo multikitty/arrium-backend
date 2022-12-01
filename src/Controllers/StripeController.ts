@@ -43,7 +43,7 @@ export default class StripeController {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
     const payload = req.rawBody;
     const signature = req.headers['stripe-signature'];
-    console.log({payload})
+    console.log({ payload });
     try {
       const event = await new StripeServices().constructEvent({ payload, secret, signature });
       const event_type = event?.type;
@@ -91,7 +91,6 @@ export default class StripeController {
           }
           break;
         case 'invoice.created':
-          console.log({ lines: data?.lines?.data, price_obj: data?.lines?.data[0]?.price });
           if (!data?.paid) {
             const plan_type = data?.lines?.data[0]?.price?.metadata['plan type'];
             const productId = data?.lines?.data[0]?.price?.product;
@@ -103,7 +102,6 @@ export default class StripeController {
                 .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
             };
 
-            console.log({ invoice_data });
             const up_invoice = await new StripeServices().updateInvoice(data?.id, invoice_data);
             if (data?.subscription) {
               const sub_id = data.subscription;
@@ -113,7 +111,6 @@ export default class StripeController {
                 await new StripeServices().payInvoice(invoice_id);
               }
             }
-            console.log({ up_invoice });
           }
           break;
         default:
@@ -135,7 +132,6 @@ export default class StripeController {
         pk,
         sk,
       });
-      console.log({ firstname, lastname, email, customerID });
       const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
       //get all areas plan id from stripe
       let plans: any = await new StripeServices().getPricingPlans({
@@ -148,9 +144,7 @@ export default class StripeController {
       if (!plans?.length) {
         throw Error('Plan not found');
       }
-      console.log({ plan: plans[0] });
       plans = plans[0]?.price?.id;
-      ///
       const subs_schedule_data = {
         customer: stripe_customer.id,
         metadata: {
@@ -178,12 +172,7 @@ export default class StripeController {
         isFreeTrial: true,
         collection_method: 'send_invoice',
       });
-      // const invoice = await new StripeServices().updateInvoice(subscription.latest_invoice, {
-      //   description: 'invoice -desc',
-      // });
-      console.log({ subscription, sub_itm: subscription?.items?.data[0] });
-      console.log({ subs_schedule_data });
-      // const schedule_subscription = await new StripeServices().createSubscriptionSchedule(subs_schedule_data);
+
       const user = await new StripeServices().updateStripeClientId({
         pk,
         sk,
@@ -384,18 +373,34 @@ export default class StripeController {
    * after 5 days
    * @returns
    */
-  public disableCustomersFiveDays = async() => {
+  public disableCustomersFiveDays = async () => {
     try {
-      //get all users
-      //check if user has stripeId
-      //get "open" invoices of that customer
-      //if invoices not paid then disable account
-      const users:any=(await new UserServices().getAllUsers({}))?.Items
-      console.log({users})
-      if(users?.length){
-        for(let user in users){
-          if(user?.stripeID){
-            console.log({stripeId:user?.stripeID})
+      const users: any = (await new UserServices().getAllUsers({}))?.Items;
+      if (users?.length) {
+        for (let user of users) {
+          const { sk, pk } = user;
+          if (user?.stripeID) {
+            try {
+              const invoices = (await new StripeServices().getInvoices({ customer: user.stripeID, getAll: true }))
+                ?.data;
+              if (invoices?.length) {
+                const unpaid_invoices = invoices.filter(
+                  (itm: any) => !itm.paid && moment() > moment.unix(itm.due_date)
+                );
+                if (unpaid_invoices?.length) {
+                  const update_data = {
+                    sk,
+                    pk,
+                    fieldName: 'accountStatus',
+                    fieldValue: 'disable',
+                  };
+                  await new UserServices().updateProfile(update_data);
+                }
+              }
+            } catch {
+              console.log('in catch');
+              continue;
+            }
           }
         }
       }
