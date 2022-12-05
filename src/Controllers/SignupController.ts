@@ -1,6 +1,6 @@
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import companyIds from '../Utils/customerId.json';
+import customerIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
 import { SignupServices } from '../Services/SignupServices';
 import UserServices from '../Services/UserServices';
@@ -21,7 +21,7 @@ export const SignupController = {
             });
           } else {
             //For Generating customer Id
-            let cIdObj = companyIds;
+            let cIdObj = customerIds;
             cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;
             fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), (err) => {
               if (err) {

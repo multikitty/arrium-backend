@@ -2,17 +2,6 @@ import { dynamoDB, TableName } from '../Utils/dynamoDB';
 
 export default class BlockServices {
     
-  /*
-    * add block list
-    */
-  public insertBlocks(data : any) {
-    return dynamoDB.batchWrite({
-      RequestItems: {
-        [TableName] : data
-      }
-    }).promise()
-  }
-
   /**
   * getBatchNumber
   */

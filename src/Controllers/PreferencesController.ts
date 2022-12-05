@@ -2,10 +2,10 @@ const _ = require('underscore');
 const axios = require('axios');
 import UserServices from "../Services/UserServices";
 import PreferenceServices from "../Services/PreferenceServices"
+import CommonServices from "../Services/CommonServices";
 import { LocationServices } from "../Services/LocationServices";
 import e, { Request, Response } from "express";
-import { SchedulePreferenceObj } from "Interfaces/preferencesInterface";
-
+import { SchedulePreferenceObj } from "../Interfaces/preferencesInterface";
 
 export default class PreferencesController {
     /**
@@ -79,6 +79,30 @@ export default class PreferencesController {
                         // add block item in array
                         batchItemsList.push(prefItem)
                     }
+                    // insert batch
+                    if(batchItemsList.length === batchSize || i+1 === preferenceList.length) {
+                        // execute batch write operation
+                        await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
+                            batchItemsList = [] // clear batchItemsList
+                            // store unprocessed (failed items)
+                            failedItems.push(result.UnprocessedItems)
+                            if(i+1 === preferenceList.length) {
+                                res.status(200);
+                                res.send({
+                                    success: true,
+                                    message: "Preferences saved successfully.",
+                                    data: failedItems
+                                });
+                            }
+                        }).catch((error : any) => {
+                            res.status(500);
+                            res.send({
+                                success: false,
+                                message: "Something went wrong, please try after sometime.",
+                                error : error
+                            });  
+                        })
+                    }  
                 }
             } else {
                 // create sort key
@@ -103,32 +127,32 @@ export default class PreferencesController {
                 };
                 // add block item in array
                 batchItemsList.push(prefItem)
+                // insert batch
+                if(batchItemsList.length === batchSize || i+1 === preferenceList.length) {
+                    // execute batch write operation
+                    await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
+                        batchItemsList = [] // clear batchItemsList
+                        // store unprocessed (failed items)
+                        failedItems.push(result.UnprocessedItems)
+                        if(i+1 === preferenceList.length) {
+                            res.status(200);
+                            res.send({
+                                success: true,
+                                message: "Preferences saved successfully.",
+                                data: failedItems
+                            });
+                        }
+                    }).catch((error : any) => {
+                        res.status(500);
+                        res.send({
+                            success: false,
+                            message: "Something went wrong, please try after sometime.",
+                            error : error
+                        });  
+                    })
+                }  
             }
 
-            // insert batch
-            if(batchItemsList.length === batchSize || i+1 === preferenceList.length) {
-                // execute batch write operation
-                await new PreferenceServices().insertPreferences(batchItemsList).then(async (result: any) => {
-                    batchItemsList = [] // clear batchItemsList
-                    // store unprocessed (failed items)
-                    failedItems.push(result.UnprocessedItems)
-                    if(i+1 === preferenceList.length) {
-                        res.status(200);
-                        res.send({
-                            success: true,
-                            message: "Preferences saved successfully.",
-                            data: failedItems
-                        });
-                    }
-                }).catch((error : any) => {
-                    res.status(500);
-                    res.send({
-                        success: false,
-                        message: "Something went wrong, please try after sometime.",
-                        error : error
-                    });  
-                })
-            }  
         }        
     }
 
@@ -284,7 +308,7 @@ export default class PreferencesController {
                     }
                 }).then(async (result : any) => {
                      // execute batch write operation
-                    await new PreferenceServices().insertPreferencesSchedule(batchItemsList).then(async (result: any) => {
+                    await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
                         batchItemsList = [] // clear batchItemsList
                         // store unprocessed (failed items)
                         failedItems.push(result.UnprocessedItems)

@@ -362,6 +362,7 @@ export default class UserServices {
         country: data.country,
         customerID: data.customerId,
         password: bcrypt.hashSync(Math.random().toString(20).substring(2), 10),
+        phoneVerified : false,
         currentSteps: 'finished',
         planType: 'basic',
         region : "",
