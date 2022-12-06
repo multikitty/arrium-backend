@@ -49,11 +49,12 @@ export default class StripeServices {
     }
     let products = await stripe.products.search({
       query: query,
+      limit: 100,
     });
-
     let prices = await stripe.prices.search({
       query: `active:\'true\' AND metadata[\'plan type\']:"${plan_type}" AND currency:"${currency}"`,
     });
+
     prices = prices?.data?.map((itm: any) => ({ ...itm, converted_amount: itm?.unit_amount / 100 }));
     products = products?.data?.map((prod: any) => {
       const filtered_price = prices?.filter((itm: any) => itm?.product === prod?.id)[0];
@@ -245,12 +246,14 @@ export default class StripeServices {
     return invoice;
   }
 
-  public async getUserByStripeId(id:string){
-    return dynamoDB.get({
-      TableName: TableName,
-      Key:{
-        stripeID:id
-      }
-    }).promise()
+  public async getUserByStripeId(id: string) {
+    return dynamoDB
+      .get({
+        TableName: TableName,
+        Key: {
+          stripeID: id,
+        },
+      })
+      .promise();
   }
 }
