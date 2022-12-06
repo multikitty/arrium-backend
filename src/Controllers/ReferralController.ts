@@ -3,6 +3,7 @@ import { ReferralCodeObj, ReferralRequestData } from "../Interfaces/referralInte
 import fs from 'fs';
 import initialIds from '../Utils/customerId.json';
 import CommonServices from "../Services/CommonServices";
+import ReferralServices from "../Services/ReferralServices";
 export default class ReferralController {
 
     /**
@@ -10,45 +11,45 @@ export default class ReferralController {
         */
     public createReferralCode(req: Request, res: Response) {
         // request data
-        let referralData : ReferralRequestData = {
-            country : req.body.country,
-            region : req.body.region,
-            station : req.body.station,
-            numberOfReferral : Number(req.body.numberOfReferral),
-            assignTo : req.body.assignTo
+        let referralData: ReferralRequestData = {
+            country: req.body.country,
+            region: req.body.region,
+            station: req.body.station,
+            numberOfReferral: Number(req.body.numberOfReferral),
+            assignTo: req.body.assignTo
         }
         // Batch insert
         let batchSize = 25;
-        let batchItemsList : any[] = [];
-        let failedItems : any[] = []
+        let batchItemsList: any[] = [];
+        let failedItems: any[] = []
         // loop for creating referral codes
         for (let i = 0; i < referralData.numberOfReferral; i++) {
             // For Generating referral code
             let cIdObj = initialIds;
             cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;
             // Create block item object
-            let codeData : ReferralCodeObj = {
-                sk : `referral#${referralData.country+cIdObj.lastCustomerId}`,
-                pk : 'referral',
-                refCode : referralData.country+cIdObj.lastCustomerId,
-                country : referralData.country,
-                region : referralData.region,
-                station : referralData.station,
-                refGenFor : referralData.assignTo,
-                refGenBy : req.body.pk,
-                refGen : new Date().toISOString(),
-                refActive : true
+            let codeData: ReferralCodeObj = {
+                sk: `referral#${referralData.country + cIdObj.lastCustomerId}`,
+                pk: 'referral',
+                refCode: referralData.country + cIdObj.lastCustomerId,
+                country: referralData.country,
+                region: referralData.region,
+                station: referralData.station,
+                refGenFor: referralData.assignTo,
+                refGenBy: req.body.pk,
+                refGen: new Date().toISOString(),
+                refActive: true
             }
             // store in query format
             let batchItem = {
                 PutRequest: {
                     Item: codeData
                 },
-            }; 
+            };
             // add block item in array
             batchItemsList.push(batchItem)
             // insert records
-            if(batchItemsList.length === batchSize || i+1 === referralData.numberOfReferral) {
+            if (batchItemsList.length === batchSize || i + 1 === referralData.numberOfReferral) {
                 fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), async (err) => {
                     if (err) {
                         res.status(500);
@@ -63,7 +64,7 @@ export default class ReferralController {
                             batchItemsList = [] // clear batchItemsList
                             // store unprocessed (failed items)
                             failedItems.push(result.UnprocessedItems)
-                            if(i+1 === referralData.numberOfReferral) {
+                            if (i + 1 === referralData.numberOfReferral) {
                                 res.status(200);
                                 res.send({
                                     success: true,
@@ -71,17 +72,62 @@ export default class ReferralController {
                                     data: failedItems
                                 });
                             }
-                        }).catch((error : any) => {
+                        }).catch((error: any) => {
                             res.status(500);
                             res.send({
                                 success: false,
                                 message: "Something went wrong, please try after sometime.",
-                                error : error
-                            });  
+                                error: error
+                            });
                         })
                     }
                 })
             }
         }
+    }
+
+
+    /**
+    * fetchRefCodeByCreator
+    */
+    public async fetchRefCodeByCreator(req: Request, res: Response) {
+        let userpk: any = req.query.userpk;
+        await new ReferralServices().getRefGenBy(userpk).then((result: any) => {
+            res.status(200);
+            res.send({
+                success: true,
+                message: "Referral list retrieved successfully.",
+                data: result,
+            });
+        }).catch((err) => {
+            res.status(500);
+            res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error: err
+            });
+        });
+    }
+
+    /**
+   * fetchRefCodeByCreator
+   */
+    public async fetchRefCodeByAgent(req: Request, res: Response) {
+        let userpk: any = req.query.userpk;
+        await new ReferralServices().getRefGenFor(userpk).then((result: any) => {
+            res.status(200);
+            res.send({
+                success: true,
+                message: "Referral list retrieved successfully.",
+                data: result,
+            });
+        }).catch((err) => {
+            res.status(500);
+            res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error: err
+            });
+        });
     }
 }

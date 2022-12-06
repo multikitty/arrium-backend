@@ -10,4 +10,8 @@ import { authentication } from "./../Middlewares/authentication";
 
 router.post("/", authentication("admin"), new ReferralValidation().createReferral(), validationSchema, new ReferralController().createReferralCode);
 
+router.get("/by-creator", authentication("admin"), new ReferralController().fetchRefCodeByCreator);
+
+router.get("/by-sales-agent", authentication("sales"), new ReferralController().fetchRefCodeByAgent);
+
 export = router;

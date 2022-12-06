@@ -9,5 +9,7 @@ export const TableName = config.aws_table_name
 // GSI Index
 export const GSI = {
     login : "GSI-Login",
-    userByRole : "usersByRole"
+    userByRole : "usersByRole",
+    refByCreator : "refByCreator",
+    refByAgent : "refByAgent"
 }
