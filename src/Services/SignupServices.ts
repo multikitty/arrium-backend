@@ -11,7 +11,7 @@ export const SignupServices = {
           email: data.email,
           pkEmail: data.email,
           password: bcrypt.hashSync(data.password, 10),
-          refCode: data.refCode,
+          refCode: data.fullRefCode,
           role: data.role,
           emailVerified: false,
           currentSteps: 'account_info',

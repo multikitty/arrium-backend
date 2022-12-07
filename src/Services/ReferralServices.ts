@@ -39,4 +39,40 @@ export default class ReferralServices {
         }
         return await dynamoDB.query(queryInput).promise();
     }
+
+
+    /**
+        * findReferralCode
+        */
+    public async findReferralCode(refCode : string) {
+        return await dynamoDB
+            .get({
+                TableName: TableName,
+                Key: {
+                    pk: "referral",
+                    sk: `referral#${refCode}`,
+                },
+            }).promise();
+    }   
+
+    /**
+     * udpateReferralCodeStatus
+     */
+    public async udpateReferralCodeStatus(data: any) {
+        let params = {
+            TableName: TableName,
+            Key: {
+                pk: "referral",
+                sk: `referral#${data.refCode}`
+            },
+            UpdateExpression: "SET #3b1e0 = :3b1e0",
+            ExpressionAttributeValues: {
+                ":3b1e0": data.status
+            },
+            ExpressionAttributeNames: {
+                "#3b1e0": "refActive"
+            }
+        }
+        return await dynamoDB.update(params).promise();
+    }
 }
