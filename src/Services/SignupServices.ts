@@ -21,6 +21,7 @@ export const SignupServices = {
           planType: 'basic',
           region : "",
           otp : "",
+          pricingPlan : false,
           country: data.country
         },
         TableName: TableName,
