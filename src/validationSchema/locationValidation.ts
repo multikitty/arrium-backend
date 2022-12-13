@@ -19,7 +19,7 @@ export default class LocationValidation {
             body("regionCode").trim().toUpperCase().not().isEmpty().withMessage("Region Code is required"),
             body("regionId").trim().not().isEmpty().withMessage("Region ID is required")
         ]
-    }
+    } 
 
     public station() {
         return [

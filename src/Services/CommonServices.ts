@@ -17,4 +17,15 @@ export default class CommonServices {
         }
         return dynamoDB.delete(params).promise();
     }
+    
+    
+    // Batch write common method  
+    public batchWriteData(data : any) {
+        return dynamoDB.batchWrite({
+            RequestItems: {
+                [TableName] : data
+            }
+        }).promise()
+    }
+
 }

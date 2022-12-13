@@ -6,6 +6,7 @@ import NotificationServices from "../Services/NotificationServices";
 import BlockServices from "../Services/BlocksServices";
 import MailServices from "../Services/MailServices";
 import UserServices from "../Services/UserServices";
+import CommonServices from "../Services/CommonServices";
 import { Request, response, Response } from "express";
 export default class BlockController {
  
@@ -157,7 +158,7 @@ export default class BlockController {
             batchItemsList.push(blockItem)
             if(batchItemsList.length === batchSize || i+1 === blockList.length) {
               // execute batch write operation
-              await new BlockServices().insertBlocks(batchItemsList).then(async (result: any) => {
+              await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
                 batchItemsList = [] // clear batchItemsList
                 // store unprocessed (failed items)
                 failedItems.push(result.UnprocessedItems)

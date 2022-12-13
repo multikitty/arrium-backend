@@ -2,18 +2,6 @@ import { TableName, dynamoDB } from '../Utils/dynamoDB';
 
 
 export default class PreferenceServices {
-    
-
-    /**
-    * add Preferences
-    */
-    public insertPreferences(data : any) {
-        return dynamoDB.batchWrite({
-            RequestItems: {
-                [TableName] : data
-            }
-        }).promise()
-    }
 
     /**
     * getPreferenceByUser
@@ -36,19 +24,6 @@ export default class PreferenceServices {
         }
         return dynamoDB.query(params).promise();
     }
-
-    /**
-    * add Preferences
-    */
-    public insertPreferencesSchedule(data : any) {
-        
-        return dynamoDB.batchWrite({
-            RequestItems: {
-                [TableName] : data
-            }
-        }).promise()
-    }
-
 
     // get availability schedule
     public async getAvailabilitySchedule(data: any) {
