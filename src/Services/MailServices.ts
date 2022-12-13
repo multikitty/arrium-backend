@@ -72,7 +72,7 @@ export default class MailServices {
   /**
    * sendBlockAcceptedMail
    */
-  public sendBlockAcceptedMail(data : any) {
+  public async sendBlockAcceptedMail(data : any) {
     const msgData = {
       type : "mail",
       data : {
@@ -80,13 +80,11 @@ export default class MailServices {
         from : 'notification@arrium.io',
         replyTo : [],
         subject : "Block(s) Accepted",
-        message : `
-                Dear ${data.user.userName}, </br> 
-                The following block(s) have been accepted: </br>
-                ${data.blockInfo} </br>
-              `
+        message : `Dear ${data.user.userName},<br />
+        The following block(s) have been accepted:<br/><br/>
+        ${data.blockInfo}`
       }
     }
-    return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+    return await new SqsQueueServices().sendMessageInNotificationQueue(msgData);
   }
 }

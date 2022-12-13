@@ -1,6 +1,7 @@
 const _ = require('underscore');
 const axios = require('axios');
 
+import getSymbolFromCurrency from 'currency-symbol-map'
 import  moment from "moment";
 import NotificationServices from "../Services/NotificationServices";
 import BlockServices from "../Services/BlocksServices";
@@ -8,6 +9,7 @@ import MailServices from "../Services/MailServices";
 import UserServices from "../Services/UserServices";
 import CommonServices from "../Services/CommonServices";
 import { Request, response, Response } from "express";
+
 export default class BlockController {
  
   /**
@@ -15,31 +17,32 @@ export default class BlockController {
     */
   private async sendAcceptedBlockNotification (data : any) {
     let blockInfo = ``;
+    let smsBlockInfo = ``;
     let validBlockInfo = false;
     // loop through block list
     for (let i = 0; i < data.blockInfo.length; i++) {
       const block = data.blockInfo[i];
       // get block date and day
       let blockDate = new Date(block.bStartTime * 1000);
-      let newBlockDate = blockDate.toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric'});
+      let newBlockDate = blockDate.toLocaleDateString("en-GB", {day: 'numeric', month: 'short'});
       let blockDay = new Intl.DateTimeFormat('en-US', {weekday: "short"}).format(blockDate)
       // get start time
       let startDateTime = new Date(block.bStartTime * 1000);
-      let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
+      let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }).replace(" ", "")
       // get end time
       let endDateTime = new Date(block.bEndTime * 1000);
-      let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
-      blockInfo += `
-      ${blockDay} ${newBlockDate} ${block.stationName}(${block.stationCode}) ${startTime} - ${endTime} ${block.price} ${block.currency} 
-      `;
+      let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }).replace(" ", "")
+      blockInfo += `${blockDay} ${newBlockDate} at ${block.stationCode}<br/>${startTime}-${endTime} for ${getSymbolFromCurrency(block.currency) ?? ""}${Number(block.price).toFixed(2)}<br/><br/>`;
+      // for sms
+      smsBlockInfo += `${blockDay} ${newBlockDate} at ${block.stationCode}\n${startTime}-${endTime} for ${getSymbolFromCurrency(block.currency) ?? ""}${Number(block.price).toFixed(2)}\n\n`;
       if(data.blockInfo.length === i+1) {
         validBlockInfo = true;
       } 
     }
     // send notification messages in queue
     if(validBlockInfo) {
-      new MailServices().sendBlockAcceptedMail({blockInfo : blockInfo, user : data.user})
-      new NotificationServices().sendBlockAcceptedMessage({blockInfo : blockInfo, user : data.user})
+      await new MailServices().sendBlockAcceptedMail({blockInfo : blockInfo, user : data.user})
+      await new NotificationServices().sendBlockAcceptedMessage({blockInfo : smsBlockInfo, user : data.user})
     }
   }
   /**
@@ -75,145 +78,145 @@ export default class BlockController {
         }
         
         // Get current batch number
-        new BlockServices().getBatchNumber(request.body.pk).then( async (result : any) => {
-          // generate new batch number
-          if(result.Item) {
-            let newBatchNumber = result.Item.batch + 1;
-            batchNumber = newBatchNumber;
-          } 
-          // Start adding blocks
-          let blockList = request.body.blockItems;
-          let batchSize = 25;
-          let batchItemsList = [];
-          let allBlocksData : any[] = [];
-          let failedItems : any[] = []
-          // loop through block list
-          for (let i = 0; i < blockList.length; i++) {
-            const block = blockList[i];
-            // get block date and day
-            let blockDate = new Date(block.bStartTime * 1000);
-            let bDate = blockDate.toISOString().split('T')[0] // for Sort key value
-            let newBlockDate = blockDate.toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric'});
-            let blockDay = new Intl.DateTimeFormat('en-US', {weekday: "short"}).format(blockDate)
-            // get start time
-            let startDateTime = new Date(block.bStartTime * 1000);
-            let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
-            // get end time
-            let endDateTime = new Date(block.bEndTime * 1000);
-            let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
-            // calculate duration
-            let now = moment(startDateTime); 
-            let end = moment(endDateTime);
-            let difference = moment.duration(end.diff(now));
-            let duration : string = String((difference.asHours()).toFixed(2));
-            duration = `${duration} Hours`;
-            // create sort key for block
-            let blockSk = `block#${batchNumber}#${bDate}#${block.bStartTime}#${block.bEndTime}#${block.offerId}`;
-            // Create block item object
-            let blockItem = {
-              PutRequest: {
-                Item: {
-                  pk: request.body.pk,
-                  sk: blockSk,
-                  bDay: blockDay,
-                  bDate: newBlockDate,
-                  Status: block.status,
-                  duration: duration,
-                  price: block.price,
-                  bStartTime: startTime,
-                  bEndTime: endTime,
-                  stationCode: block.stationCode,
-                  stationName: block.stationName,
-                  currency: block.currency,
-                  offerID: block.offerId,
-                  surgeMultiplier: block.surgeMultiplier,
-                  projectedTips: block.projectedTips,
-                  priorityOffer: block.priorityOffer,
-                  expDate: block.bEndTime
-                },
-              },
-            };
-            // add block items to all block data array
-            let blockData = {
-              pk: request.body.pk,
-              sk: blockSk,
-              bDay: blockDay,
-              bDate: newBlockDate,
-              Status: block.status,
-              duration: duration,
-              price: block.price,
-              bStartTime: startTime,
-              bEndTime: endTime,
-              stationCode: block.stationCode,
-              stationName: block.stationName,
-              currency: block.currency,
-              offerID: block.offerId,
-              surgeMultiplier: block.surgeMultiplier,
-              projectedTips: block.projectedTips,
-              priorityOffer: block.priorityOffer,
-              expDate: block.bEndTime
-            }
-            allBlocksData.push(blockData)
-            // add block item in array
-            batchItemsList.push(blockItem)
-            if(batchItemsList.length === batchSize || i+1 === blockList.length) {
-              // execute batch write operation
-              await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
-                batchItemsList = [] // clear batchItemsList
-                // store unprocessed (failed items)
-                failedItems.push(result.UnprocessedItems)
-                if(i+1 === blockList.length) {
-                  // update batch number
-                  let batchInfo = {
-                    userPk : request.body.pk,
-                    batchNumber : batchNumber
-                  }
-                  // Update batch number
-                  await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
-                    if(result.Attributes) {
-                      // update frontend client with socket io event
-                      request.app.get("socketService").emit("block-data-updated", {data : allBlocksData, userPk : request.body.pk});
-                      // success response
-                      response.status(200);
-                      response.send({
-                        success: true,
-                        message: "Searched blocks added successfully.",
-                        data: failedItems
-                      });
-                    } else {
-                      response.status(500);
-                      response.send({
-                        success: false,
-                        message: "Something went wrong, please try after sometime.",
-                      });  
-                    }
-                  }).catch((error : any) => {
-                    response.status(500);
-                    response.send({
-                      success: false,
-                      message: "Something went wrong, please try after sometime.",
-                      error : error
-                    });  
-                  })
-                }
-              }).catch((error : any) => {
-                response.status(500);
-                response.send({
-                  success: false,
-                  message: "Something went wrong, please try after sometime.",
-                  error : error
-                });  
-              })
-            }        
-          }
-        }).catch((error : any) => {
-          response.status(500);
-          response.send({
-            success: false,
-            message: "Something went wrong, please try after sometime.",
-            error : error
-          });  
-        });
+        // new BlockServices().getBatchNumber(request.body.pk).then( async (result : any) => {
+        //   // generate new batch number
+        //   if(result.Item) {
+        //     let newBatchNumber = result.Item.batch + 1;
+        //     batchNumber = newBatchNumber;
+        //   } 
+        //   // Start adding blocks
+        //   let blockList = request.body.blockItems;
+        //   let batchSize = 25;
+        //   let batchItemsList = [];
+        //   let allBlocksData : any[] = [];
+        //   let failedItems : any[] = []
+        //   // loop through block list
+        //   for (let i = 0; i < blockList.length; i++) {
+        //     const block = blockList[i];
+        //     // get block date and day
+        //     let blockDate = new Date(block.bStartTime * 1000);
+        //     let bDate = blockDate.toISOString().split('T')[0] // for Sort key value
+        //     let newBlockDate = blockDate.toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric'});
+        //     let blockDay = new Intl.DateTimeFormat('en-US', {weekday: "short"}).format(blockDate)
+        //     // get start time
+        //     let startDateTime = new Date(block.bStartTime * 1000);
+        //     let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
+        //     // get end time
+        //     let endDateTime = new Date(block.bEndTime * 1000);
+        //     let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
+        //     // calculate duration
+        //     let now = moment(startDateTime); 
+        //     let end = moment(endDateTime);
+        //     let difference = moment.duration(end.diff(now));
+        //     let duration : string = String((difference.asHours()).toFixed(2));
+        //     duration = `${duration} Hours`;
+        //     // create sort key for block
+        //     let blockSk = `block#${batchNumber}#${bDate}#${block.bStartTime}#${block.bEndTime}#${block.offerId}`;
+        //     // Create block item object
+        //     let blockItem = {
+        //       PutRequest: {
+        //         Item: {
+        //           pk: request.body.pk,
+        //           sk: blockSk,
+        //           bDay: blockDay,
+        //           bDate: newBlockDate,
+        //           Status: block.status,
+        //           duration: duration,
+        //           price: block.price,
+        //           bStartTime: startTime,
+        //           bEndTime: endTime,
+        //           stationCode: block.stationCode,
+        //           stationName: block.stationName,
+        //           currency: block.currency,
+        //           offerID: block.offerId,
+        //           surgeMultiplier: block.surgeMultiplier,
+        //           projectedTips: block.projectedTips,
+        //           priorityOffer: block.priorityOffer,
+        //           expDate: block.bEndTime
+        //         },
+        //       },
+        //     };
+        //     // add block items to all block data array
+        //     let blockData = {
+        //       pk: request.body.pk,
+        //       sk: blockSk,
+        //       bDay: blockDay,
+        //       bDate: newBlockDate,
+        //       Status: block.status,
+        //       duration: duration,
+        //       price: block.price,
+        //       bStartTime: startTime,
+        //       bEndTime: endTime,
+        //       stationCode: block.stationCode,
+        //       stationName: block.stationName,
+        //       currency: block.currency,
+        //       offerID: block.offerId,
+        //       surgeMultiplier: block.surgeMultiplier,
+        //       projectedTips: block.projectedTips,
+        //       priorityOffer: block.priorityOffer,
+        //       expDate: block.bEndTime
+        //     }
+        //     allBlocksData.push(blockData)
+        //     // add block item in array
+        //     batchItemsList.push(blockItem)
+        //     if(batchItemsList.length === batchSize || i+1 === blockList.length) {
+        //       // execute batch write operation
+        //       await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
+        //         batchItemsList = [] // clear batchItemsList
+        //         // store unprocessed (failed items)
+        //         failedItems.push(result.UnprocessedItems)
+        //         if(i+1 === blockList.length) {
+        //           // update batch number
+        //           let batchInfo = {
+        //             userPk : request.body.pk,
+        //             batchNumber : batchNumber
+        //           }
+        //           // Update batch number
+        //           await new BlockServices().updateBatchNumber(batchInfo).then((result: any) => {
+        //             if(result.Attributes) {
+        //               // update frontend client with socket io event
+        //               request.app.get("socketService").emit("block-data-updated", {data : allBlocksData, userPk : request.body.pk});
+        //               // success response
+        //               response.status(200);
+        //               response.send({
+        //                 success: true,
+        //                 message: "Searched blocks added successfully.",
+        //                 data: failedItems
+        //               });
+        //             } else {
+        //               response.status(500);
+        //               response.send({
+        //                 success: false,
+        //                 message: "Something went wrong, please try after sometime.",
+        //               });  
+        //             }
+        //           }).catch((error : any) => {
+        //             response.status(500);
+        //             response.send({
+        //               success: false,
+        //               message: "Something went wrong, please try after sometime.",
+        //               error : error
+        //             });  
+        //           })
+        //         }
+        //       }).catch((error : any) => {
+        //         response.status(500);
+        //         response.send({
+        //           success: false,
+        //           message: "Something went wrong, please try after sometime.",
+        //           error : error
+        //         });  
+        //       })
+        //     }        
+        //   }
+        // }).catch((error : any) => {
+        //   response.status(500);
+        //   response.send({
+        //     success: false,
+        //     message: "Something went wrong, please try after sometime.",
+        //     error : error
+        //   });  
+        // });
       } else {
         response.status(500);
         response.send({

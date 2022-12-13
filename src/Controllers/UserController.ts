@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { AWSError } from "aws-sdk";
 import { PromiseResult } from "aws-sdk/lib/request";
-import { AddUserObj } from "../Interfaces/userInterface";
+import { AddUserObj, UpdatePricingPlanObj } from "../Interfaces/userInterface";
 import fs from 'fs';
 import companyIds from '../Utils/customerId.json';
 
@@ -632,4 +632,28 @@ export default class UserController {
         });
       })
   }
+
+  // updatePricingPlanStatus
+  public async enablePricingPlanPage(request: Request, response: Response) {
+    let userData : UpdatePricingPlanObj = {
+      userPK : request.body.userPK,
+      userSK : request.body.userSK,
+      status : request.body.pricingPlan
+    }
+    await new UserServices().updatePricingPlanStatus(userData).then((result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+      response.status(200);
+      response.send({
+        success: true,
+        message: "Pricing plan status updated.",
+      });
+    }).catch((error : AWSError) => {
+      response.status(500);
+      response.send({
+        success: false,
+        message: "Something went wrong while updating phone number",
+        error : error
+      });
+    });
+  }
+
 }

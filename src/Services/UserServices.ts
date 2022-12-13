@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { AddUserObj } from '../Interfaces/userInterface';
+import { AddUserObj, UpdatePricingPlanObj } from '../Interfaces/userInterface';
 import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
 
 export default class UserServices {
@@ -371,5 +371,22 @@ export default class UserServices {
       TableName: TableName,
     })
     .promise();
+  }
+
+  // udpate pricing plan page status
+  public updatePricingPlanStatus(data: UpdatePricingPlanObj) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: data.userPK,
+          sk: data.userSK,
+        },
+        UpdateExpression: `set pricingPlan= :pricingPlan`,
+        ExpressionAttributeValues: {
+          ':pricingPlan': data.status
+        }
+      })
+      .promise();
   }
 }
