@@ -77,14 +77,32 @@ export default class StripeServices {
     return products;
   }
 
-  public async createCustomer(email: string, name: string, customerId: number) {
+  public async createCustomer(email: string, name: string, customerId: number,pk:string,sk:string) {
     console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
       name,
       invoice_prefix: `${Math.floor(Math.random() * 100 + 1)}${customerId}`,
+      metadata:{
+        pk,
+        sk
+      }
       // invoice_prefix: customerId,
     });
+    return customer;
+  }
+  public async updateCustomer({email, name,stripeId}:{stripeId:string,email?: string, name?: string}) {
+    const data:any={}
+    if(email){
+      data.email=email
+    }
+    if(name){
+      data.name=name
+    }
+    const customer = await stripe.customers.update(
+      stripeId,
+      data
+    );
     return customer;
   }
 

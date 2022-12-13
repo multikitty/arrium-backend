@@ -12,7 +12,9 @@ export default class StripeController {
       const stripeCust = await new StripeServices().createCustomer(
         'zeus@arrium.com',
         'Zeus Thunder',
-        exis_user?.customerID
+        exis_user?.customerID,
+        pk,
+        sk
       );
       const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeID', fieldValue: stripeCust?.id });
       return res.status(200).json({ exis_user, stripeCust, cus });
@@ -30,9 +32,9 @@ export default class StripeController {
     }
   }
 
-  async createCustomerStripe(email: string, name: string, customerId: number) {
+  async createCustomerStripe(email: string, name: string, customerId: number,pk:string,sk:string) {
     try {
-      const res = await new StripeServices().createCustomer(email, name, customerId);
+      const res = await new StripeServices().createCustomer(email, name, customerId,pk,sk);
       return res;
     } catch (error: any) {
       throw Error(error?.message);
