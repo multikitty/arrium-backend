@@ -28,7 +28,7 @@ export const SignupController = {
             let refCode = request.body.country+request.body.refCode;
             // register flag
             let canSignup = false;
-            if(refCode) {
+            if(request.body.refCode) {
               // validate referral code is correct
               await new ReferralServices().findReferralCode(refCode).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
                 if(result.Item) {
