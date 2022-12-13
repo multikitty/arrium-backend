@@ -3,7 +3,7 @@ import moment from 'moment';
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
 import { dynamoDB, TableName } from '../Utils/dynamoDB';
-import { Plan, PricingPlan, FreeTrial, RetrieveInvoices } from 'Interfaces/stripeInterfaces';
+import { Plan, PricingPlan, FreeTrial, RetrieveInvoices, customerData } from 'Interfaces/stripeInterfaces';
 export default class StripeServices {
   private getCountry(country: string) {
     switch (country) {
@@ -77,12 +77,16 @@ export default class StripeServices {
     return products;
   }
 
-  public async createCustomer(email: string, name: string, customerId: number) {
+  public async createCustomer({ email, name, customerId, pk, sk }: customerData) {
     console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
       name,
       invoice_prefix: `${Math.floor(Math.random() * 100 + 1)}${customerId}`,
+      metadata: {
+        pk,
+        sk,
+      },
       // invoice_prefix: customerId,
     });
     return customer;

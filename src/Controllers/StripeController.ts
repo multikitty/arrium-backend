@@ -5,21 +5,21 @@ import { SignupServices } from '../Services/SignupServices';
 import StripeServices from '../Services/StripeServices';
 
 export default class StripeController {
-  async createStripeCustomer(req: any, res: any) {
-    const { sk, pk } = req.body;
-    try {
-      const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
-      const stripeCust = await new StripeServices().createCustomer(
-        'zeus@arrium.com',
-        'Zeus Thunder',
-        exis_user?.customerID
-      );
-      const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeID', fieldValue: stripeCust?.id });
-      return res.status(200).json({ exis_user, stripeCust, cus });
-    } catch (err) {
-      return res.status(500).json({ error: err, message: 'Something went wrong' });
-    }
-  }
+  // async createStripeCustomer(req: any, res: any) {
+  //   const { sk, pk } = req.body;
+  //   try {
+  //     const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+  //     const stripeCust = await new StripeServices().createCustomer(
+  //       'zeus@arrium.com',
+  //       'Zeus Thunder',
+  //       exis_user?.customerID
+  //     );
+  //     const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeID', fieldValue: stripeCust?.id });
+  //     return res.status(200).json({ exis_user, stripeCust, cus });
+  //   } catch (err) {
+  //     return res.status(500).json({ error: err, message: 'Something went wrong' });
+  //   }
+  // }
   async getPricingPlans(req: any, res: any) {
     const { getAll = false, active = true, name = '', plan_type, country } = req.query;
     try {
@@ -30,14 +30,14 @@ export default class StripeController {
     }
   }
 
-  async createCustomerStripe(email: string, name: string, customerId: number) {
-    try {
-      const res = await new StripeServices().createCustomer(email, name, customerId);
-      return res;
-    } catch (error: any) {
-      throw Error(error?.message);
-    }
-  }
+  // async createCustomerStripe(email: string, name: string, customerId: number) {
+  //   try {
+  //     const res = await new StripeServices().createCustomer(email, name, customerId);
+  //     return res;
+  //   } catch (error: any) {
+  //     throw Error(error?.message);
+  //   }
+  // }
 
   async handleStripeEvents(req: any, res: any) {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -79,7 +79,7 @@ export default class StripeController {
             console.log('&****', { scheduled_subscriptions });
             //show plan page
           }
-       
+
           break;
         case 'invoice.created':
           if (!data?.paid) {
@@ -93,7 +93,7 @@ export default class StripeController {
                 .format('MMM DD,YYYY')} - ${moment.unix(data?.lines?.data[0]?.period?.end).format('MMM DD,YYYY')})`,
             };
 
-             await new StripeServices().updateInvoice(data?.id, invoice_data);
+            await new StripeServices().updateInvoice(data?.id, invoice_data);
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(sub_id);
@@ -123,7 +123,13 @@ export default class StripeController {
         pk,
         sk,
       });
-      const stripe_customer = await new StripeServices().createCustomer(email, `${firstname} ${lastname}`, customerID);
+      const stripe_customer = await new StripeServices().createCustomer({
+        email,
+        name: `${firstname} ${lastname}`,
+        customerId: customerID,
+        pk,
+        sk,
+      });
       //get all areas plan id from stripe
       let plans: any = await new StripeServices().getPricingPlans({
         active: true,
@@ -170,10 +176,9 @@ export default class StripeController {
         stripeID: stripe_customer.id,
       });
       return user;
-    } catch (err:any) {
+    } catch (err: any) {
       console.log({ err });
-       throw Error(`Something went wrong! ${err?.message}`);
-
+      throw Error(`Something went wrong! ${err?.message}`);
     }
   }
   public async onSelectPlan(req: any, res: any) {
