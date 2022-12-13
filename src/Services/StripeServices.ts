@@ -77,7 +77,19 @@ export default class StripeServices {
     return products;
   }
 
-  public async createCustomer({ email, name, customerId, pk, sk }: customerData) {
+  public async createCustomer({
+    email,
+    name,
+    customerId,
+    pk,
+    sk,
+  }: {
+    email: string;
+    name: string;
+    customerId: number;
+    pk: string;
+    sk: string;
+  }) {
     console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
@@ -89,6 +101,17 @@ export default class StripeServices {
       },
       // invoice_prefix: customerId,
     });
+    return customer;
+  }
+  public async updateCustomer({ email, name, stripeId }: { stripeId: string; email?: string; name?: string }) {
+    const data: any = {};
+    if (email) {
+      data.email = email;
+    }
+    if (name) {
+      data.name = name;
+    }
+    const customer = await stripe.customers.update(stripeId, data);
     return customer;
   }
 

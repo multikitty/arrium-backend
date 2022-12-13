@@ -5,21 +5,23 @@ import { SignupServices } from '../Services/SignupServices';
 import StripeServices from '../Services/StripeServices';
 
 export default class StripeController {
-  // async createStripeCustomer(req: any, res: any) {
-  //   const { sk, pk } = req.body;
-  //   try {
-  //     const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
-  //     const stripeCust = await new StripeServices().createCustomer(
-  //       'zeus@arrium.com',
-  //       'Zeus Thunder',
-  //       exis_user?.customerID
-  //     );
-  //     const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeID', fieldValue: stripeCust?.id });
-  //     return res.status(200).json({ exis_user, stripeCust, cus });
-  //   } catch (err) {
-  //     return res.status(500).json({ error: err, message: 'Something went wrong' });
-  //   }
-  // }
+  async createStripeCustomer(req: any, res: any) {
+    const { sk, pk } = req.body;
+    try {
+      const exis_user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+      const stripeCust = await new StripeServices().createCustomer({
+        email: 'zeus@arrium.com',
+        name: 'Zeus Thunder',
+        customerId: exis_user?.customerID,
+        pk,
+        sk,
+      });
+      const cus = await new UserServices().updateProfile({ sk, pk, fieldName: 'stripeID', fieldValue: stripeCust?.id });
+      return res.status(200).json({ exis_user, stripeCust, cus });
+    } catch (err) {
+      return res.status(500).json({ error: err, message: 'Something went wrong' });
+    }
+  }
   async getPricingPlans(req: any, res: any) {
     const { getAll = false, active = true, name = '', plan_type, country } = req.query;
     try {
@@ -30,14 +32,14 @@ export default class StripeController {
     }
   }
 
-  // async createCustomerStripe(email: string, name: string, customerId: number) {
-  //   try {
-  //     const res = await new StripeServices().createCustomer(email, name, customerId);
-  //     return res;
-  //   } catch (error: any) {
-  //     throw Error(error?.message);
-  //   }
-  // }
+  async createCustomerStripe(email: string, name: string, customerId: number, pk: string, sk: string) {
+    try {
+      const res = await new StripeServices().createCustomer({ email, name, customerId, pk, sk });
+      return res;
+    } catch (error: any) {
+      throw Error(error?.message);
+    }
+  }
 
   async handleStripeEvents(req: any, res: any) {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
