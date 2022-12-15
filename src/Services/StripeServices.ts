@@ -19,7 +19,7 @@ export default class StripeServices {
     const { due_date, paid } = data;
     if (paid) {
       return 'paid';
-    } else if (!paid && moment().unix() > due_date) {
+    } else if (!paid && moment().unix() < due_date) {
       return 'due';
     }
     return 'overdue';
@@ -233,9 +233,15 @@ export default class StripeServices {
   }
 
   public async getInvoices(data: RetrieveInvoices) {
-    let query = { customer: data.customer, limit: data?.limit ?? 10 };
+    let query: any = { customer: data.customer, limit: data?.limit ?? 10 };
     if (data?.getAll) {
-      data.limit = 99999999;
+      query.limit = 99999999;
+    }
+    if (data?.starting_after) {
+      query.starting_after = data.starting_after;
+    }
+    if (data?.ending_before) {
+      query.ending_before = data.ending_before;
     }
     const invoices = await stripe.invoices.list(query);
     return invoices;

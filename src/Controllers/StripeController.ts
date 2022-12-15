@@ -59,31 +59,39 @@ export default class StripeController {
             if free trial and not subscribed to any other subscription then change status inactive
           */
           //TODO get user by stripeId
-          const customer=await new StripeServices().getCustomer(stripeId)
-          if(customer){
-            const {pk,sk}=customer?.meta_data
-          const user = (await new UserServices().getUserData({ sk: 'driver#900037', pk: 'UK-900037' }))?.Item;
-          console.log({ user, t: data?.trial_end, s: data?.ended_at });
-          // should be true trial_end
-          if (stripeId && data?.trial_end && user && data?.ended_at) {
-            let scheduled_subscriptions = (await new StripeServices().getSubscriptionSchedules(user.stripeID))?.data;
-            if (scheduled_subscriptions?.length) {
-              scheduled_subscriptions = scheduled_subscriptions.filter((itm: any) => itm?.status !== 'canceled');
-              if (!scheduled_subscriptions?.length) {
-                //make user status inactive
-                const update_user = {
-                  sk: user.sk,
-                  pk: user.pk,
-                  fieldName: 'accountStatus',
-                  fieldValue: 'inActive',
-                };
-                await new UserServices().updateProfile(update_user);
+          const stripe_customer = await new StripeServices().getCustomer(stripeId);
+          console.log({ stripe_customer, meta: stripe_customer?.metadata });
+          if (stripe_customer) {
+            const { pk, sk } = stripe_customer?.metadata;
+            const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+            console.log({ user, t: data?.trial_end, s: data?.ended_at });
+            // should be true trial_end
+            if (stripeId && data?.trial_end && user && data?.ended_at) {
+              let scheduled_subscriptions = (await new StripeServices().getSubscriptionSchedules(user.stripeID))?.data;
+              if (scheduled_subscriptions?.length) {
+                scheduled_subscriptions = scheduled_subscriptions.filter((itm: any) => itm?.status !== 'canceled');
+                if (!scheduled_subscriptions?.length) {
+                  //make user status inactive
+                  let update_user = {
+                    sk: user.sk,
+                    pk: user.pk,
+                    fieldName: 'accountStatus',
+                    fieldValue: 'inActive',
+                  };
+                  await new UserServices().updateProfile(update_user);
+                  update_user = {
+                    sk: user.sk,
+                    pk: user.pk,
+                    fieldName: 'pricingPlan',
+                    fieldValue: 'true',
+                  };
+                  await new UserServices().updateProfile(update_user);
+                }
               }
+              console.log('&****', { scheduled_subscriptions });
+              //show plan page
             }
-            console.log('&****', { scheduled_subscriptions });
-            //show plan page
           }
-
           break;
         case 'invoice.created':
           if (!data?.paid) {
@@ -108,18 +116,25 @@ export default class StripeController {
             }
           }
           break;
-          case 'invoice.paid':
-            const customer=await new StripeServices().getCustomer(stripeId)
-            if(customer){
-              const {pk,sk}=customer?.meta_data
-              const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
-              if(user){
-                if(user?.status!=='Active'){
-
-                }
+        case 'invoice.paid':
+          const customer = await new StripeServices().getCustomer(stripeId);
+          if (customer) {
+            const { pk, sk } = customer?.metadata;
+            const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+            console.log({ user });
+            if (user) {
+              if (user?.status !== 'Active') {
+                const update_data = {
+                  sk,
+                  pk,
+                  fieldName: 'accountStatus',
+                  fieldValue: 'Active',
+                };
+                await new UserServices().updateProfile(update_data);
               }
             }
-            break;
+          }
+          break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
       }
@@ -289,7 +304,7 @@ export default class StripeController {
 
   public async getInvoices(req: any, res: any) {
     const { sk, pk } = req.body;
-    const { page = 1 } = req.query;
+    const { page = 1, limit = 10, start_after, end_before } = req.query;
     try {
       const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
       if (!user?.stripeID) {
@@ -297,13 +312,19 @@ export default class StripeController {
           .status(404)
           .json({ success: false, message: 'Something went wrong', error: 'User Stripe Id not found' });
       }
-      const data = {
+      const data: any = {
         customer: user?.stripeID,
-        limit: 10,
+        limit: limit ?? 10,
         page: Number(page),
       };
       if (page > 1) {
         data.page = Number(page);
+      }
+      if (start_after) {
+        data.starting_after = start_after;
+      }
+      if (end_before) {
+        data.ending_before = end_before;
       }
       const invoices = await new StripeServices().getInvoices(data);
 
@@ -329,15 +350,32 @@ export default class StripeController {
         };
         return data;
       });
-      const response = { data: invoices_data, has_more: invoices?.has_more, invoices };
-      return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
+      let starting_after = null;
+      let ending_before = null;
+      const has_more = invoices?.has_more ?? false;
+      if (has_more && invoices_data?.length > 1) {
+        starting_after = invoices_data[invoices_data.length - 1]?.id;
+        ending_before = invoices_data[0]?.id;
+      } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
+        starting_after = invoices_data[0]?.id;
+        ending_before = invoices_data[0]?.id;
+      }
+
+      return res?.status(200).json({
+        success: true,
+        data: invoices_data,
+        has_more,
+        starting_after,
+        ending_before,
+        message: 'Successfully fetched invoices',
+      });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
     }
   }
   public async getInvoicesAdmin(req: any, res: any) {
     const { sk, pk } = req.query;
-    const { page = 1 } = req.query;
+    const { page = 1, start_after, end_before, limit = 10 } = req.query;
     try {
       let user: any = (await new UserServices().getUserData({ sk, pk }))?.Item;
       if (!user?.stripeID) {
@@ -345,13 +383,19 @@ export default class StripeController {
           .status(404)
           .json({ success: false, message: 'Something went wrong', error: 'User Stripe Id not found' });
       }
-      const data = {
+      const data: any = {
         customer: user?.stripeID,
-        limit: 10,
+        limit,
         page: Number(page),
       };
       if (page > 1) {
         data.page = Number(page);
+      }
+      if (start_after) {
+        data.starting_after = start_after;
+      }
+      if (end_before) {
+        data.ending_before = end_before;
       }
       const invoices = await new StripeServices().getInvoices(data);
       const invoices_data = invoices?.data?.map((invoice: any) => {
@@ -376,8 +420,24 @@ export default class StripeController {
         };
         return data;
       });
-      const response = { invoices_data, has_more: invoices?.has_more, invoices };
-      return res?.status(200).json({ success: true, invoices: response, message: 'Successfully fetched invoices' });
+      let starting_after = null;
+      let ending_before = null;
+      const has_more = invoices?.has_more ?? false;
+      if (has_more && invoices_data?.length > 1) {
+        starting_after = invoices_data[invoices_data.length - 1]?.id;
+        ending_before = invoices_data[0]?.id;
+      } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
+        starting_after = invoices_data[0]?.id;
+        ending_before = invoices_data[0]?.id;
+      }
+      return res?.status(200).json({
+        success: true,
+        data: invoices_data,
+        has_more,
+        starting_after,
+        ending_before,
+        message: 'Successfully fetched invoices',
+      });
     } catch (error) {
       return res?.status(500).json({ success: false, error, message: 'Something went wrong' });
     }

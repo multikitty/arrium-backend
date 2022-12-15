@@ -6,7 +6,7 @@ const socketio = require('socket.io');
 //config env
 import dotenv from 'dotenv';
 dotenv.config();
-require('./Utils/crons')
+require('./Utils/crons');
 // initialize app
 const app: Express = express();
 app.use(express.urlencoded({ extended: true }));
@@ -25,8 +25,6 @@ import stripe from './routes/stripe';
 import referral from './routes/referral';
 import timezone from './routes/timezone';
 import sesTemplates from './routes/sesTemplates';
-import StripeController from './Controllers/StripeController';
-import StripeServices from './Services/StripeServices';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -78,15 +76,4 @@ server.on('connection', (socket: any) => {
   app.set('socketService', socket);
 });
 
-//  new StripeController().disableCustomersFiveDays().then((res)=>{
-//   console.log({res})
-//  }).catch((err)=>{
-//     console.log(err)
-//  })
-
-//  new StripeServices().getUserByStripeId('cus_MtLXNls6qV7PMw').then((res)=>{
-//   console.log({res})
-//  }).catch((err)=>{
-//   console.log({err})
-//  })
 httpServer.listen(9000);
