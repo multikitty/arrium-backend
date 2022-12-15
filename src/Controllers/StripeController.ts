@@ -58,8 +58,10 @@ export default class StripeController {
           /*check if current ended subscription is of free trial
             if free trial and not subscribed to any other subscription then change status inactive
           */
-          console.log('**user');
           //TODO get user by stripeId
+          const customer=await new StripeServices().getCustomer(stripeId)
+          if(customer){
+            const {pk,sk}=customer?.meta_data
           const user = (await new UserServices().getUserData({ sk: 'driver#900037', pk: 'UK-900037' }))?.Item;
           console.log({ user, t: data?.trial_end, s: data?.ended_at });
           // should be true trial_end
@@ -106,6 +108,18 @@ export default class StripeController {
             }
           }
           break;
+          case 'invoice.paid':
+            const customer=await new StripeServices().getCustomer(stripeId)
+            if(customer){
+              const {pk,sk}=customer?.meta_data
+              const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+              if(user){
+                if(user?.status!=='Active'){
+
+                }
+              }
+            }
+            break;
         default:
         // throw Error(`Unhandled Event ${event?.type}`);
       }
