@@ -24,6 +24,8 @@ router.put("/update-account-info", authentication("admin"), new UserController()
 
 router.post("/approve-account", authentication("admin"), new UserController().sendAccountSetupMail);
 
+router.put("/pricing-plan", authentication("admin"), new UserController().enablePricingPlanPage);
+
 router.get("/list-by-role", authentication("admin"), new UserController().fetchUserByRole);
 
 router.post("/add-user", authentication("admin"), new UserValidation().addUser(), validationSchema, new UserController().addUser);

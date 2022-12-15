@@ -18,11 +18,11 @@ export default class SqsQueueServices {
         // send data to SQS
         sqs.sendMessage(params, (err, data) => {
             if (err) {
+                console.log("Error", err);
                 return true
-              console.log("Error", err);
             } else {
+                console.log("Successfully added message", data.MessageId);
                 return false
-              console.log("Successfully added message", data.MessageId);
             }
         });
     }

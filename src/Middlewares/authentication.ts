@@ -16,7 +16,7 @@ export const authentication = (userRole?: string) => {
           message: 'Failed to authenticate token',
         });
       // if everything good, save to request for use in other routes
-      if (decoded.userRole === userRole || decoded.userRole === 'admin') {
+      if (decoded.userRole === userRole || decoded.userRole === 'admin' || userRole === "all") {
         request.body.pk = decoded.pk;
         request.body.sk = decoded.sk;
         request.body.role = decoded.userRole;

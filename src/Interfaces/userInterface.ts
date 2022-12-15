@@ -18,3 +18,9 @@ export interface AddUserObj {
     readonly endDate : Date | string | null
 }
 
+
+export interface UpdatePricingPlanObj {
+    readonly userPK : string,
+    readonly userSK : string,
+    readonly status: boolean
+}
