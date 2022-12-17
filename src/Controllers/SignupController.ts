@@ -1,4 +1,5 @@
-import fs from 'fs';
+// import fs from 'fs';
+import { promises as fs } from 'fs';
 import jwt from 'jsonwebtoken';
 import customerIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
@@ -24,11 +25,14 @@ export const SignupController = {
               message: 'An account already exists for this email address',
             });
           } else {
-            // check referral code
-            let refCode = request.body.country+request.body.refCode;
+            // referral code
+            let refCode = "";
             // register flag
             let canSignup = false;
+            // check referral code
             if(request.body.refCode) {
+              // create referral code pattern
+              refCode = request.body.country+request.body.refCode;
               // validate referral code is correct
               await new ReferralServices().findReferralCode(refCode).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
                 if(result.Item) {
@@ -61,18 +65,16 @@ export const SignupController = {
               //For Generating customer Id
               let cIdObj = customerIds;
               cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;  
-              fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), (err) => {
-                if (err) {
-                  response.status(500);
-                  response.send({
-                    success: false,
-                    message: 'Something went wrong, please try after sometime.',
-                    error: err,
-                  });
-                } else {
-                  request.body.customerId = String(cIdObj.lastCustomerId);
-                  canSignup = true
-                }
+              await fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj)).then(() => {
+                request.body.customerId = String(cIdObj.lastCustomerId);
+                canSignup = true
+              }).catch((err) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: 'Something went wrong, please try after sometime.',
+                  error: err,
+                });
               })
             }
             // user signup
