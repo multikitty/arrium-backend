@@ -6,11 +6,11 @@ const socketio = require('socket.io');
 //config env
 import dotenv from 'dotenv';
 dotenv.config();
+require('./Utils/crons');
 // initialize app
 const app: Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.json());
 //Import Routes File
 import signup from './routes/signup';
 import signin from './routes/signin';
@@ -39,6 +39,8 @@ app.use(
     },
   })
 );
+app.use(express.json());
+
 //Routes Defined Here
 app.use('/v1/signin', signin);
 app.use('/v1/signup', signup);
@@ -73,4 +75,5 @@ server.on('connection', (socket: any) => {
   console.log('New Client is Connected!');
   app.set('socketService', socket);
 });
+
 httpServer.listen(9000);
