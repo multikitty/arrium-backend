@@ -47,7 +47,7 @@ export const authSchema = {
       .withMessage('Password must have at least one character uppercase')
       .matches(/\d/)
       .withMessage('Password must contain number characters'),
-    body('country').trim().not().isEmpty().withMessage('Country Code is required.'),
+    body('country').trim().toUpperCase().not().isEmpty().withMessage('Country Code is required.'),
   ],
 
   //validation for signup Account Information
@@ -98,9 +98,7 @@ export const authSchema = {
       .trim()
       .not()
       .isEmpty()
-      .withMessage('Amazon flex username is required')
-      .isEmail()
-      .withMessage('Please enter valid Amazon flex username'),
+      .withMessage('Amazon flex username is required'),
     body('amznFlexPassword')
       .trim()
       .not()

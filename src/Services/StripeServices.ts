@@ -3,7 +3,7 @@ import moment from 'moment';
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET);
 import { dynamoDB, TableName } from '../Utils/dynamoDB';
-import { Plan, PricingPlan, FreeTrial, RetrieveInvoices } from 'Interfaces/stripeInterfaces';
+import { Plan, PricingPlan, FreeTrial, RetrieveInvoices, customerData } from 'Interfaces/stripeInterfaces';
 export default class StripeServices {
   private getCountry(country: string) {
     switch (country) {
@@ -19,7 +19,7 @@ export default class StripeServices {
     const { due_date, paid } = data;
     if (paid) {
       return 'paid';
-    } else if (!paid && moment().unix() > due_date) {
+    } else if (!paid && moment().unix() < due_date) {
       return 'due';
     }
     return 'overdue';
@@ -49,11 +49,12 @@ export default class StripeServices {
     }
     let products = await stripe.products.search({
       query: query,
+      limit: 100,
     });
-
     let prices = await stripe.prices.search({
       query: `active:\'true\' AND metadata[\'plan type\']:"${plan_type}" AND currency:"${currency}"`,
     });
+
     prices = prices?.data?.map((itm: any) => ({ ...itm, converted_amount: itm?.unit_amount / 100 }));
     products = products?.data?.map((prod: any) => {
       const filtered_price = prices?.filter((itm: any) => itm?.product === prod?.id)[0];
@@ -76,14 +77,41 @@ export default class StripeServices {
     return products;
   }
 
-  public async createCustomer(email: string, name: string, customerId: number) {
+  public async createCustomer({
+    email,
+    name,
+    customerId,
+    pk,
+    sk,
+  }: {
+    email: string;
+    name: string;
+    customerId: number;
+    pk: string;
+    sk: string;
+  }) {
     console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
       name,
       invoice_prefix: `${Math.floor(Math.random() * 100 + 1)}${customerId}`,
+      metadata: {
+        pk,
+        sk,
+      },
       // invoice_prefix: customerId,
     });
+    return customer;
+  }
+  public async updateCustomer({ email, name, stripeId }: { stripeId: string; email?: string; name?: string }) {
+    const data: any = {};
+    if (email) {
+      data.email = email;
+    }
+    if (name) {
+      data.name = name;
+    }
+    const customer = await stripe.customers.update(stripeId, data);
     return customer;
   }
 
@@ -148,6 +176,12 @@ export default class StripeServices {
     const subscription = await stripe.subscriptions.update(subscriptionId, data);
     return subscription;
   }
+  public async getSubscriptionSchedules(stripeId: string) {
+    const subscriptionSchedules = await stripe.subscriptionSchedules.list({
+      customer: stripeId,
+    });
+    return subscriptionSchedules;
+  }
   public async updateStripeClientId(data: any) {
     return dynamoDB
       .update({
@@ -156,9 +190,9 @@ export default class StripeServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set stripeId= :stripeId`,
+        UpdateExpression: `set stripeID= :stripeID`,
         ExpressionAttributeValues: {
-          ':stripeId': data.stripeId,
+          ':stripeID': data.stripeID,
         },
         ReturnValues: 'ALL_NEW',
       })
@@ -199,9 +233,15 @@ export default class StripeServices {
   }
 
   public async getInvoices(data: RetrieveInvoices) {
-    let query = { customer: data.customer, limit: data?.limit ?? 10 };
+    let query: any = { customer: data.customer, limit: data?.limit ?? 10 };
     if (data?.getAll) {
-      data.limit = 100;
+      query.limit = 99999999;
+    }
+    if (data?.starting_after) {
+      query.starting_after = data.starting_after;
+    }
+    if (data?.ending_before) {
+      query.ending_before = data.ending_before;
     }
     const invoices = await stripe.invoices.list(query);
     return invoices;
@@ -237,5 +277,16 @@ export default class StripeServices {
   public async payInvoice(id: string) {
     const invoice = await stripe.invoices.pay(id);
     return invoice;
+  }
+
+  public async getUserByStripeId(id: string) {
+    return dynamoDB
+      .get({
+        TableName: TableName,
+        Key: {
+          stripeID: id,
+        },
+      })
+      .promise();
   }
 }

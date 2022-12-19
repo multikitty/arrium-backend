@@ -1,12 +1,15 @@
 const _ = require('underscore');
 const axios = require('axios');
 
+import getSymbolFromCurrency from 'currency-symbol-map'
 import  moment from "moment";
 import NotificationServices from "../Services/NotificationServices";
 import BlockServices from "../Services/BlocksServices";
 import MailServices from "../Services/MailServices";
 import UserServices from "../Services/UserServices";
+import CommonServices from "../Services/CommonServices";
 import { Request, response, Response } from "express";
+
 export default class BlockController {
  
   /**
@@ -14,31 +17,32 @@ export default class BlockController {
     */
   private async sendAcceptedBlockNotification (data : any) {
     let blockInfo = ``;
+    let smsBlockInfo = ``;
     let validBlockInfo = false;
     // loop through block list
     for (let i = 0; i < data.blockInfo.length; i++) {
       const block = data.blockInfo[i];
       // get block date and day
       let blockDate = new Date(block.bStartTime * 1000);
-      let newBlockDate = blockDate.toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric'});
+      let newBlockDate = blockDate.toLocaleDateString("en-GB", {day: 'numeric', month: 'short'});
       let blockDay = new Intl.DateTimeFormat('en-US', {weekday: "short"}).format(blockDate)
       // get start time
       let startDateTime = new Date(block.bStartTime * 1000);
-      let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
+      let startTime = startDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }).replace(" ", "")
       // get end time
       let endDateTime = new Date(block.bEndTime * 1000);
-      let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })
-      blockInfo += `
-      ${blockDay} ${newBlockDate} ${block.stationName}(${block.stationCode}) ${startTime} - ${endTime} ${block.price} ${block.currency} 
-      `;
+      let endTime = endDateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' }).replace(" ", "")
+      blockInfo += `${blockDay} ${newBlockDate} at ${block.stationCode}<br/>${startTime}-${endTime} for ${getSymbolFromCurrency(block.currency) ?? ""}${Number(block.price).toFixed(2)}<br/><br/>`;
+      // for sms
+      smsBlockInfo += `${blockDay} ${newBlockDate} at ${block.stationCode}\n${startTime}-${endTime} for ${getSymbolFromCurrency(block.currency) ?? ""}${Number(block.price).toFixed(2)}\n\n`;
       if(data.blockInfo.length === i+1) {
         validBlockInfo = true;
       } 
     }
     // send notification messages in queue
     if(validBlockInfo) {
-      new MailServices().sendBlockAcceptedMail({blockInfo : blockInfo, user : data.user})
-      new NotificationServices().sendBlockAcceptedMessage({blockInfo : blockInfo, user : data.user})
+      await new MailServices().sendBlockAcceptedMail({blockInfo : blockInfo, user : data.user})
+      await new NotificationServices().sendBlockAcceptedMessage({blockInfo : smsBlockInfo, user : data.user})
     }
   }
   /**
@@ -157,7 +161,7 @@ export default class BlockController {
             batchItemsList.push(blockItem)
             if(batchItemsList.length === batchSize || i+1 === blockList.length) {
               // execute batch write operation
-              await new BlockServices().insertBlocks(batchItemsList).then(async (result: any) => {
+              await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
                 batchItemsList = [] // clear batchItemsList
                 // store unprocessed (failed items)
                 failedItems.push(result.UnprocessedItems)

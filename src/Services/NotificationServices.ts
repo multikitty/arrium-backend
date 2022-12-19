@@ -11,14 +11,10 @@ export default class NotificationServices {
             type: "text_message",
             data: {
                 phoneNumber : data?.user?.userPhoneNumber, 
-                message: `
-                    Dear ${data?.user?.userName},
-                    BLOCK ACCEPTED:
-                    ${data.blockInfo}
-                `
+                message: `BLOCK(S) ACCEPTED\n\n${data.blockInfo}`
             }
         }
-        return new SqsQueueServices().sendMessageInNotificationQueue(msgData);
+        return await new SqsQueueServices().sendMessageInNotificationQueue(msgData);
     }
 
     /**
@@ -29,9 +25,7 @@ export default class NotificationServices {
             type: "text_message",
             data: {
                 phoneNumber : data?.userPhoneNumber, 
-                message: `
-                    Your OTP for verification is ${data.otp}
-                `
+                message: `Your OTP for verification is ${data.otp}`
             }
         }
         return new SqsQueueServices().sendMessageInNotificationQueue(msgData);

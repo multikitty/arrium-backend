@@ -27,4 +27,14 @@ export interface RetrieveInvoices {
   customer: string;
   limit?: number;
   getAll?: boolean;
+  ending_before?: string;
+  starting_after?: string;
+}
+
+export interface customerData {
+  email: string;
+  name: string;
+  customerId: number;
+  pk: string;
+  sk: string;
 }
