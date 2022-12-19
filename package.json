@@ -16,6 +16,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.8",
+    "@types/node-cron": "^3.0.6",
     "@types/nodemailer": "^6.4.4",
     "@types/uuid": "^9.0.0",
     "aws-sdk": "^2.1130.0",
@@ -37,6 +38,7 @@
     "currency-symbol-map": "^5.1.0",
     "express": "^4.17.1",
     "moment": "^2.24.0",
+    "node-cron": "^3.0.2",
     "socket.io": "^4.5.3",
     "stripe": "^10.15.0",
     "underscore": "^1.13.4"
