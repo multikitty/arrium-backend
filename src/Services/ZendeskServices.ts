@@ -1,10 +1,10 @@
 import {
   ZendeskCreateOrganization,
   ZendeskUser,
-  ZendeskUpdate,
   ZendeskMakePrimary,
   ZendeskCreateTicket,
   ZendeskPrimaryEmailParams,
+  ZendeskUpdateUser,
 } from "../Interfaces/zendeskInterface";
 
 const axios = require("axios");
@@ -61,8 +61,8 @@ export default class ZendeskServices {
   }
 
   // update zendesk user
-  public async updateZendeskUser(params: ZendeskUpdate) {
-    await axios
+  public async updateZendeskUser(params: ZendeskUpdateUser) {
+    return await axios
       .put(
         `${process.env.ZENDESK_BASE_URL}api/v2/users/${params.zendeskUserId}`,
         { user: params },
@@ -74,12 +74,6 @@ export default class ZendeskServices {
           },
         },
       )
-      .then((result: any) => {
-        return result.data;
-      })
-      .catch((error: any) => {
-        throw error;
-      });
   }
 
   // get zendesk identity userid

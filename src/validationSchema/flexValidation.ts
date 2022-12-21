@@ -11,7 +11,9 @@ export default class FlexValidation {
             body("userAgent").trim().not().isEmpty().withMessage("User Agent is required"),
             body("flexId").trim().toUpperCase().not().isEmpty().withMessage("Flex ID is required"),
             body("country").trim().not().isEmpty().withMessage("Country is required"),
-            body("region").trim().not().isEmpty().withMessage("Region is required")
+            body("region").trim().not().isEmpty().withMessage("Region is required"),
+            body("zendeskUserID").trim().not().isEmpty().withMessage("Zendesk User ID is required"),
+            body("zendeskOrgID").trim().not().isEmpty().withMessage("Zendesk organization ID is required")
             // body("devModel").trim().not().isEmpty().withMessage("Device Model is required"),
             // body("devType").trim().not().isEmpty().withMessage("Device type is required"),
             // body("devId").trim().not().isEmpty().withMessage("Device ID is required"),

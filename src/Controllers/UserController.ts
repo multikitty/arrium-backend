@@ -9,6 +9,8 @@ import { PromiseResult } from "aws-sdk/lib/request";
 import { AddUserObj, UpdatePricingPlanObj } from "../Interfaces/userInterface";
 import fs from 'fs';
 import companyIds from '../Utils/customerId.json';
+import { ZendeskUpdateUser } from "../Interfaces/zendeskInterface";
+import ZendeskServices from "../Services/ZendeskServices";
 
 export default class UserController {
   // get logged in user data
@@ -81,58 +83,81 @@ export default class UserController {
   * updateAmznFlexDetails
   */
   public async updateAmznFlexDetails(request: Request, response: Response) {
-    await new UserServices().updateFlexDetails(request.body)
-      .then(async (result: any) => {
-        // handle result 
-        if (result.Attributes) {
-          const responseData = result.Attributes;
-          // udpate changes in user entity
-          let countryRegionData = {
-            userPk: request.body.userPk,
-            userSk: request.body.userSk,
-            country: result.Attributes.country,
-            region: result.Attributes.region
-          }
-          await new UserServices().updateUserCountryRegion(countryRegionData)
-            .then((result) => {
-              if (result) {
-                response.status(200);
-                response.send({
-                  success: true,
-                  message: "Configuration details updated successfully.",
-                  data: responseData
-                });
-              } else {
-                response.status(500);
-                response.send({
-                  success: false,
-                  message: "Something went wrong, please try after sometime.",
-                });
+    // update zendesk organisation id of user
+    let zendeskParams : ZendeskUpdateUser = {
+      zendeskUserId : request.body.zendeskUserID,
+      organization_id : request.body.zendeskOrgID
+    }
+    // update zendesk organization
+    await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+      if (resp.status === 200) {
+        await new UserServices().updateFlexDetails(request.body)
+          .then(async (result: any) => {
+            // handle result 
+            if (result.Attributes) {
+              const responseData = result.Attributes;
+              // udpate changes in user entity
+              let countryRegionData = {
+                userPk: request.body.userPk,
+                userSk: request.body.userSk,
+                country: result.Attributes.country,
+                region: result.Attributes.region
               }
-            }).catch((error: any) => {
+              await new UserServices().updateUserCountryRegion(countryRegionData)
+                .then((result) => {
+                  if (result) {
+                    response.status(200);
+                    response.send({
+                      success: true,
+                      message: "Configuration details updated successfully.",
+                      data: responseData
+                    });
+                  } else {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: "Something went wrong, please try after sometime.",
+                    });
+                  }
+                }).catch((error: any) => {
+                  response.status(500);
+                  response.send({
+                    success: false,
+                    message: "Something went wrong, please try after sometime.",
+                    error: error
+                  });
+                })
+            } else {
               response.status(500);
               response.send({
                 success: false,
                 message: "Something went wrong, please try after sometime.",
-                error: error
               });
-            })
-        } else {
-          response.status(500);
-          response.send({
-            success: false,
-            message: "Something went wrong, please try after sometime.",
-          });
-        }
-      })
-      .catch((error: any) => {
+            }
+          })
+          .catch((error: any) => {
+            response.status(500);
+            response.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+              error: error
+            });
+          })
+      } else {
         response.status(500);
         response.send({
           success: false,
           message: "Something went wrong, please try after sometime.",
-          error: error
         });
-      })
+      }
+    }).catch((error: any) => {
+      response.status(error.response?.status ?? 500);
+      response.send({
+        success: false,
+        message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+        error: error
+      });
+    })
   }
   // get single user data
   async getUserByPkSk(request: any, response: any) {
@@ -175,24 +200,55 @@ export default class UserController {
   // update account info
   async updateAccountInfo(request: any, response: any) {
     try {
-      await new UserServices()
-        .updateAccountInfo(request.body)
-        .then((result) => {
-          if (result.Attributes) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "User Account Information updated successfully",
+      // update zendesk organisation id of user
+      let zendeskParams : ZendeskUpdateUser = {
+        zendeskUserId : request.body.zendeskUserID,
+        name : request.body.firstname+" "+request.body.lastname,
+        email : request.body.email,
+        time_zone : request.body.tzName
+      }
+      // update zendesk organization
+      await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+        if (resp.status === 200) {
+          await new UserServices()
+            .updateAccountInfo(request.body)
+            .then((result) => {
+              if (result.Attributes) {
+                response.status(200);
+                response.send({
+                  success: true,
+                  message: "User Account Information updated successfully",
+                });
+              } else {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime."
+                });
+              }
+            }).catch((error) => {
+              response.status(500);
+              response.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error: error
+              });
             });
-          }
-        }).catch((error) => {
+        } else {
           response.status(500);
           response.send({
             success: false,
             message: "Something went wrong, please try after sometime.",
-            error: error
           });
+        }
+      }).catch((error: any) => {
+        response.status(error.response?.status ?? 500);
+        response.send({
+          success: false,
+          message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+          error: error
         });
+      })
     } catch (error) {
       response.status(500);
       response.send({

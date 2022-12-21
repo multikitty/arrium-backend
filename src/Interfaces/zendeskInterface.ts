@@ -7,12 +7,13 @@ export interface ZendeskUser {
   readonly organization_id: string;
 }
 
-export interface ZendeskUpdate {
-  readonly email: string;
-  readonly name: string;
-  readonly verified: boolean;
-  readonly time_zone: string;
-  zendeskUserId: string;
+export interface  ZendeskUpdateUser {
+  readonly email?: string;
+  readonly name?: string;
+  readonly verified?: boolean;
+  readonly time_zone?: string;
+  readonly zendeskUserId: string;
+  readonly organization_id?: string;
 }
 
 export interface ZendeskComment {

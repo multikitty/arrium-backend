@@ -277,13 +277,13 @@ export const SignupController = {
         amznFlexPassword: request.body.amznFlexPassword,
       };
       // update flex data
-      await SignupServices.updateAmazonFlexInfoService(flexData).then((result) => {
+      await SignupServices.updateAmazonFlexInfoService(flexData).then(async (result) => {
         if (result) {
           let keyParams : EntitySkPk = {
             sk : request.body.sk,
             pk : request.body.pk
           }
-          new UserServices().getUserData(keyParams).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
+          await new UserServices().getUserData(keyParams).then(async (result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
             if(result.Item) {
               // create a user in zendesk
               let zendeskUser : ZendeskUser = {
@@ -294,7 +294,7 @@ export const SignupController = {
                 time_zone : result.Item.tzName,
                 organization_id : "8216223451037" // => default org id
               }
-              new ZendeskServices().createZendeskUser(zendeskUser).then((resp) => {
+              await new ZendeskServices().createZendeskUser(zendeskUser).then(async (resp) => {
                 if (resp.status === 201 && resp?.data?.user?.id) {
                   // Update account registration steps
                   let updateParams : UpdateCurrentStepAndZendeskUsrID = {
@@ -303,7 +303,7 @@ export const SignupController = {
                     currentStep : "finished",
                     zendeskUsrID : resp?.data?.user?.id
                   }
-                  new UserServices().updateCurrentStepAndZendeskID(updateParams)
+                  await new UserServices().updateCurrentStepAndZendeskID(updateParams)
                   .then(async (result) => {
                     // send mail to admin here
                     let userData = {
