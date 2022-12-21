@@ -85,23 +85,6 @@ export const SignupServices = {
       .promise();
   },
 
-  updateCurrentSteps: async (data: any) => {
-    return dynamoDB
-      .update({
-        TableName: TableName,
-        Key: {
-          pk: data.pk,
-          sk: data.sk,
-        },
-        UpdateExpression: `set currentSteps= :currentSteps`,
-        ExpressionAttributeValues: {
-          ':currentSteps': 'finished',
-        },
-        ReturnValues: 'ALL_NEW',
-      })
-      .promise();
-  },
-
   signupSendMailService: async (data: any) => {
     return dynamoDB
       .get({

@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { AddUserObj, UpdatePricingPlanObj } from '../Interfaces/userInterface';
+import { AddUserObj, UpdateCurrentStepAndZendeskUsrID, UpdatePricingPlanObj } from '../Interfaces/userInterface';
 import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
+import { EntitySkPk } from '../Interfaces/commonInterface';
 
 export default class UserServices {
   // Fetch User by GSI Index from GSI-Login
@@ -16,7 +17,7 @@ export default class UserServices {
     return dynamoDB.query(queryParams).promise();
   }
 
-  async getUserData(data: any) {
+  async getUserData(data: EntitySkPk) {
     return dynamoDB
       .get({
         TableName: TableName,
@@ -307,7 +308,7 @@ export default class UserServices {
   /**
    * udpate current step of user
    */
-  public updateCurrentSteps(data: any) {
+  public updateCurrentStepAndZendeskID(data: UpdateCurrentStepAndZendeskUsrID) {
     return dynamoDB
       .update({
         TableName: TableName,
@@ -315,9 +316,10 @@ export default class UserServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set currentSteps= :currentSteps`,
+        UpdateExpression: `set currentSteps= :currentSteps, zendeskUserID= :zendeskUserID`,
         ExpressionAttributeValues: {
           ':currentSteps': data.currentStep,
+          ":zendeskUserID" : data.zendeskUsrID
         },
         ReturnValues: 'ALL_NEW',
       })

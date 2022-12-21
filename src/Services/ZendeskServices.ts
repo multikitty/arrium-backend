@@ -12,7 +12,7 @@ const axios = require("axios");
 export default class ZendeskServices {
   // create org in zendesk
   async createZendeskOrganisation(params: ZendeskCreateOrganization) {
-    await axios
+    return await axios
       .post(
         `${process.env.ZENDESK_BASE_URL}api/v2/organizations`,
         { organization: params },
@@ -24,12 +24,6 @@ export default class ZendeskServices {
           },
         },
       )
-      .then((result: any) => {
-        return result.data;
-      })
-      .catch((error: any) => {
-        throw new Error(error.response.data.details);
-      });
   }
 
   // get org list from zendesk
@@ -52,7 +46,7 @@ export default class ZendeskServices {
 
   // create zendesk user
   async createZendeskUser(params: ZendeskUser) {
-    await axios
+    return await axios
       .post(
         `${process.env.ZENDESK_BASE_URL}api/v2/users`,
         { user: params },
@@ -64,12 +58,6 @@ export default class ZendeskServices {
           },
         },
       )
-      .then((result: any) => {
-        return result.data;
-      })
-      .catch((error: any) => {
-        throw new Error(error.response.data.details);
-      });
   }
 
   // update zendesk user

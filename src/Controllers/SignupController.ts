@@ -10,6 +10,11 @@ import ReferralServices from '../Services/ReferralServices';
 import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { PromiseResult } from 'aws-sdk/lib/request';
+import { ZendeskUser } from '../Interfaces/zendeskInterface';
+import ZendeskServices from '../Services/ZendeskServices';
+import { EntitySkPk } from '../Interfaces/commonInterface';
+import { Request, Response } from 'express';
+import { UpdateCurrentStepAndZendeskUsrID } from 'Interfaces/userInterface';
 
 export const SignupController = {
   // Signup Step 1
@@ -262,7 +267,7 @@ export const SignupController = {
     }
   },
 
-  updateAmazonFlexInfo: async (request: any, response: any) => {
+  updateAmazonFlexInfo: async (request: Request, response: Response) => {
     try {
       // AMZN Flex data
       let flexData = {
@@ -271,46 +276,101 @@ export const SignupController = {
         amznFlexUser: request.body.amznFlexUser,
         amznFlexPassword: request.body.amznFlexPassword,
       };
-
       // update flex data
       await SignupServices.updateAmazonFlexInfoService(flexData).then((result) => {
         if (result) {
-          // Update account registration steps
-          SignupServices.updateCurrentSteps(request.body)
-            .then(async (result) => {
-              // send mail to admin here
-              let userData = {
-                email: result?.Attributes?.email,
-                firstname: result?.Attributes?.firstname,
-                lastname: result?.Attributes?.lastname,
-              };
-              // send mail to queue
-              await new MailServices()
-                .newUserSignUpMail(userData)
-                .then(() => {
-                  response.status(200);
-                  response.send({
-                    success: true,
-                    message: 'Amazon Flex info updated successfully.',
+          let keyParams : EntitySkPk = {
+            sk : request.body.sk,
+            pk : request.body.pk
+          }
+          new UserServices().getUserData(keyParams).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
+            if(result.Item) {
+              // create a user in zendesk
+              let zendeskUser : ZendeskUser = {
+                email : result.Item.email,
+                name : result.Item.firstname+" "+result.Item.lastname,
+                role : result.Item.role === "driver" ? "end-user" : "agent",
+                verified:  true,
+                time_zone : result.Item.tzName,
+                organization_id : "8216223451037" // => default org id
+              }
+              new ZendeskServices().createZendeskUser(zendeskUser).then((resp) => {
+                if (resp.status === 201 && resp?.data?.user?.id) {
+                  // Update account registration steps
+                  let updateParams : UpdateCurrentStepAndZendeskUsrID = {
+                    sk : request.body.sk,
+                    pk : request.body.pk,
+                    currentStep : "finished",
+                    zendeskUsrID : resp?.data?.user?.id
+                  }
+                  new UserServices().updateCurrentStepAndZendeskID(updateParams)
+                  .then(async (result) => {
+                    // send mail to admin here
+                    let userData = {
+                      email: result?.Attributes?.email,
+                      firstname: result?.Attributes?.firstname,
+                      lastname: result?.Attributes?.lastname,
+                      role : result?.Attributes?.role,
+                      status : result?.Attributes?.accountStatus,
+                      timeZone : result?.Attributes?.tzName
+                    };
+                    // send mail to queue
+                    await new MailServices()
+                      .newUserSignUpMail(userData)
+                      .then(() => {
+                        response.status(200);
+                        response.send({
+                          success: true,
+                          message: 'Amazon Flex info updated successfully.',
+                        });
+                      })
+                      .catch((err) => {
+                        response.status(500);
+                        response.send({
+                          success: false,
+                          message: 'Something went wrong, please try after sometime.',
+                          error: err,
+                        });
+                      });
+                  })
+                  .catch((err) => {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: 'Something went wrong, please try after sometime.',
+                      error: err,
+                    });
                   });
-                })
-                .catch((err) => {
+                } else {
                   response.status(500);
                   response.send({
                     success: false,
                     message: 'Something went wrong, please try after sometime.',
-                    error: err,
                   });
+                }
+              }).catch((error: any) => {
+                response.status(error.response?.status ?? 500);
+                response.send({
+                  success: false,
+                  message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+                  error: error
                 });
-            })
-            .catch((err) => {
+              })
+            } else {
               response.status(500);
               response.send({
                 success: false,
                 message: 'Something went wrong, please try after sometime.',
-                error: err,
               });
+            }
+          }).catch((err) => {
+            response.status(500);
+            response.send({
+              success: false,
+              message: 'Something went wrong, please try after sometime.',
+              error: err,
             });
+          });
         } else {
           response.status(500);
           response.send({
