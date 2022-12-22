@@ -38,7 +38,7 @@ export default class StripeServices {
       planPrice: "£25",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 2 hours of driving @£13 per hour, for 1 month access",
+      "Less than 2 hours of driving 13 per hour, for 1 month access",
       benefitsData: [
       {
       status: true,
@@ -92,7 +92,7 @@ export default class StripeServices {
       planPrice: "£35",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 3 hours of driving @£13 per hour, for 1 month access",
+      "Less than 3 hours of driving @13 per hour, for 1 month access",
       benefitsData: [
       {
       status: false,
@@ -146,7 +146,7 @@ export default class StripeServices {
       planPrice: "£45",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 3.5 hours of driving @£13 per hour, for 1 month access",
+      "Less than 3.5 hours of driving @13 per hour, for 1 month access",
       benefitsData: [
       {
       status: true,
@@ -203,7 +203,7 @@ export default class StripeServices {
       planPrice: "£30",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 2 hours of driving @£13 per hour, for 1 month access",
+      "Less than 2 hours of driving @13 per hour, for 1 month access",
       benefitsData: [
       {
       status: true,
@@ -257,7 +257,7 @@ export default class StripeServices {
       planPrice: "£40",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 3 hours of driving @£13 per hour, for 1 month access",
+      "Less than 3 hours of driving @13 per hour, for 1 month access",
       benefitsData: [
       {
       status: false,
@@ -311,7 +311,7 @@ export default class StripeServices {
       planPrice: "£50",
       planDuration: "per month",
       planDurationDescription:
-      "Less than 3.5 hours of driving @£13 per hour, for 1 month access",
+      "Less than 3.5 hours of driving @13 per hour, for 1 month access",
       benefitsData: [
       {
       status: true,
