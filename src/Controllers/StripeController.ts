@@ -355,10 +355,18 @@ export default class StripeController {
       const has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
-        ending_before = invoices_data[0]?.id;
+        if(page>1){
+          ending_before = invoices_data[0]?.id;
+        }
       } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
         starting_after = invoices_data[0]?.id;
         ending_before = invoices_data[0]?.id;
+      }else if(!has_more && invoices_data?.length && !end_before){
+        starting_after=null;
+        ending_before = invoices_data[0]?.id;
+      }else if (!has_more && invoices_data?.length){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        ending_before = null;
       }
 
       return res?.status(200).json({

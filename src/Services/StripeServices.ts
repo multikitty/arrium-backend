@@ -140,7 +140,7 @@ export default class StripeServices {
       popularity: "",
       planType: "Basic Plan",
       planName: "All Areas",
-      key:'all areas',
+      key:'All Areas',
       planDescription:
       "Deliver Amazon packages during the day and groceries in the evening",
       planPrice: "£45",
@@ -425,6 +425,7 @@ export default class StripeServices {
       const arr:any=[]
       products.map((prod:any)=>{
         const struct_prod:any=new StripeServices().structurePricingData({prod,plan_type})
+        console.log({struct_prod})
         if(struct_prod){
           arr.push(struct_prod)
         }
@@ -449,7 +450,6 @@ export default class StripeServices {
     pk: string;
     sk: string;
   }) {
-    console.log({ invoice_prefix: `${Math.random() * 100 + 1}${customerId}` });
     const customer = await stripe.customers.create({
       email,
       name,
