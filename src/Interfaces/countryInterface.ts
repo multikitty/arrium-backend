@@ -11,7 +11,8 @@ export interface AddRegionObj {
     readonly pk : string,
     readonly regionName : string,
     readonly regionCode : string
-    readonly regionId : string
+    readonly regionId : string,
+    readonly zendeskID : string,
 }
 
 export interface AddStationTypeObj {

@@ -24,3 +24,10 @@ export interface UpdatePricingPlanObj {
     readonly userSK : string,
     readonly status: boolean
 }
+
+export interface UpdateCurrentStepAndZendeskUsrID {
+    readonly sk : string,
+    readonly pk : string,
+    readonly currentStep : string,
+    readonly zendeskUsrID: string
+}

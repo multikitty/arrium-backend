@@ -2,15 +2,18 @@ export interface ZendeskUser {
   readonly email: string;
   readonly name: string;
   readonly role: string;
+  readonly verified: boolean;
+  readonly time_zone: string;
   readonly organization_id: string;
 }
 
-export interface ZendeskUpdate {
-  readonly email: string;
-  readonly name: string;
-  readonly verified: boolean;
-  readonly time_zone: string;
-  zendeskUserId: string;
+export interface  ZendeskUpdateUser {
+  readonly email?: string;
+  readonly name?: string;
+  readonly verified?: boolean;
+  readonly time_zone?: string;
+  readonly zendeskUserId: string;
+  readonly organization_id?: string;
 }
 
 export interface ZendeskComment {
@@ -34,7 +37,7 @@ export interface OrganizationFieldsInterface {
   flexCountry: string;
 }
 export interface ZendeskCreateOrganization {
-  name: number;
+  name: string;
   organization_fields: OrganizationFieldsInterface;
 }
 
