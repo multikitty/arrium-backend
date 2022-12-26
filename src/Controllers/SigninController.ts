@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import UserServices from '../Services/UserServices';
+import StripeServices from '../Services/StripeServices';
 
 export const SigninController = {
   login: async (request: any, response: any) => {
@@ -36,11 +37,17 @@ export const SigninController = {
                 let params = {
                   pk : result.Items[0].pk
                 }
+                let isFreeTrial=false;
+                    if(userData && userData?.stripeID){
+                      const freeTrialExists=await new StripeServices().checkFreeTrial(userData.stripeID)
+                      isFreeTrial=freeTrialExists
+                    }
                 await new UserServices().fetchAmznFlexDetails(params).then((result : any) => {
                   if(result.Item) {
                     let responseData = {
                       userData : userData,
-                      flexData : result.Item 
+                      flexData : result.Item ,
+                      isFreeTrial
                     }
                     response.status(200);
                     response.send({
@@ -51,7 +58,8 @@ export const SigninController = {
                   } else {
                     let responseData = {
                       userData : userData,
-                      flexData : []
+                      flexData : [],
+                      isFreeTrial
                     }
                     response.status(200);
                     response.send({

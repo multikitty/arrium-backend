@@ -648,4 +648,20 @@ export default class StripeServices {
       })
       .promise();
   }
+
+  public async checkFreeTrial(stripeId:string){
+    try {
+      const subscription= await stripe.subscriptions.list({
+        limit: 10,
+        status:'trialing',
+        customer:stripeId
+      });
+      if(subscription?.length){
+        return true
+      }
+      return false
+        } catch (error) {
+      return false
+    }
+  }
 }
