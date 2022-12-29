@@ -301,6 +301,7 @@ export default class UserServices {
           ':pkEmail': data.email,
           ':emailVerified': false,
         },
+        ReturnValues: 'ALL_NEW', //will return all Attributes in response
       })
       .promise();
   }
