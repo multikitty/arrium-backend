@@ -25,6 +25,7 @@ import stripe from './routes/stripe';
 import referral from './routes/referral';
 import timezone from './routes/timezone';
 import sesTemplates from './routes/sesTemplates';
+import alert from './routes/alert';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -55,6 +56,7 @@ app.use('/v1/stripe', stripe);
 app.use('/v1/referral', referral);
 app.use('/v1/timezone', timezone);
 app.use('/v1/templates', sesTemplates);
+app.use('/v1/alert', alert);
 
 // Handling 404 Page Not Found
 app.use((req, res, next) => {
