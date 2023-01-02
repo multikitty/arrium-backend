@@ -28,4 +28,15 @@ export default class CommonServices {
         }).promise()
     }
 
+    async getEntity(data: EntitySkPk) {
+        return dynamoDB
+            .get({
+                TableName: TableName,
+                Key: {
+                    pk: data.pk,
+                    sk: data.sk,
+                },
+            })
+            .promise();
+    }
 }

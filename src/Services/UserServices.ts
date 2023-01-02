@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { AddUserObj, UpdatePricingPlanObj } from '../Interfaces/userInterface';
+import { AddUserObj, UpdateCurrentStepAndZendeskUsrID, UpdatePricingPlanObj } from '../Interfaces/userInterface';
 import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
+import { EntitySkPk } from '../Interfaces/commonInterface';
 
 export default class UserServices {
   // Fetch User by GSI Index from GSI-Login
@@ -16,7 +17,7 @@ export default class UserServices {
     return dynamoDB.query(queryParams).promise();
   }
 
-  async getUserData(data: any) {
+  async getUserData(data: EntitySkPk) {
     return dynamoDB
       .get({
         TableName: TableName,
@@ -50,19 +51,11 @@ export default class UserServices {
         sk: `flexDetails#${data.userPk}`,
       },
       UpdateExpression: `SET 
-        amznFlexUser = :flexUser, 
+        amznFlexUser= :flexUser, 
         amznFlexPassword= :flexPassword, 
-        devModel= :devModel, 
-        devType= :devType,
-        devID= :devId,  
-        devSerial= :devSerialNumber, 
-        osVersion= :osVersion, 
-        flexVersion= :flexVersion, 
-        awsreg1= :awsReg1,
-        cogid1= :cogId1,
-        awsreg2= :awsReg2,
-        cogid2= :cogId2, 
-        amznID= :amznId,
+        accToken= :accToken,
+        refToken= :refToken,
+        usrAgent= :usrAgent,
         flexID= :flexId,
         country= :country,
         #attrRegion= :region
@@ -73,24 +66,40 @@ export default class UserServices {
       ExpressionAttributeValues: {
         ':flexUser': data.flexUser,
         ':flexPassword': data.flexPassword,
-        ':devModel': data.devModel,
-        ':devType': data.devType,
-        ':devId': data.devId,
-        ':devSerialNumber': data.devSerialNumber,
-        ':osVersion': data.osVersion,
-        ':flexVersion': data.flexVersion,
-        ':awsReg1': data.awsReg1,
-        ':cogId1': data.cogId1,
-        ':awsReg2': data.awsReg2,
-        ':cogId2': data.cogId2,
-        ':amznId': data.amznId,
+        // ':devModel': data.devModel,
+        // ':devType': data.devType,
+        // ':devId': data.devId,
+        // ':devSerialNumber': data.devSerialNumber,
+        // ':osVersion': data.osVersion,
+        // ':flexVersion': data.flexVersion,
+        // ':awsReg1': data.awsReg1,
+        // ':cogId1': data.cogId1,
+        // ':awsReg2': data.awsReg2,
+        // ':cogId2': data.cogId2,
+        // ':amznId': data.amznId,
+        ":usrAgent": data.userAgent,
+        ":accToken": data.accessToken,
+        ":refToken": data.refreshToken,
         ':flexId': data.flexId,
         ':country': data.country,
-        ':region': data.region,
+        ':region': data.region
       },
       ReturnValues: 'ALL_NEW',
     };
     return dynamoDB.update(params).promise();
+
+    // old column update query 
+    // devModel= :devModel, 
+    // devType= :devType,
+    // devID= :devId,  
+    // devSerial= :devSerialNumber, 
+    // osVersion= :osVersion, 
+    // flexVersion= :flexVersion, 
+    // awsreg1= :awsReg1,
+    // cogid1= :cogId1,
+    // awsreg2= :awsReg2,
+    // cogid2= :cogId2, 
+    // amznID= :amznId,
   }
 
   // update user's regionCode and countryCode
@@ -292,6 +301,7 @@ export default class UserServices {
           ':pkEmail': data.email,
           ':emailVerified': false,
         },
+        ReturnValues: 'ALL_NEW', //will return all Attributes in response
       })
       .promise();
   }
@@ -299,7 +309,7 @@ export default class UserServices {
   /**
    * udpate current step of user
    */
-  public updateCurrentSteps(data: any) {
+  public updateCurrentStepAndZendeskID(data: UpdateCurrentStepAndZendeskUsrID) {
     return dynamoDB
       .update({
         TableName: TableName,
@@ -307,9 +317,10 @@ export default class UserServices {
           pk: data.pk,
           sk: data.sk,
         },
-        UpdateExpression: `set currentSteps= :currentSteps`,
+        UpdateExpression: `set currentSteps= :currentSteps, zendeskUserID= :zendeskUserID`,
         ExpressionAttributeValues: {
           ':currentSteps': data.currentStep,
+          ":zendeskUserID" : data.zendeskUsrID
         },
         ReturnValues: 'ALL_NEW',
       })

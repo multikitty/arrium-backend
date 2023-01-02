@@ -9,7 +9,7 @@ export interface ITimezone {
 export interface TimezoneListResponse {
     message: string
     status: string
-    zones: ITimezone
+    zones: Array<ITimezone>
 }
 
 export interface IFetchTimezoneByZoneResult {

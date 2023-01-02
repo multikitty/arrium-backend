@@ -1,4 +1,5 @@
-import fs from 'fs';
+// import fs from 'fs';
+import { promises as fs } from 'fs';
 import jwt from 'jsonwebtoken';
 import customerIds from '../Utils/customerId.json';
 import MailServices from '../Services/MailServices';
@@ -9,6 +10,11 @@ import ReferralServices from '../Services/ReferralServices';
 import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { PromiseResult } from 'aws-sdk/lib/request';
+import { ZendeskUser } from '../Interfaces/zendeskInterface';
+import ZendeskServices from '../Services/ZendeskServices';
+import { EntitySkPk } from '../Interfaces/commonInterface';
+import { Request, Response } from 'express';
+import { UpdateCurrentStepAndZendeskUsrID } from 'Interfaces/userInterface';
 
 export const SignupController = {
   // Signup Step 1
@@ -24,11 +30,14 @@ export const SignupController = {
               message: 'An account already exists for this email address',
             });
           } else {
-            // check referral code
-            let refCode = request.body.country+request.body.refCode;
+            // referral code
+            let refCode = "";
             // register flag
             let canSignup = false;
+            // check referral code
             if(request.body.refCode) {
+              // create referral code pattern
+              refCode = request.body.country+request.body.refCode;
               // validate referral code is correct
               await new ReferralServices().findReferralCode(refCode).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
                 if(result.Item) {
@@ -61,18 +70,16 @@ export const SignupController = {
               //For Generating customer Id
               let cIdObj = customerIds;
               cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;  
-              fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), (err) => {
-                if (err) {
-                  response.status(500);
-                  response.send({
-                    success: false,
-                    message: 'Something went wrong, please try after sometime.',
-                    error: err,
-                  });
-                } else {
-                  request.body.customerId = String(cIdObj.lastCustomerId);
-                  canSignup = true
-                }
+              await fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj)).then(() => {
+                request.body.customerId = String(cIdObj.lastCustomerId);
+                canSignup = true
+              }).catch((err) => {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: 'Something went wrong, please try after sometime.',
+                  error: err,
+                });
               })
             }
             // user signup
@@ -260,7 +267,7 @@ export const SignupController = {
     }
   },
 
-  updateAmazonFlexInfo: async (request: any, response: any) => {
+  updateAmazonFlexInfo: async (request: Request, response: Response) => {
     try {
       // AMZN Flex data
       let flexData = {
@@ -269,46 +276,101 @@ export const SignupController = {
         amznFlexUser: request.body.amznFlexUser,
         amznFlexPassword: request.body.amznFlexPassword,
       };
-
       // update flex data
-      await SignupServices.updateAmazonFlexInfoService(flexData).then((result) => {
+      await SignupServices.updateAmazonFlexInfoService(flexData).then(async (result) => {
         if (result) {
-          // Update account registration steps
-          SignupServices.updateCurrentSteps(request.body)
-            .then(async (result) => {
-              // send mail to admin here
-              let userData = {
-                email: result?.Attributes?.email,
-                firstname: result?.Attributes?.firstname,
-                lastname: result?.Attributes?.lastname,
-              };
-              // send mail to queue
-              await new MailServices()
-                .newUserSignUpMail(userData)
-                .then(() => {
-                  response.status(200);
-                  response.send({
-                    success: true,
-                    message: 'Amazon Flex info updated successfully.',
+          let keyParams : EntitySkPk = {
+            sk : request.body.sk,
+            pk : request.body.pk
+          }
+          await new UserServices().getUserData(keyParams).then(async (result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
+            if(result.Item) {
+              // create a user in zendesk
+              let zendeskUser : ZendeskUser = {
+                email : result.Item.email,
+                name : result.Item.firstname+" "+result.Item.lastname,
+                role : result.Item.role === "driver" ? "end-user" : "agent",
+                verified:  true,
+                time_zone : result.Item.tzName,
+                organization_id : "8216223451037" // => default org id
+              }
+              await new ZendeskServices().createZendeskUser(zendeskUser).then(async (resp) => {
+                if (resp.status === 201 && resp?.data?.user?.id) {
+                  // Update account registration steps
+                  let updateParams : UpdateCurrentStepAndZendeskUsrID = {
+                    sk : request.body.sk,
+                    pk : request.body.pk,
+                    currentStep : "finished",
+                    zendeskUsrID : resp?.data?.user?.id
+                  }
+                  await new UserServices().updateCurrentStepAndZendeskID(updateParams)
+                  .then(async (result) => {
+                    // send mail to admin here
+                    let userData = {
+                      email: result?.Attributes?.email,
+                      firstname: result?.Attributes?.firstname,
+                      lastname: result?.Attributes?.lastname,
+                      role : result?.Attributes?.role,
+                      status : result?.Attributes?.accountStatus,
+                      timeZone : result?.Attributes?.tzName
+                    };
+                    // send mail to queue
+                    await new MailServices()
+                      .newUserSignUpMail(userData)
+                      .then(() => {
+                        response.status(200);
+                        response.send({
+                          success: true,
+                          message: 'Amazon Flex info updated successfully.',
+                        });
+                      })
+                      .catch((err) => {
+                        response.status(500);
+                        response.send({
+                          success: false,
+                          message: 'Something went wrong, please try after sometime.',
+                          error: err,
+                        });
+                      });
+                  })
+                  .catch((err) => {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: 'Something went wrong, please try after sometime.',
+                      error: err,
+                    });
                   });
-                })
-                .catch((err) => {
+                } else {
                   response.status(500);
                   response.send({
                     success: false,
                     message: 'Something went wrong, please try after sometime.',
-                    error: err,
                   });
+                }
+              }).catch((error: any) => {
+                response.status(error.response?.status ?? 500);
+                response.send({
+                  success: false,
+                  message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+                  error: error
                 });
-            })
-            .catch((err) => {
+              })
+            } else {
               response.status(500);
               response.send({
                 success: false,
                 message: 'Something went wrong, please try after sometime.',
-                error: err,
               });
+            }
+          }).catch((err) => {
+            response.status(500);
+            response.send({
+              success: false,
+              message: 'Something went wrong, please try after sometime.',
+              error: err,
             });
+          });
         } else {
           response.status(500);
           response.send({

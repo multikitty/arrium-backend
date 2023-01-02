@@ -1,7 +1,6 @@
 import { FreeTrial } from 'Interfaces/stripeInterfaces';
 import moment from 'moment';
 import UserServices from '../Services/UserServices';
-import { SignupServices } from '../Services/SignupServices';
 import StripeServices from '../Services/StripeServices';
 
 export default class StripeController {
@@ -58,13 +57,10 @@ export default class StripeController {
           /*check if current ended subscription is of free trial
             if free trial and not subscribed to any other subscription then change status inactive
           */
-          //TODO get user by stripeId
           const stripe_customer = await new StripeServices().getCustomer(stripeId);
-          console.log({ stripe_customer, meta: stripe_customer?.metadata });
           if (stripe_customer) {
             const { pk, sk } = stripe_customer?.metadata;
             const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
-            console.log({ user, t: data?.trial_end, s: data?.ended_at });
             // should be true trial_end
             if (stripeId && data?.trial_end && user && data?.ended_at) {
               let scheduled_subscriptions = (await new StripeServices().getSubscriptionSchedules(user.stripeID))?.data;
@@ -120,11 +116,12 @@ export default class StripeController {
           const customer = await new StripeServices().getCustomer(stripeId);
           if (customer) {
             const { pk, sk } = customer?.metadata;
+            if(pk && sk){
             const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
             console.log({ user });
             if (user) {
               if (user?.status !== 'Active') {
-                const update_data = {
+                let update_data = {
                   sk,
                   pk,
                   fieldName: 'accountStatus',
@@ -132,7 +129,17 @@ export default class StripeController {
                 };
                 await new UserServices().updateProfile(update_data);
               }
+              const lineItem=data?.lines?.data[0]
+
+              console.log({lineItem,lineItem_length:data?.lines?.data?.length})
+              if(lineItem){
+                //GET PRODUCT META AND TYPE 
+                const prodId=lineItem?.price?.product;
+                const product=await new StripeServices().getProduct(prodId)
+                console.log({product,meta:product.metadata})
+              }
             }
+          }
           }
           break;
         default:
@@ -355,10 +362,18 @@ export default class StripeController {
       const has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
-        ending_before = invoices_data[0]?.id;
+        if(page>1){
+          ending_before = invoices_data[0]?.id;
+        }
       } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
         starting_after = invoices_data[0]?.id;
         ending_before = invoices_data[0]?.id;
+      }else if(!has_more && invoices_data?.length && !end_before){
+        starting_after=null;
+        ending_before = invoices_data[0]?.id;
+      }else if (!has_more && invoices_data?.length){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        ending_before = null;
       }
 
       return res?.status(200).json({
@@ -367,6 +382,10 @@ export default class StripeController {
         has_more,
         starting_after,
         ending_before,
+        currentPage:page,
+        has_next_page:has_more ? true:false,
+        nextPage:has_more ?  +page+1 : null,
+        prevPage:ending_before ? +page-1:null,
         message: 'Successfully fetched invoices',
       });
     } catch (error) {
@@ -398,6 +417,7 @@ export default class StripeController {
         data.ending_before = end_before;
       }
       const invoices = await new StripeServices().getInvoices(data);
+
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
@@ -425,17 +445,30 @@ export default class StripeController {
       const has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
-        ending_before = invoices_data[0]?.id;
+        if(page>1){
+          ending_before = invoices_data[0]?.id;
+        }
       } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
         starting_after = invoices_data[0]?.id;
         ending_before = invoices_data[0]?.id;
+      }else if(!has_more && invoices_data?.length && !end_before){
+        starting_after=null;
+        ending_before = invoices_data[0]?.id;
+      }else if (!has_more && invoices_data?.length){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        ending_before = null;
       }
+
       return res?.status(200).json({
         success: true,
         data: invoices_data,
         has_more,
         starting_after,
         ending_before,
+        currentPage:page,
+        has_next_page:has_more ? true:false,
+        nextPage:has_more ?  +page+1 : null,
+        prevPage:ending_before ? +page-1:null,
         message: 'Successfully fetched invoices',
       });
     } catch (error) {

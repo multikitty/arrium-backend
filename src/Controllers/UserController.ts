@@ -9,6 +9,9 @@ import { PromiseResult } from "aws-sdk/lib/request";
 import { AddUserObj, UpdatePricingPlanObj } from "../Interfaces/userInterface";
 import fs from 'fs';
 import companyIds from '../Utils/customerId.json';
+import { ZendeskUpdateUser } from "../Interfaces/zendeskInterface";
+import ZendeskServices from "../Services/ZendeskServices";
+import StripeServices from "../Services/StripeServices";
 
 export default class UserController {
   // get logged in user data
@@ -81,58 +84,81 @@ export default class UserController {
   * updateAmznFlexDetails
   */
   public async updateAmznFlexDetails(request: Request, response: Response) {
-    await new UserServices().updateFlexDetails(request.body)
-      .then(async (result: any) => {
-        // handle result 
-        if (result.Attributes) {
-          const responseData = result.Attributes;
-          // udpate changes in user entity
-          let countryRegionData = {
-            userPk: request.body.userPk,
-            userSk: request.body.userSk,
-            country: result.Attributes.country,
-            region: result.Attributes.region
-          }
-          await new UserServices().updateUserCountryRegion(countryRegionData)
-            .then((result) => {
-              if (result) {
-                response.status(200);
-                response.send({
-                  success: true,
-                  message: "Configuration details updated successfully.",
-                  data: responseData
-                });
-              } else {
-                response.status(500);
-                response.send({
-                  success: false,
-                  message: "Something went wrong, please try after sometime.",
-                });
+    // update zendesk organisation id of user
+    let zendeskParams : ZendeskUpdateUser = {
+      zendeskUserId : request.body.zendeskUserID,
+      organization_id : request.body.zendeskOrgID
+    }
+    // update zendesk organization
+    await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+      if (resp.status === 200) {
+        await new UserServices().updateFlexDetails(request.body)
+          .then(async (result: any) => {
+            // handle result 
+            if (result.Attributes) {
+              const responseData = result.Attributes;
+              // udpate changes in user entity
+              let countryRegionData = {
+                userPk: request.body.userPk,
+                userSk: request.body.userSk,
+                country: result.Attributes.country,
+                region: result.Attributes.region
               }
-            }).catch((error: any) => {
+              await new UserServices().updateUserCountryRegion(countryRegionData)
+                .then((result) => {
+                  if (result) {
+                    response.status(200);
+                    response.send({
+                      success: true,
+                      message: "Configuration details updated successfully.",
+                      data: responseData
+                    });
+                  } else {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: "Something went wrong, please try after sometime.",
+                    });
+                  }
+                }).catch((error: any) => {
+                  response.status(500);
+                  response.send({
+                    success: false,
+                    message: "Something went wrong, please try after sometime.",
+                    error: error
+                  });
+                })
+            } else {
               response.status(500);
               response.send({
                 success: false,
                 message: "Something went wrong, please try after sometime.",
-                error: error
               });
-            })
-        } else {
-          response.status(500);
-          response.send({
-            success: false,
-            message: "Something went wrong, please try after sometime.",
-          });
-        }
-      })
-      .catch((error: any) => {
+            }
+          })
+          .catch((error: any) => {
+            response.status(500);
+            response.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+              error: error
+            });
+          })
+      } else {
         response.status(500);
         response.send({
           success: false,
           message: "Something went wrong, please try after sometime.",
-          error: error
         });
-      })
+      }
+    }).catch((error: any) => {
+      response.status(error.response?.status ?? 500);
+      response.send({
+        success: false,
+        message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+        error: error
+      });
+    })
   }
   // get single user data
   async getUserByPkSk(request: any, response: any) {
@@ -175,24 +201,78 @@ export default class UserController {
   // update account info
   async updateAccountInfo(request: any, response: any) {
     try {
-      await new UserServices()
-        .updateAccountInfo(request.body)
-        .then((result) => {
-          if (result.Attributes) {
-            response.status(200);
-            response.send({
-              success: true,
-              message: "User Account Information updated successfully",
+      // update zendesk organisation id of user
+      let zendeskParams : ZendeskUpdateUser = {
+        zendeskUserId : request.body.zendeskUserID,
+        name : request.body.firstname+" "+request.body.lastname,
+        email : request.body.email,
+        time_zone : request.body.tzName
+      }
+      // update zendesk organization
+      await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+        if (resp.status === 200) {
+          await new UserServices()
+            .updateAccountInfo(request.body)
+            .then((result) => {
+              if (result.Attributes) {
+                // update user name and email in stripe
+                if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+                  let stripeParams = {
+                    stripeId : result.Attributes.stripeID,
+                    name : result.Attributes.firstname+" "+result.Attributes.lastname,
+                    email : result.Attributes.email
+                  }
+                  new StripeServices().updateCustomer(stripeParams).then((resp) => {
+                    response.status(200);
+                    response.send({
+                      success: true,
+                      message: "User Account Information updated successfully",
+                    });
+                  }).catch((err) => {
+                    response.status(500);
+                    response.send({
+                      success: false,
+                      message: "Something went wrong, please try after sometime.",
+                      error : err
+                    });
+                  }) 
+                } else {
+                  response.status(200);
+                  response.send({
+                    success: true,
+                    message: "User Account Information updated successfully",
+                  });
+                }
+              } else {
+                response.status(500);
+                response.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime."
+                });
+              }
+            }).catch((error) => {
+              response.status(500);
+              response.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+                error: error
+              });
             });
-          }
-        }).catch((error) => {
+        } else {
           response.status(500);
           response.send({
             success: false,
             message: "Something went wrong, please try after sometime.",
-            error: error
           });
+        }
+      }).catch((error: any) => {
+        response.status(error.response?.status ?? 500);
+        response.send({
+          success: false,
+          message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+          error: error
         });
+      })
     } catch (error) {
       response.status(500);
       response.send({
@@ -316,13 +396,55 @@ export default class UserController {
 
   async updateProfileDetails(req: Request, res: Response) {
     try {
-      await new UserServices().updateProfile(req.body).then(async (result) => {
-        res.status(200);
-        res.send({
-          success: true,
-          message: `Updated successfully`,
-          data: result
-        });
+      await new UserServices().updateProfile(req.body).then(async (result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+        if(result.Attributes) {
+          // update details in Zendesk
+          let zendeskParams : ZendeskUpdateUser = {
+            name : result.Attributes?.firstname+" "+result.Attributes?.lastname,
+            zendeskUserId : result.Attributes?.zendeskUserID,
+            time_zone : result.Attributes?.tzName
+          }
+
+          // update user name and email in stripe
+          if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+            let stripeParams = {
+              stripeId : result.Attributes.stripeID,
+              name : result.Attributes.firstname+" "+result.Attributes.lastname,
+              email : result.Attributes.email
+            }
+            await new StripeServices().updateCustomer(stripeParams)
+          } 
+          // update zendesk
+          await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+            if (resp.status === 200) {
+              res.status(200);
+              res.send({
+                success: true,
+                message: `Updated successfully`,
+                data: result
+              });
+            } else {
+              res.status(500);
+              res.send({
+                success: false,
+                message: "Something went wrong, please try after sometime.",
+              });
+            }
+          }).catch((error: any) => {
+            res.status(error.response?.status ?? 500);
+            res.send({
+              success: false,
+              message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+              error: error
+            });
+          })
+        } else {
+          res.status(500);
+          res.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+          });
+        }
       }).catch((err) => {
         res.status(500);
         res.send({
@@ -393,41 +515,81 @@ export default class UserController {
     * Update email
     */
   public async updateEmail(req: Request, res: Response) {
-    await new UserServices().updateEmail(req.body).then((result) => {
-      //  email verification token
-      let token = jwt.sign(
-        {
-          pk: req.body.pk,
-          sk: req.body.sk,
-          userRole: req.body.role
-        },
-        process.env.JWT_SECRET_KEY as string,
-        {
-          expiresIn: 86400, // expires in 24 hours
-        }
-      );
-      // email data
-      const emailData = {
-        email: req.body.email,
-        token,
-      };
-      //send email verifcation link
-      new MailServices()
-        .sendMailEmailVerification(emailData)
-        .then((mailResponse) => {
-          res.status(200);
-          res.send({
-            success: true,
-            message: "Email updated successfully, please check verification mail.",
-          });
-        }).catch((error: any) => {
+    await new UserServices().updateEmail(req.body).then(async (result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+      if(result.Attributes) {
+        // update user name and email in stripe
+        if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+          let stripeParams = {
+            stripeId : result.Attributes.stripeID,
+            name : result.Attributes.firstname+" "+result.Attributes.lastname,
+            email : result.Attributes.email
+          }
+          await new StripeServices().updateCustomer(stripeParams)
+        } 
+        //  email verification token
+        let token = jwt.sign(
+          {
+            pk: req.body.pk,
+            sk: req.body.sk,
+            userRole: req.body.role
+          },
+          process.env.JWT_SECRET_KEY as string,
+          {
+            expiresIn: 86400, // expires in 24 hours
+          }
+        );
+        // email data
+        const emailData = {
+          email: req.body.email,
+          token,
+        };
+        //send email verifcation link
+        await new MailServices()
+          .sendMailEmailVerification(emailData)
+          .then(async (mailResponse) => {
+            // update details in Zendesk
+            let zendeskParams : ZendeskUpdateUser = {
+              zendeskUserId : result.Attributes?.zendeskUserID,
+              email : result.Attributes?.email
+            }
+            // update zendesk
+            await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+              if (resp.status === 200) {
+                res.status(200);
+                res.send({
+                  success: true,
+                  message: "Email updated successfully, please check verification mail.",
+                });
+              } else {
+                res.status(500);
+                res.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                });
+              }
+            }).catch((error: any) => {
+              res.status(error.response?.status ?? 500);
+              res.send({
+                success: false,
+                message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+                error: error
+              });
+            })
+          }).catch((error: any) => {
+            res.status(500);
+            res.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+              error: error
+            });
+          })
+        } else {
           res.status(500);
           res.send({
             success: false,
             message: "Something went wrong, please try after sometime.",
-            error: error
           });
-        })
+        }
     }).catch((error: any) => {
       res.status(500);
       res.send({
