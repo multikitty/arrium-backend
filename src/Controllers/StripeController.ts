@@ -82,10 +82,16 @@ export default class StripeController {
                     fieldValue: 'true',
                   };
                   await new UserServices().updateProfile(update_user);
+                  update_user = {
+                    sk,
+                    pk,
+                    fieldName: 'status',
+                    fieldValue: 'expired',
+                  };
+                  await new UserServices().updateProfile(update_user);
                 }
+                
               }
-              console.log('&****', { scheduled_subscriptions });
-              //show plan page
             }
           }
           break;
@@ -207,15 +213,28 @@ export default class StripeController {
         isFreeTrial: true,
         collection_method: 'send_invoice',
       });
-
+      let update_data = {
+        sk,
+        pk,
+        fieldName: 'planType',
+        fieldValue: 'trial',
+      };
+      await new UserServices().updateProfile(update_data);
+       update_data = {
+        sk,
+        pk,
+        fieldName: 'status',
+        fieldValue: 'active',
+      };
+      await new UserServices().updateProfile(update_data);
       const user = await new StripeServices().updateStripeClientId({
         pk,
         sk,
         stripeID: stripe_customer.id,
       });
+
       return user;
     } catch (err: any) {
-      console.log({ err });
       throw Error(`Something went wrong! ${err?.message}`);
     }
   }
