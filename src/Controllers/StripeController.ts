@@ -352,8 +352,10 @@ export default class StripeController {
       if (end_before) {
         data.ending_before = end_before;
       }
-      const invoices = await new StripeServices().getInvoices(data);
-
+      let invoices = await new StripeServices().getInvoices(data);
+      if(invoices?.length){
+        invoices=invoices?.data?.sort((a:any,b:any)=>a?.created-b.created)
+      }
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
@@ -399,6 +401,7 @@ export default class StripeController {
         success: true,
         data: invoices_data,
         has_more,
+        invoices,
         starting_after,
         ending_before,
         currentPage:page,
@@ -435,8 +438,10 @@ export default class StripeController {
       if (end_before) {
         data.ending_before = end_before;
       }
-      const invoices = await new StripeServices().getInvoices(data);
-
+      let invoices = await new StripeServices().getInvoices(data);
+      if(invoices?.length){
+        invoices=invoices?.data?.sort((a:any,b:any)=>a?.created-b.created)
+      }
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
