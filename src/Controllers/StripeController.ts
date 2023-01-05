@@ -401,7 +401,6 @@ export default class StripeController {
         success: true,
         data: invoices_data,
         has_more,
-        invoices,
         starting_after,
         ending_before,
         currentPage:page,
