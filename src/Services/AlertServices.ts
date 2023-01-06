@@ -1,9 +1,12 @@
-import { AlertObject, NotificationObject,UpdateAlertObject} from "../Interfaces/alertInterface";
+import {
+  AlertObject,
+  NotificationObject,
+  UpdateAlertObject,
+} from "../Interfaces/alertInterface";
 import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB";
 import AWS from "aws-sdk";
 
 export default class AlertServices {
-
   public insertAlert(data: AlertObject) {
     return dynamoDB
       .put({
@@ -31,9 +34,9 @@ export default class AlertServices {
         dismissed= :dismissed
           `,
         ExpressionAttributeValues: {
-          ':dismissed': data.currentTime
+          ":dismissed": data.currentTime,
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
@@ -42,10 +45,10 @@ export default class AlertServices {
     const WebSocket = new AWS.ApiGatewayManagementApi({
       endpoint: process.env.WEB_SOCKET_END_POINT,
     });
+    const { connectionId, message } = params;
     return await WebSocket.postToConnection({
-      ConnectionId: params.connectionId,
-      Data: params.message,
+      ConnectionId: connectionId,
+      Data: message,
     }).promise();
   }
-  
 }
