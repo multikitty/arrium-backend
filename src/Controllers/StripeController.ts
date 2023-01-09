@@ -356,6 +356,7 @@ export default class StripeController {
       if(invoices?.length){
         invoices=invoices?.data?.sort((a:any,b:any)=>a?.created-b.created)
       }
+    
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
@@ -380,7 +381,7 @@ export default class StripeController {
       });
       let starting_after = null;
       let ending_before = null;
-      const has_more = invoices?.has_more ?? false;
+      let has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
         if(page>1){
@@ -395,6 +396,10 @@ export default class StripeController {
       }else if (!has_more && invoices_data?.length){
         starting_after = invoices_data[invoices_data?.length-1]?.id;
         ending_before = null;
+      }
+       if (end_before && !has_more){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        has_more=true
       }
 
       return res?.status(200).json({
@@ -465,7 +470,7 @@ export default class StripeController {
       });
       let starting_after = null;
       let ending_before = null;
-      const has_more = invoices?.has_more ?? false;
+      let has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
         if(page>1){
@@ -480,6 +485,10 @@ export default class StripeController {
       }else if (!has_more && invoices_data?.length){
         starting_after = invoices_data[invoices_data?.length-1]?.id;
         ending_before = null;
+      }
+      if (end_before && !has_more){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        has_more=true
       }
 
       return res?.status(200).json({
