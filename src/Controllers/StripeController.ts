@@ -82,10 +82,16 @@ export default class StripeController {
                     fieldValue: 'true',
                   };
                   await new UserServices().updateProfile(update_user);
+                  update_user = {
+                    sk,
+                    pk,
+                    fieldName: 'status',
+                    fieldValue: 'expired',
+                  };
+                  await new UserServices().updateProfile(update_user);
                 }
+                
               }
-              console.log('&****', { scheduled_subscriptions });
-              //show plan page
             }
           }
           break;
@@ -207,15 +213,28 @@ export default class StripeController {
         isFreeTrial: true,
         collection_method: 'send_invoice',
       });
-
+      let update_data = {
+        sk,
+        pk,
+        fieldName: 'planType',
+        fieldValue: 'trial',
+      };
+      await new UserServices().updateProfile(update_data);
+       update_data = {
+        sk,
+        pk,
+        fieldName: 'status',
+        fieldValue: 'active',
+      };
+      await new UserServices().updateProfile(update_data);
       const user = await new StripeServices().updateStripeClientId({
         pk,
         sk,
         stripeID: stripe_customer.id,
       });
+
       return user;
     } catch (err: any) {
-      console.log({ err });
       throw Error(`Something went wrong! ${err?.message}`);
     }
   }
@@ -333,8 +352,11 @@ export default class StripeController {
       if (end_before) {
         data.ending_before = end_before;
       }
-      const invoices = await new StripeServices().getInvoices(data);
-
+      let invoices = await new StripeServices().getInvoices(data);
+      if(invoices?.length){
+        invoices=invoices?.data?.sort((a:any,b:any)=>a?.created-b.created)
+      }
+    
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
@@ -359,7 +381,7 @@ export default class StripeController {
       });
       let starting_after = null;
       let ending_before = null;
-      const has_more = invoices?.has_more ?? false;
+      let has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
         if(page>1){
@@ -374,6 +396,10 @@ export default class StripeController {
       }else if (!has_more && invoices_data?.length){
         starting_after = invoices_data[invoices_data?.length-1]?.id;
         ending_before = null;
+      }
+       if (end_before && !has_more){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        has_more=true
       }
 
       return res?.status(200).json({
@@ -416,8 +442,10 @@ export default class StripeController {
       if (end_before) {
         data.ending_before = end_before;
       }
-      const invoices = await new StripeServices().getInvoices(data);
-
+      let invoices = await new StripeServices().getInvoices(data);
+      if(invoices?.length){
+        invoices=invoices?.data?.sort((a:any,b:any)=>a?.created-b.created)
+      }
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
           id: invoice?.id,
@@ -442,7 +470,7 @@ export default class StripeController {
       });
       let starting_after = null;
       let ending_before = null;
-      const has_more = invoices?.has_more ?? false;
+      let has_more = invoices?.has_more ?? false;
       if (has_more && invoices_data?.length > 1) {
         starting_after = invoices_data[invoices_data.length - 1]?.id;
         if(page>1){
@@ -457,6 +485,10 @@ export default class StripeController {
       }else if (!has_more && invoices_data?.length){
         starting_after = invoices_data[invoices_data?.length-1]?.id;
         ending_before = null;
+      }
+      if (end_before && !has_more){
+        starting_after = invoices_data[invoices_data?.length-1]?.id;
+        has_more=true
       }
 
       return res?.status(200).json({
