@@ -11,5 +11,6 @@ export const GSI = {
     login : "GSI-Login",
     userByRole : "usersByRole",
     refByCreator : "refByCreator",
-    refByAgent : "refByAgent"
+    refByAgent : "refByAgent",
+    customerIDs : "customerIDs"
 }

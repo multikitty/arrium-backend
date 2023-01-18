@@ -57,7 +57,7 @@ export default class MailServices {
     const msgData = {
       type : "mail",
       data : {
-        to : data.pkEmail,
+        to : data.email,
         from : 'noreply@arrium.io',
         replyTo : [],
         subject : "Reset Password",

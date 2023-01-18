@@ -9,7 +9,6 @@ export const SignupServices = {
           pk: data.pk,
           sk: data.sk,
           email: data.email,
-          pkEmail: data.email,
           password: bcrypt.hashSync(data.password, 10),
           refCode: data.fullRefCode,
           role: data.role,

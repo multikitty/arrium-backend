@@ -2,19 +2,59 @@ import bcrypt from 'bcryptjs';
 import { AddUserObj, UpdateCurrentStepAndZendeskUsrID, UpdatePricingPlanObj } from '../Interfaces/userInterface';
 import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
 import { EntitySkPk } from '../Interfaces/commonInterface';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { PromiseResult } from 'aws-sdk/lib/request';
+import { AWSError } from 'aws-sdk';
 
 export default class UserServices {
   // Fetch User by GSI Index from GSI-Login
   async getUserIndexByEmail(email: string) {
     let queryParams = {
       IndexName: GSI.login,
-      KeyConditionExpression: 'pkEmail = :pkEmail',
+      KeyConditionExpression: 'email = :email',
       ExpressionAttributeValues: {
-        ':pkEmail': email,
+        ':email': email,
       },
       TableName: TableName,
     };
     return dynamoDB.query(queryParams).promise();
+  }
+
+  async getCustomerIdByIndex(customerID: string) {
+    let queryParams = {
+      IndexName: GSI.customerIDs,
+      KeyConditionExpression: 'customerID = :customerID',
+      ExpressionAttributeValues: {
+        ':customerID': customerID,
+      },
+      TableName: TableName,
+    };
+    return dynamoDB.query(queryParams).promise();
+  }
+
+  // method for generating random 6 digits customerIDs
+  /**
+    * name
+    */
+  public async generateRandomCustomerID(countryCode : string) {
+    let exist = false;
+    let cID;
+    do {
+      let randomDigits = Math.floor(100000 + Math.random() * 900000).toString();
+      cID = `${countryCode}-${randomDigits}`;
+      // check value exist or not in db
+      await this.getCustomerIdByIndex(cID)
+        .then((response : PromiseResult<DocumentClient.QueryOutput, AWSError>) => {
+          if(response?.Count &&  response?.Count > 0) {
+            exist = true;
+          } else {
+            exist = false;
+          }
+        }).catch(() => {
+          throw new Error("Failed to generate customerID.");
+        })
+    } while (exist);  
+    return cID;
   }
 
   async getUserData(data: EntitySkPk) {
@@ -141,8 +181,7 @@ export default class UserServices {
           lastname= :lastname, 
           phoneNumber= :phoneNumber, 
           dialCode= :dialCode,
-          email= :email,
-          pkEmail= :email,  
+          email= :email, 
           emailVerified= :emailVerified, 
           tzName= :tzName, 
           #attrRole= :role, 
@@ -194,7 +233,7 @@ export default class UserServices {
     //         pk: data.pk,
     //         sk: data.sk,
     //         customerID: data.customerID,
-    //         pkEmail: data.pkEmail
+    //         email: data.email
     //       },
     //       Limit: 10,
     //     })
@@ -295,10 +334,9 @@ export default class UserServices {
           sk: data.sk,
           pk: data.pk,
         },
-        UpdateExpression: `set email= :email, pkEmail= :pkEmail, emailVerified= :emailVerified`,
+        UpdateExpression: `set email= :email, emailVerified= :emailVerified`,
         ExpressionAttributeValues: {
           ':email': data.email,
-          ':pkEmail': data.email,
           ':emailVerified': false,
         },
         ReturnValues: 'ALL_NEW', //will return all Attributes in response
@@ -363,7 +401,6 @@ export default class UserServices {
         phoneNumber: data.phoneNumber, 
         dialCode : data.dialCode,
         email: data.email,
-        pkEmail: data.email,
         emailVerified: data.emailVerified,
         tzName : data.tzName,
         role: data.userRole,

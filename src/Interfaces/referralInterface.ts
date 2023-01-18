@@ -8,7 +8,8 @@ export interface ReferralCodeObj {
     readonly refGenFor : string,
     readonly refGenBy : string,
     readonly refGen : Date | string |Number,
-    readonly refActive : boolean
+    readonly refActive : boolean,
+    readonly customerID : string
 }
 
 export interface ReferralRequestData {

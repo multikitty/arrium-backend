@@ -4,9 +4,9 @@ export const SigninServices = {
   loginService: async (data: any) => {
     let queryParams = {
       IndexName: GSI.login,
-      KeyConditionExpression: "pkEmail = :pkEmail",
+      KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: {
-        ":pkEmail": data.email,
+        ":email": data.email,
       },
       TableName: TableName
     };
