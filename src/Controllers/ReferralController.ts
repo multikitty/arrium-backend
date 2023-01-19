@@ -10,7 +10,7 @@ export default class ReferralController {
     /**
         * createReferralCode
         */
-    public createReferralCode(req: Request, res: Response) {
+    public async createReferralCode(req: Request, res: Response) {
         // request data
         let referralData: ReferralRequestData = {
             country: req.body.country,
@@ -26,7 +26,7 @@ export default class ReferralController {
         // loop for creating referral codes
         for (let i = 0; i < referralData.numberOfReferral; i++) {
             // For Generating referral code
-            new UserServices().generateRandomCustomerID(req.body.country).then(async (cID) => {
+            await new UserServices().generateRandomCustomerID(req.body.country).then(async (cID) => {
                 if(cID) {
                     let customerID = String(cID);
                     // Create block item object
