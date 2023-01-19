@@ -4,12 +4,13 @@ import fs from 'fs';
 import initialIds from '../Utils/customerId.json';
 import CommonServices from "../Services/CommonServices";
 import ReferralServices from "../Services/ReferralServices";
+import UserServices from "../Services/UserServices";
 export default class ReferralController {
 
     /**
         * createReferralCode
         */
-    public createReferralCode(req: Request, res: Response) {
+    public async createReferralCode(req: Request, res: Response) {
         // request data
         let referralData: ReferralRequestData = {
             country: req.body.country,
@@ -25,40 +26,33 @@ export default class ReferralController {
         // loop for creating referral codes
         for (let i = 0; i < referralData.numberOfReferral; i++) {
             // For Generating referral code
-            let cIdObj = initialIds;
-            cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;
-            // Create block item object
-            let codeData: ReferralCodeObj = {
-                sk: `referral#${referralData.country + cIdObj.lastCustomerId}`,
-                pk: 'referral',
-                refCode: referralData.country + cIdObj.lastCustomerId,
-                country: referralData.country,
-                region: referralData.region,
-                station: referralData.station,
-                refGenFor: referralData.assignTo,
-                refGenBy: req.body.pk,
-                refGen: new Date().toISOString(),
-                refActive: true
-            }
-            // store in query format
-            let batchItem = {
-                PutRequest: {
-                    Item: codeData
-                },
-            };
-            // add block item in array
-            batchItemsList.push(batchItem)
-            // insert records
-            if (batchItemsList.length === batchSize || i + 1 === referralData.numberOfReferral) {
-                fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), async (err) => {
-                    if (err) {
-                        res.status(500);
-                        res.send({
-                            success: false,
-                            message: 'Something went wrong, please try after sometime.',
-                            error: err,
-                        });
-                    } else {
+            await new UserServices().generateRandomCustomerID(req.body.country).then(async (cID) => {
+                if(cID) {
+                    let customerID = String(cID);
+                    // Create block item object
+                    let codeData: ReferralCodeObj = {
+                        sk: `referral#${customerID}`,
+                        pk: 'referral',
+                        refCode: customerID,
+                        customerID: customerID,
+                        country: referralData.country,
+                        region: referralData.region,
+                        station: referralData.station,
+                        refGenFor: referralData.assignTo,
+                        refGenBy: req.body.pk,
+                        refGen: new Date().toISOString(),
+                        refActive: true
+                    }
+                    // store in query format
+                    let batchItem = {
+                        PutRequest: {
+                            Item: codeData
+                        },
+                    };
+                    // add block item in array
+                    batchItemsList.push(batchItem)
+                    // insert records
+                    if (batchItemsList.length === batchSize || i + 1 === referralData.numberOfReferral) {
                         // execute batch write operation
                         await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
                             batchItemsList = [] // clear batchItemsList
@@ -81,8 +75,21 @@ export default class ReferralController {
                             });
                         })
                     }
-                })
-            }
+                } else {
+                  res.status(500);
+                  res.send({
+                    success: false,
+                    message: 'Something went wrong, please try after sometime.'
+                  });
+                }
+              }).catch((err) => {
+                res.status(500);
+                res.send({
+                  success: false,
+                  message: 'Something went wrong, please try after sometime.',
+                  error: err,
+                });
+              })
         }
     }
 

@@ -37,13 +37,13 @@ export const SignupController = {
             // check referral code
             if(request.body.refCode) {
               // create referral code pattern
-              refCode = request.body.country+request.body.refCode;
+              refCode = request.body.country+"-"+request.body.refCode;
               // validate referral code is correct
               await new ReferralServices().findReferralCode(refCode).then((result : PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
                 if(result.Item) {
                   if(result.Item.refActive) {
                     canSignup = true;
-                    request.body.customerId = String(request.body.refCode);
+                    request.body.customerId = String(refCode);
                   } else {
                     response.status(200);
                     response.send({
@@ -68,11 +68,17 @@ export const SignupController = {
               })
             } else {
               //For Generating customer Id
-              let cIdObj = customerIds;
-              cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;  
-              await fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj)).then(() => {
-                request.body.customerId = String(cIdObj.lastCustomerId);
-                canSignup = true
+              await new UserServices().generateRandomCustomerID(request.body.country).then((cID) => {
+                if(cID) {
+                  request.body.customerId = String(cID);
+                  canSignup = true
+                } else {
+                  response.status(500);
+                  response.send({
+                    success: false,
+                    message: 'Something went wrong, please try after sometime.'
+                  });
+                }
               }).catch((err) => {
                 response.status(500);
                 response.send({
@@ -89,7 +95,7 @@ export const SignupController = {
               // user role
               let userRole = 'driver';
               // create sk, pk and role
-              request.body.pk = `${request.body.country}-${request.body.customerId}`;
+              request.body.pk = request.body.customerId;
               request.body.sk = `${userRole}#${request.body.customerId}`;
               request.body.role = userRole;
               //  email verification token
@@ -353,7 +359,7 @@ export const SignupController = {
                 response.send({
                   success: false,
                   message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-                  error: error
+                  error: error?.response?.data
                 });
               })
             } else {

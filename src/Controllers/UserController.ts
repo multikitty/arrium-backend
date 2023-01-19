@@ -711,22 +711,12 @@ export default class UserController {
             message: 'An account already exists for this email address',
           });
         } else {
-          //For Generating customer Id
-          let cIdObj = companyIds;
-          cIdObj.lastCustomerId = cIdObj.lastCustomerId + 1;
-          fs.writeFile('src/Utils/customerId.json', JSON.stringify(cIdObj), async (err) => {
-            if (err) {
-              res.status(500);
-              res.send({
-                success: false,
-                message: 'Something went wrong, please try after sometime.',
-                error: err,
-              });
-            } else {
-              req.body.customerId = String(cIdObj.lastCustomerId);
+          new UserServices().generateRandomCustomerID(req.body.country).then(async (cID) => {
+            if(cID) {
+              req.body.customerId = String(cID);
               let userRole = req.body.userRole;
               // create sk, pk and role
-              req.body.userPK = `${req.body.country}-${req.body.customerId}`;
+              req.body.userPK = req.body.customerId;
               req.body.userSK = `${userRole}#${req.body.customerId}`;
               // token params
               let tokenParams = {
@@ -734,21 +724,6 @@ export default class UserController {
                 sk: req.body.userSK,
                 userRole: req.body.userRole,
               }
-              // //  email verification token
-              // let token = jwt.sign(
-              //   tokenParams,
-              //   process.env.JWT_SECRET_KEY as string,
-              //   {
-              //     expiresIn: 86400, // expires in 24 hours
-              //   }
-              // );
-              // // email data
-              // const emailData = {
-              //   email: req.body.email,
-              //   token,
-              // };
-              // //send email verifcation link
-              // await new MailServices().sendMailEmailVerification(emailData)
               // add user
               await new UserServices().insertUser(req.body).then( async (result: PromiseResult<DocumentClient.PutItemOutput, AWSError>) => {
                 // send create password email
@@ -762,7 +737,7 @@ export default class UserController {
                 );
                 // mail data
                 let mailData = {
-                  pkEmail : req.body.email,
+                  email : req.body.email,
                   token : token
                 }
                 // send mail
@@ -782,7 +757,20 @@ export default class UserController {
                   error: error
                 });
               })
+            } else {
+              res.status(500);
+              res.send({
+                success: false,
+                message: 'Something went wrong, please try after sometime.'
+              });
             }
+          }).catch((err) => {
+            res.status(500);
+            res.send({
+              success: false,
+              message: 'Something went wrong, please try after sometime.',
+              error: err,
+            });
           })
         }
       }).catch((error: any) => {
