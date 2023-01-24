@@ -52,7 +52,8 @@ export default class PreferencesController {
             let sortKey;
 
             // check for preffered days
-            if(preferredDays.length) {
+            if(preferredDays.length) {          // work for premium user =====>
+                
                 for (let j = 0; j < preferredDays.length; j++) {
                     const day = preferredDays[j];
                     if(day.active) {
@@ -80,13 +81,13 @@ export default class PreferencesController {
                         batchItemsList.push(prefItem)
                     }
                     // insert batch
-                    if(batchItemsList.length === batchSize || i+1 === preferenceList.length) {
+                    if(batchItemsList.length === batchSize || ( i+1 === preferenceList.length && j+1 === preferredDays.length) ) {
                         // execute batch write operation
                         await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
                             batchItemsList = [] // clear batchItemsList
                             // store unprocessed (failed items)
                             failedItems.push(result.UnprocessedItems)
-                            if(i+1 === preferenceList.length) {
+                            if(i+1 === preferenceList.length && j+1 === preferredDays.length) {
                                 res.status(200);
                                 res.send({
                                     success: true,
@@ -100,11 +101,11 @@ export default class PreferencesController {
                                 success: false,
                                 message: "Something went wrong, please try after sometime.",
                                 error : error
-                            });  
+                            });
                         })
                     }  
                 }
-            } else {
+            } else {                        //work for basic plan user ====>
                 // create sort key
                 sortKey = `availability#${listItem.stationCode}`;
                 // Create block item object
@@ -159,7 +160,7 @@ export default class PreferencesController {
     /**
     * getPreferences
     */
-    public async getPreferencesByUser(req: Request, res: Response) {
+    public async getPreferencesByUser(req: Request, res: Response) {    
         let data = {
             pk : req.body.pk
         }

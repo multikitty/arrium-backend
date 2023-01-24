@@ -12,6 +12,8 @@ import UserValidation from "../validationSchema/userValidation";
 //get User Details
 router.get("/", authentication("driver"), new UserController().getUserData);
 
+router.post("/send-otp", authentication("driver"), new UserController().sendOtpToUser);
+
 router.get("/list", authentication("admin"), new UserController().listAllUsers);
 // get user by sk and pk for admin
 router.get("/get", authentication("admin"), new UserController().getUserByPkSk);

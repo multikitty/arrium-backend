@@ -437,4 +437,25 @@ export default class UserServices {
       })
       .promise();
   }
+
+  /**
+   * updateOTP
+   */
+  public updateOTP(data: any) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          sk: data.sk,
+          pk: data.pk,
+        },
+        UpdateExpression: `set otp= :otp, phoneVerified= :phoneVerified`,
+        ExpressionAttributeValues: {
+          ':otp': data.otp,
+          ':phoneVerified': false
+        },
+        ReturnValues: 'ALL_NEW', //will return all Attributes in response
+      })
+      .promise();
+  }
 }

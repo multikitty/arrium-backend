@@ -12,6 +12,7 @@ import companyIds from '../Utils/customerId.json';
 import { ZendeskUpdateUser } from "../Interfaces/zendeskInterface";
 import ZendeskServices from "../Services/ZendeskServices";
 import StripeServices from "../Services/StripeServices";
+import NotificationServices from "../Services/NotificationServices";
 
 export default class UserController {
   // get logged in user data
@@ -85,12 +86,12 @@ export default class UserController {
   */
   public async updateAmznFlexDetails(request: Request, response: Response) {
     // update zendesk organisation id of user
-    let zendeskParams : ZendeskUpdateUser = {
-      zendeskUserId : request.body.zendeskUserID,
-      organization_id : request.body.zendeskOrgID
+    let zendeskParams: ZendeskUpdateUser = {
+      zendeskUserId: request.body.zendeskUserID,
+      organization_id: request.body.zendeskOrgID
     }
     // update zendesk organization
-    await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+    await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp: any) => {
       if (resp.status === 200) {
         await new UserServices().updateFlexDetails(request.body)
           .then(async (result: any) => {
@@ -202,25 +203,25 @@ export default class UserController {
   async updateAccountInfo(request: any, response: any) {
     try {
       // update zendesk organisation id of user
-      let zendeskParams : ZendeskUpdateUser = {
-        zendeskUserId : request.body.zendeskUserID,
-        name : request.body.firstname+" "+request.body.lastname,
-        email : request.body.email,
-        time_zone : request.body.tzName
+      let zendeskParams: ZendeskUpdateUser = {
+        zendeskUserId: request.body.zendeskUserID,
+        name: request.body.firstname + " " + request.body.lastname,
+        email: request.body.email,
+        time_zone: request.body.tzName
       }
       // update zendesk organization
-      await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+      await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp: any) => {
         if (resp.status === 200) {
           await new UserServices()
             .updateAccountInfo(request.body)
             .then((result) => {
               if (result.Attributes) {
                 // update user name and email in stripe
-                if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+                if (result.Attributes.role === "driver" && result.Attributes.stripeID) {
                   let stripeParams = {
-                    stripeId : result.Attributes.stripeID,
-                    name : result.Attributes.firstname+" "+result.Attributes.lastname,
-                    email : result.Attributes.email
+                    stripeId: result.Attributes.stripeID,
+                    name: result.Attributes.firstname + " " + result.Attributes.lastname,
+                    email: result.Attributes.email
                   }
                   new StripeServices().updateCustomer(stripeParams).then((resp) => {
                     response.status(200);
@@ -233,9 +234,9 @@ export default class UserController {
                     response.send({
                       success: false,
                       message: "Something went wrong, please try after sometime.",
-                      error : err
+                      error: err
                     });
-                  }) 
+                  })
                 } else {
                   response.status(200);
                   response.send({
@@ -396,26 +397,26 @@ export default class UserController {
 
   async updateProfileDetails(req: Request, res: Response) {
     try {
-      await new UserServices().updateProfile(req.body).then(async (result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
-        if(result.Attributes) {
+      await new UserServices().updateProfile(req.body).then(async (result: PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+        if (result.Attributes) {
           // update details in Zendesk
-          let zendeskParams : ZendeskUpdateUser = {
-            name : result.Attributes?.firstname+" "+result.Attributes?.lastname,
-            zendeskUserId : result.Attributes?.zendeskUserID,
-            time_zone : result.Attributes?.tzName
+          let zendeskParams: ZendeskUpdateUser = {
+            name: result.Attributes?.firstname + " " + result.Attributes?.lastname,
+            zendeskUserId: result.Attributes?.zendeskUserID,
+            time_zone: result.Attributes?.tzName
           }
 
           // update user name and email in stripe
-          if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+          if (result.Attributes.role === "driver" && result.Attributes.stripeID) {
             let stripeParams = {
-              stripeId : result.Attributes.stripeID,
-              name : result.Attributes.firstname+" "+result.Attributes.lastname,
-              email : result.Attributes.email
+              stripeId: result.Attributes.stripeID,
+              name: result.Attributes.firstname + " " + result.Attributes.lastname,
+              email: result.Attributes.email
             }
             await new StripeServices().updateCustomer(stripeParams)
-          } 
+          }
           // update zendesk
-          await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+          await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp: any) => {
             if (resp.status === 200) {
               res.status(200);
               res.send({
@@ -515,17 +516,17 @@ export default class UserController {
     * Update email
     */
   public async updateEmail(req: Request, res: Response) {
-    await new UserServices().updateEmail(req.body).then(async (result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
-      if(result.Attributes) {
+    await new UserServices().updateEmail(req.body).then(async (result: PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+      if (result.Attributes) {
         // update user name and email in stripe
-        if(result.Attributes.role === "driver" && result.Attributes.stripeID) {
+        if (result.Attributes.role === "driver" && result.Attributes.stripeID) {
           let stripeParams = {
-            stripeId : result.Attributes.stripeID,
-            name : result.Attributes.firstname+" "+result.Attributes.lastname,
-            email : result.Attributes.email
+            stripeId: result.Attributes.stripeID,
+            name: result.Attributes.firstname + " " + result.Attributes.lastname,
+            email: result.Attributes.email
           }
           await new StripeServices().updateCustomer(stripeParams)
-        } 
+        }
         //  email verification token
         let token = jwt.sign(
           {
@@ -548,12 +549,12 @@ export default class UserController {
           .sendMailEmailVerification(emailData)
           .then(async (mailResponse) => {
             // update details in Zendesk
-            let zendeskParams : ZendeskUpdateUser = {
-              zendeskUserId : result.Attributes?.zendeskUserID,
-              email : result.Attributes?.email
+            let zendeskParams: ZendeskUpdateUser = {
+              zendeskUserId: result.Attributes?.zendeskUserID,
+              email: result.Attributes?.email
             }
             // update zendesk
-            await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp : any) => {
+            await new ZendeskServices().updateZendeskUser(zendeskParams).then(async (resp: any) => {
               if (resp.status === 200) {
                 res.status(200);
                 res.send({
@@ -583,13 +584,13 @@ export default class UserController {
               error: error
             });
           })
-        } else {
-          res.status(500);
-          res.send({
-            success: false,
-            message: "Something went wrong, please try after sometime.",
-          });
-        }
+      } else {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
     }).catch((error: any) => {
       res.status(500);
       res.send({
@@ -712,7 +713,7 @@ export default class UserController {
           });
         } else {
           new UserServices().generateRandomCustomerID(req.body.country).then(async (cID) => {
-            if(cID) {
+            if (cID) {
               req.body.customerId = String(cID);
               let userRole = req.body.userRole;
               // create sk, pk and role
@@ -725,7 +726,7 @@ export default class UserController {
                 userRole: req.body.userRole,
               }
               // add user
-              await new UserServices().insertUser(req.body).then( async (result: PromiseResult<DocumentClient.PutItemOutput, AWSError>) => {
+              await new UserServices().insertUser(req.body).then(async (result: PromiseResult<DocumentClient.PutItemOutput, AWSError>) => {
                 // send create password email
                 // create token
                 let token = jwt.sign(
@@ -737,8 +738,8 @@ export default class UserController {
                 );
                 // mail data
                 let mailData = {
-                  email : req.body.email,
-                  token : token
+                  email: req.body.email,
+                  token: token
                 }
                 // send mail
                 await new MailServices().sendMailForgotPassword(mailData)
@@ -785,25 +786,65 @@ export default class UserController {
 
   // updatePricingPlanStatus
   public async enablePricingPlanPage(request: Request, response: Response) {
-    let userData : UpdatePricingPlanObj = {
-      userPK : request.body.userPK,
-      userSK : request.body.userSK,
-      status : request.body.pricingPlan
+    let userData: UpdatePricingPlanObj = {
+      userPK: request.body.userPK,
+      userSK: request.body.userSK,
+      status: request.body.pricingPlan
     }
-    await new UserServices().updatePricingPlanStatus(userData).then((result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+    await new UserServices().updatePricingPlanStatus(userData).then((result: PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
       response.status(200);
       response.send({
         success: true,
         message: "Pricing plan status updated.",
       });
-    }).catch((error : AWSError) => {
+    }).catch((error: AWSError) => {
       response.status(500);
       response.send({
         success: false,
         message: "Something went wrong while updating phone number",
-        error : error
+        error: error
       });
     });
   }
 
+  // updatePricingPlanStatus
+  public async sendOtpToUser(request: Request, response: Response) {
+    try {
+      // generate otp
+      request.body.otp = Math.floor(Math.random() * 9000 + 1000);
+      await new UserServices().updateOTP(request.body).then(async (result: PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+        if (result.Attributes) {
+          let userPhone: string = result?.Attributes?.dialCode + "" + result?.Attributes?.phoneNumber;
+          // sent otp
+          await new NotificationServices().sendOTPSMS({ otp: request.body.otp, userPhoneNumber: userPhone }).then(() => {
+            response.status(200);
+            response.send({
+              success: true,
+              message: 'OTP sent successfully',
+            });
+          }).catch((error) => {
+            response.status(500);
+            response.send({
+              success: false,
+              message: 'Something went wrong, please try after sometime.',
+              error: error
+            });
+          })
+        } else {
+          response.status(500);
+          response.send({
+            success: false,
+            message: 'Something went wrong, please try after sometime.',
+          });
+        }
+      });
+    } catch (error) {
+      response.status(500);
+      response.send({
+        success: false,
+        message: 'Something went wrong, please try after sometime.',
+        error: error,
+      });
+    }
+  }
 }
