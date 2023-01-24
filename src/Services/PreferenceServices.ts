@@ -7,7 +7,6 @@ export default class PreferenceServices {
     * getPreferenceByUser
     */
     public getPreferenceByUser(data: any) {
-        console.log(data)
         let params = {
             TableName: TableName,
             ScanIndexForward: true,
