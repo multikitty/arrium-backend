@@ -22,6 +22,8 @@ router.get("/flex-details/:pk", authentication("admin"), new UserController().ge
 
 router.put("/flex-details/update", authentication("admin"), new FlexValidation().flexDetails(), validationSchema, new UserController().updateAmznFlexDetails);
 
+router.put("/flex-details/update-tokens", authentication("admin"), new FlexValidation().flexTokens(), validationSchema, new UserController().updateFlexTokens);
+
 router.put("/update-account-info", authentication("admin"), new UserController().updateAccountInfo);
 
 router.post("/approve-account", authentication("admin"), new UserController().sendAccountSetupMail);
@@ -40,7 +42,7 @@ router.post(
   new UserController().sendEmailVerify
 );
 
-router.post("/verify-email", authentication, new UserController().VerifyEmail);
+router.post("/verify-email", authentication("driver"), new UserController().VerifyEmail);
 
 router.post(
   "/update-password",

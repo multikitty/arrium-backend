@@ -22,6 +22,20 @@ export default class FlexValidation {
             // body("flexVersion").trim().not().isEmpty().withMessage("Flex version is required"),
             // body("amznId").trim().not().isEmpty().withMessage("Amazon ID is required"),
         ]
-    }    
+    }
+    
+    public flexTokens() {
+        return [
+            body("accessToken").trim().not().isEmpty().withMessage("Access Token is required"),
+            body("refreshToken").trim().not().isEmpty().withMessage("Refresh Token is required"),
+            // body("devModel").trim().not().isEmpty().withMessage("Device Model is required"),
+            // body("devType").trim().not().isEmpty().withMessage("Device type is required"),
+            // body("devId").trim().not().isEmpty().withMessage("Device ID is required"),
+            // body("devSerialNumber").trim().not().isEmpty().withMessage("Device serial number is required"),
+            // body("osVersion").trim().not().isEmpty().withMessage("Device OS version is required"),
+            // body("flexVersion").trim().not().isEmpty().withMessage("Flex version is required"),
+            // body("amznId").trim().not().isEmpty().withMessage("Amazon ID is required"),
+        ]
+    }
 }
 

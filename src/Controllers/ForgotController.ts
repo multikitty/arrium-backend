@@ -12,7 +12,7 @@ export const ForgotController = {
           response.status(200);
           response.send({
             success: false,
-            message: "Email ID not found. Please check and try again!",
+            message: "Email address not found",
           });
         } else {
           let keyParams = {

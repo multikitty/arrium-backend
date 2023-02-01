@@ -152,7 +152,7 @@ export default class LocationController {
                   res.send({
                      success: false,
                      message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-                     error: error
+                     error: error?.response?.data
                   });
                })
             }
@@ -199,7 +199,7 @@ export default class LocationController {
    * fetchAllRegion 
    */
    public async fetchAllRegion(req: Request, res: Response) {
-      await new LocationServices().getRegionList(req.query.coutnry_code)
+      await new LocationServices().getRegionList(req.query.country_code)
          .then((result: any) => {
             res.status(200);
             res.send({
