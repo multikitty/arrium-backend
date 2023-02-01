@@ -271,7 +271,7 @@ export default class UserController {
         response.send({
           success: false,
           message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-          error: error
+          error: error?.response?.data
         });
       })
     } catch (error) {
@@ -436,7 +436,7 @@ export default class UserController {
             res.send({
               success: false,
               message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-              error: error
+              error: error?.response?.data
             });
           })
         } else {
@@ -573,7 +573,7 @@ export default class UserController {
               res.send({
                 success: false,
                 message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-                error: error
+                error: error?.response?.data
               });
             })
           }).catch((error: any) => {
@@ -847,4 +847,33 @@ export default class UserController {
       });
     }
   }
+
+
+  // for update flex tokens 
+  async updateFlexTokens(request: Request, response: Response) {
+    await new UserServices().updateFlexTokens(request.body).then((result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+      if (result.Attributes) {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "Configuration tokens updated successfully.",
+          data: result.Attributes
+        });
+      } else {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
+    }).catch((error) => {
+      response.status(500);
+      response.send({
+        success: false,
+        message: 'Something went wrong, please try after sometime.',
+        error: error
+      });
+    })
+  }
+
 }

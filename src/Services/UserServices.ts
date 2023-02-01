@@ -34,7 +34,7 @@ export default class UserServices {
 
   // method for generating random 6 digits customerIDs
   /**
-    * name
+    * generateRandomCustomerID
     */
   public async generateRandomCustomerID(countryCode : string) {
     let exist = false;
@@ -140,6 +140,30 @@ export default class UserServices {
     // awsreg2= :awsReg2,
     // cogid2= :cogId2, 
     // amznID= :amznId,
+  }
+
+
+  /**
+   * updateFlexTokens
+   */
+  public updateFlexTokens(data: any) {
+    let params = {
+      TableName: TableName,
+      Key: {
+        pk: data.userPk,
+        sk: `flexDetails#${data.userPk}`,
+      },
+      UpdateExpression: `SET 
+        accToken= :accToken,
+        refToken= :refToken
+      `,
+      ExpressionAttributeValues: {
+        ":accToken": data.accessToken,
+        ":refToken": data.refreshToken
+      },
+      ReturnValues: 'ALL_NEW',
+    };
+    return dynamoDB.update(params).promise();
   }
 
   // update user's regionCode and countryCode
