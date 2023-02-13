@@ -1,5 +1,6 @@
-import AWS from "aws-sdk"
-import AlertServices from "../Services/AlertServices"
+import AWS from "aws-sdk";
+import { Request, Response } from "express";
+import AlertServices from "../Services/AlertServices";
 
 
 export default class AlertController{

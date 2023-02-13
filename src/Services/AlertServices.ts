@@ -129,10 +129,10 @@ export default class AlertServices {
     const WebSocket = new AWS.ApiGatewayManagementApi({
       endpoint: process.env.WEB_SOCKET_END_POINT,
     });
+    const { connectionId, message } = params;
     return await WebSocket.postToConnection({
-      ConnectionId: params.connectionId,
-      Data: params.message,
+      ConnectionId: connectionId,
+      Data: message,
     }).promise();
   }
-
 }
