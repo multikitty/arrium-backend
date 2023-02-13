@@ -1,5 +1,5 @@
 module.exports = {
-  aws_table_name: 'ArriumFlex',
+  aws_table_name: 'ArriumFlex-stage',
   aws_local_config: {
     accessKeyId: 'hu8ewa',
     secretAccessKey: 'wd0fy8',
