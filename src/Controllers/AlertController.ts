@@ -177,7 +177,7 @@ export default class AlertController {
           data: result,
         });
       })
-      .catch((error: any) => {
+      .catch(function (error) {
         res.status(500);
         res.send({
           success: false,
