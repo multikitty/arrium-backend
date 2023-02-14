@@ -28,11 +28,12 @@ export interface BlockAlertObject {
   readonly currentTime: number;
   readonly notifDismiss?: boolean;
   readonly notifViewed?: boolean;
-  readonly expDate?: number;  
+  readonly expDate?: number;
 }
 
 export interface PaymentAlertObject {
   readonly pk: string;
+  readonly sk?: string;
   readonly notifType: string;
   readonly currentTime: string;
   readonly invID?: string;
