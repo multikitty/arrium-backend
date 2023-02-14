@@ -32,7 +32,7 @@ router.get(
 
 //update notification viewed status
 router.post(
-  "/updateViewedNotification",
+  "/updateAllViewedNotification",
   authentication("driver"),
   new AlertController().updateNotificationViewed
 );
