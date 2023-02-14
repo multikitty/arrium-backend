@@ -1,4 +1,4 @@
-import { BlockAlertObject, PaymentAlertObject,AlertObject, NotificationObject,UpdateAlertObject} from "../Interfaces/alertInterface";
+import { BlockAlertObject, PaymentAlertObject, AlertObject, NotificationObject, UpdateAlertObject } from "../Interfaces/alertInterface";
 import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB";
 import AWS from "aws-sdk";
 
@@ -11,7 +11,7 @@ export default class AlertServices {
           pk: data.pk,
           sk: `${data.currentTime}#${data.notifType}#${data.invID}`,
           notifType: data.notifType,
-          notifViewed: data.notifViewed
+          notifViewed: data.notifViewed,
         },
         TableName: TableName,
       })
@@ -26,7 +26,7 @@ export default class AlertServices {
           sk: `notif#${data.notifType}#${data.currentTime}#${data.offerID}`,
           price: data.price,
           bStartTimeU: data.bStartTimeU,
-          bEndTimeU:data.bEndTimeU,
+          bEndTimeU: data.bEndTimeU,
           stationCode: data.stationCode,
           stationName: data.stationName,
           sessionTimeU: data.sessionTimeU,
@@ -39,7 +39,7 @@ export default class AlertServices {
       .promise();
   }
 
-  public getBlockNotification(pk: string){
+  public getBlockNotification(pk: string) {
     let queryParams = {
       TableName: TableName,
       ScanIndexForward: true,
@@ -62,14 +62,14 @@ export default class AlertServices {
       TableName: TableName,
       Key: {
         pk: pk,
-        notifType:"block"
+        notifType: "block"
       },
       UpdateExpression: 'SET notifViewed = :update',
       ConditionExpression: 'notifViewed = :notifViewed and begins_with(SK, :type)',
       ExpressionAttributeValues: {
         ':notifViewed': false,
         ':type': 'block',
-        ':update':true
+        ':update': true
       },
     })
     return dynamoDB
@@ -77,14 +77,14 @@ export default class AlertServices {
         TableName: TableName,
         Key: {
           pk: pk,
-          notifType:"block"
+          notifType: "block"
         },
         UpdateExpression: 'SET notifViewed = :update',
         ConditionExpression: 'notifViewed = :notifViewed and begins_with(SK, :type)',
         ExpressionAttributeValues: {
           ':notifViewed': false,
           ':type': 'notif#block',
-          ':update':true
+          ':update': true
         },
       })
       .promise();
@@ -96,7 +96,7 @@ export default class AlertServices {
         TableName: TableName,
         Key: {
           PK: pk,
-          notifDismiss:false
+          notifDismiss: false
         },
         UpdateExpression: 'SET notifDismiss = :notifDismiss AND expDate= :expDate',
         ExpressionAttributeValues: {
@@ -124,7 +124,7 @@ export default class AlertServices {
       })
       .promise();
   }
-  
+
   async sendNotification(params: NotificationObject) {
     const WebSocket = new AWS.ApiGatewayManagementApi({
       endpoint: process.env.WEB_SOCKET_END_POINT,

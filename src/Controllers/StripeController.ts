@@ -4,7 +4,7 @@ import UserServices from "../Services/UserServices";
 import { SignupServices } from "../Services/SignupServices";
 import StripeServices from "../Services/StripeServices";
 import AlertController from "./AlertController";
-import AlertServices from "Services/AlertServices";
+import AlertServices from "../Services/AlertServices";
 
 export default class StripeController {
   async createStripeCustomer(req: any, res: any) {
@@ -153,21 +153,16 @@ export default class StripeController {
             const product = await new StripeServices().getProduct(productId);
             const invoice_id = data.id;
             const invoice_data = {
-              description: `${
-                plan_type[0].toUpperCase() + plan_type.slice(1)
-              }: ${product?.name} (${moment
-                .unix(data?.lines?.data[0]?.period?.start)
-                .format("MMM DD,YYYY")} - ${moment
-                .unix(data?.lines?.data[0]?.period?.end)
-                .format("MMM DD,YYYY")})`,
+              description: `${plan_type[0].toUpperCase() + plan_type.slice(1)
+                }: ${product?.name} (${moment
+                  .unix(data?.lines?.data[0]?.period?.start)
+                  .format("MMM DD,YYYY")} - ${moment
+                    .unix(data?.lines?.data[0]?.period?.end)
+                    .format("MMM DD,YYYY")})`,
             };
             await new StripeServices().updateInvoice(data?.id, invoice_data);
-            const notificationBody = {
-              pk: pk,
-              invoiceId: invoice_id,
-              notificationType: "Pinned",
-            };
-            await new AlertServices().insertAlert(notificationBody);
+            const currentTime = Math.floor(Date.now() / 1000);
+            await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: invoice_id, notifViewed: false });
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(
@@ -188,7 +183,7 @@ export default class StripeController {
             pk: pk,
             currentTime: Date.now(),
           };
-          await new AlertServices().updateAlert(notificationBody);
+          // await new AlertServices().insertPaymentAlert({});
           if (customer) {
             const { pk, sk } = customer?.metadata;
             const user = (await new UserServices().getUserData({ sk, pk }))
@@ -357,14 +352,13 @@ export default class StripeController {
         customer: user.stripeID,
         unit_amount_decimal: plan.amount,
         currency: plan.currency,
-        description: `${
-          plan?.metadata["plan type"][0].toUpperCase() +
+        description: `${plan?.metadata["plan type"][0].toUpperCase() +
           plan?.metadata["plan type"].slice(1)
-        }: ${product?.name} (${moment(free_trial_end_date).format(
-          "MMM DD,YYYY"
-        )} - ${moment(new Date(month_end.format("YYYY-MM-DD hh:mm:ss"))).format(
-          "MMM DD,YYYY"
-        )})`,
+          }: ${product?.name} (${moment(free_trial_end_date).format(
+            "MMM DD,YYYY"
+          )} - ${moment(new Date(month_end.format("YYYY-MM-DD hh:mm:ss"))).format(
+            "MMM DD,YYYY"
+          )})`,
         period: {
           start: moment(free_trial_end_date).unix(), //free trial end-date
           end: month_end.endOf("day").unix(),
@@ -433,8 +427,8 @@ export default class StripeController {
             : null,
           paid_at: invoice?.status_transitions?.paid_at
             ? moment
-                .unix(invoice?.status_transitions?.paid_at)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.status_transitions?.paid_at)
+              .format("MMM DD,YYYY")
             : null,
           invoice_url: invoice?.hosted_invoice_url,
           paid_status: new StripeServices().getPaidStatus({
@@ -443,13 +437,13 @@ export default class StripeController {
           }),
           period_start: invoice?.lines?.data[0]?.period?.start
             ? moment
-                .unix(invoice?.lines?.data[0]?.period?.start)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.lines?.data[0]?.period?.start)
+              .format("MMM DD,YYYY")
             : null,
           period_end: invoice?.lines?.data[0]?.period?.end
             ? moment
-                .unix(invoice?.lines?.data[0]?.period?.end)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.lines?.data[0]?.period?.end)
+              .format("MMM DD,YYYY")
             : null,
         };
         return data;
@@ -522,8 +516,8 @@ export default class StripeController {
             : null,
           paid_at: invoice?.status_transitions?.paid_at
             ? moment
-                .unix(invoice?.status_transitions?.paid_at)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.status_transitions?.paid_at)
+              .format("MMM DD,YYYY")
             : null,
           invoice_url: invoice?.hosted_invoice_url,
           paid_status: new StripeServices().getPaidStatus({
@@ -532,13 +526,13 @@ export default class StripeController {
           }),
           period_start: invoice?.lines?.data[0]?.period?.start
             ? moment
-                .unix(invoice?.lines?.data[0]?.period?.start)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.lines?.data[0]?.period?.start)
+              .format("MMM DD,YYYY")
             : null,
           period_end: invoice?.lines?.data[0]?.period?.end
             ? moment
-                .unix(invoice?.lines?.data[0]?.period?.end)
-                .format("MMM DD,YYYY")
+              .unix(invoice?.lines?.data[0]?.period?.end)
+              .format("MMM DD,YYYY")
             : null,
         };
         return data;
