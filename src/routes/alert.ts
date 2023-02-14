@@ -8,12 +8,13 @@ import { validationSchema } from "./../Middlewares/validationSchema";
 import { authentication } from '../Middlewares/authentication';
 
 //add blocks notification
-router.post("/createBlockNotification",authentication('driver'), alertValidation.createBlockNotification,validationSchema ,new AlertController().insertBlockNotification);
+router.post("/createBlockNotification", authentication('driver'), alertValidation.createBlockNotification, validationSchema, new AlertController().insertBlockNotification);
 
 //get blocks notification
-router.get("/blockNotification", authentication('driver') , new AlertController().getNotificationList);
+router.get("/blockNotification", authentication('driver'), new AlertController().getNotificationList);
+router.get("/allNotification", new AlertController().getAllNotificationList)
 
 //update notification viewed status
-router.post("/updateViewedNotification", authentication('driver') , new AlertController().updateNotificationViewed);
+router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
 
 export = router;

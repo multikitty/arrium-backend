@@ -4,7 +4,7 @@ import UserServices from "../Services/UserServices";
 import { SignupServices } from "../Services/SignupServices";
 import StripeServices from "../Services/StripeServices";
 import AlertController from "./AlertController";
-import AlertServices from "Services/AlertServices";
+import AlertServices from "../Services/AlertServices";
 
 export default class StripeController {
   async createStripeCustomer(req: any, res: any) {
