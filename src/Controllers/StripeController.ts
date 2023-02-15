@@ -195,6 +195,8 @@ export default class StripeController {
           if (customer) {
             const { pk, sk } = customer?.metadata;
             if (pk && sk) {
+              const currentTime = Math.floor(Date.now() / 1000);
+              await new AlertServices().updatePaymentAlert(pk, sk, currentTime);
               const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
               console.log({ user });
               if (user) {

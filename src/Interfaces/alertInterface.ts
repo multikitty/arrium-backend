@@ -33,6 +33,7 @@ export interface BlockAlertObject {
 
 export interface PaymentAlertObject {
   readonly pk: string;
+  readonly sk?: string;
   readonly notifType: string;
   readonly currentTime: number;
   readonly invID?: number;

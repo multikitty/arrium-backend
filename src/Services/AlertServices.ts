@@ -18,6 +18,25 @@ export default class AlertServices {
       .promise();
   }
 
+  public updatePaymentAlert(pk: string, sk: string, currentTime: number) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: pk,
+          sk: sk
+        },
+        UpdateExpression: 'SET expDate= :expDate',
+        ConditionExpression: 'sk = :sk and notifType = :type',
+        ExpressionAttributeValues: {
+          ':sk': sk,
+          ':type': 'invoice',
+          ':expDate': currentTime
+        },
+      })
+      .promise();
+  }
+
   public insertBlockAlert(data: BlockAlertObject) {
     return dynamoDB
       .put({
