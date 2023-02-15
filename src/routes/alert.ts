@@ -12,7 +12,9 @@ router.post("/createBlockNotification", authentication('driver'), alertValidatio
 
 //get blocks notification
 router.get("/blockNotification", authentication('driver'), new AlertController().getNotificationList);
-router.get("/allNotification", new AlertController().getAllNotificationList)
+
+//get all notification
+router.get("/allNotification", authentication('driver'), new AlertController().getAllNotificationList)
 
 //update notification viewed status
 router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);

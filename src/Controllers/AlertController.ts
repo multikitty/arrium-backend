@@ -72,13 +72,14 @@ export default class AlertController {
   public async getAllNotificationList(req: any, res: any) {
     console.log(req.params.pk)
     try {
-      const blockNotification: any = await new AlertServices().getBlockNotification(req.body.pk)
-      const invoiceNotification: any = await new AlertServices().getInvoiceNotification(req.body.pk)
+      const blockNotification = await new AlertServices().getBlockNotification(req.body.pk)
+      const invoiceNotification = await new AlertServices().getInvoiceNotification(req.body.pk)
       res.status(200);
       res.send({
         success: true,
         message: "All notifications!",
-        data: invoiceNotification.Items?.concat(blockNotification.Items),
+        blockNotificationData: blockNotification.Items,
+        invoiceNotificationData: invoiceNotification.Items,
       });
     } catch (e) {
       res.status(500);
