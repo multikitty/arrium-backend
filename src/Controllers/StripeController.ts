@@ -4,7 +4,7 @@ import UserServices from "../Services/UserServices";
 import { SignupServices } from "../Services/SignupServices";
 import StripeServices from "../Services/StripeServices";
 import AlertController from "./AlertController";
-import AlertServices from "Services/AlertServices";
+import AlertServices from "../Services/AlertServices";
 
 export default class StripeController {
   async createStripeCustomer(req: any, res: any) {
@@ -169,12 +169,8 @@ export default class StripeController {
                     .format("MMM DD,YYYY")})`,
             };
             await new StripeServices().updateInvoice(data?.id, invoice_data);
-            const notificationBody = {
-              pk: pk,
-              invoiceId: invoice_id,
-              notificationType: "Pinned",
-            };
-            // await new AlertServices().insertAlert(notificationBody);
+            const currentTime = Math.floor(Date.now() / 1000);
+            await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: invoice_id, notifViewed: false });
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(

@@ -11,7 +11,7 @@ export default class AlertServices {
           pk: data.pk,
           sk: `${data.currentTime}#${data.notifType}#${data.invID}`,
           notifType: data.notifType,
-          notifViewed: data.notifViewed
+          notifViewed: data.notifViewed,
         },
         TableName: TableName,
       })
