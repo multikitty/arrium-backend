@@ -19,4 +19,7 @@ router.post("/updateViewedNotification", authentication('driver'), new AlertCont
 //update notification dismissed status
 router.post("/updateDismissedSingleNotification", authentication('driver'), new AlertController().updateDismissedDateInBlockNotification)
 
+// update notification dismissed all status
+router.post("/updateDismissedAllNotifications", authentication('driver'), new AlertController().updateDismissedDateInAllBlockNotification)
+
 export = router;

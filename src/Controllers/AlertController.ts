@@ -103,22 +103,37 @@ export default class AlertController {
   }
 
   async updateDismissedDateInAllBlockNotification(req: any, res: any) {
+    const allBlockAlertOfUser = await new AlertServices().getBlockNotification(req.body.pk)
     const currentTime = Math.floor(Date.now() / 1000);
-    await new AlertServices().updateAllBlockAlertbyDismiss(req.body.pk, currentTime).then((result: any) => {
+    Promise.all<any>(allBlockAlertOfUser.Items?.map(async (item: any) => {
+      return new AlertServices().updateAllBlockAlertbyDismiss(item.pk, item.sk, currentTime).then((result: any) => {
+        return {
+          success: true,
+          message: "Update sucessfully!",
+          data: result,
+        }
+      }).catch((e: any) => {
+        return {
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error: e
+        }
+      })
+    })).then(function (result) {
       res.status(200);
       res.send({
         success: true,
-        message: "Update sucessfully!",
+        message: "All notification viewed successfully!",
         data: result,
       });
-    }).catch((error: any) => {
+    }).catch(function (error) {
       res.status(500);
       res.send({
         success: false,
         message: "Something went wrong, please try after sometime.",
         error: error
       });
-    })
+    });
   }
 
   async updateDismissedDateInBlockNotification(req: any, res: any) {

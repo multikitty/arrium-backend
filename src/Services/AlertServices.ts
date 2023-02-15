@@ -98,19 +98,22 @@ export default class AlertServices {
       .promise();
   }
 
-  async updateAllBlockAlertbyDismiss(pk: string, currentTime: number) {
+  async updateAllBlockAlertbyDismiss(pk: string, sk: string, currentTime: number) {
     return dynamoDB
       .update({
         TableName: TableName,
         Key: {
-          PK: pk
+          pk: pk,
+          sk: sk
         },
-        UpdateExpression: 'SET notifDismiss = :updateNotifDismiss AND expDate= :expDate',
-        ConditionExpression: 'notifDismiss = :notifDismiss and SK contains :type',
+        UpdateExpression: 'SET notifDismiss = :updateNotifDismiss, expDate= :expDate',
+        ConditionExpression: 'notifDismiss = :notifDismiss and sk = :sk and notifType = :type',
         ExpressionAttributeValues: {
           ':notifDismiss': false,
           ':updateNotifDismiss': true,
-          ':expDate': currentTime
+          ':expDate': currentTime,
+          ':sk': sk,
+          ':type': 'block'
         },
       })
       .promise();
