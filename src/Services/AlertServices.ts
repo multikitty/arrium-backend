@@ -1,4 +1,4 @@
-import { BlockAlertObject, PaymentAlertObject,AlertObject, NotificationObject,UpdateAlertObject} from "../Interfaces/alertInterface";
+import { BlockAlertObject, PaymentAlertObject, AlertObject, NotificationObject, UpdateAlertObject } from "../Interfaces/alertInterface";
 import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB";
 import AWS from "aws-sdk";
 
@@ -26,7 +26,7 @@ export default class AlertServices {
           sk: `notif#${data.notifType}#${data.currentTime}#${data.offerID}`,
           price: data.price,
           bStartTimeU: data.bStartTimeU,
-          bEndTimeU:data.bEndTimeU,
+          bEndTimeU: data.bEndTimeU,
           stationCode: data.stationCode,
           stationName: data.stationName,
           sessionTimeU: data.sessionTimeU,
@@ -39,7 +39,7 @@ export default class AlertServices {
       .promise();
   }
 
-  public getBlockNotification(pk: string){
+  public getBlockNotification(pk: string) {
     let queryParams = {
       TableName: TableName,
       ScanIndexForward: true,
@@ -57,34 +57,21 @@ export default class AlertServices {
     return dynamoDB.query(queryParams).promise();
   }
 
-  async updateAllBlockAlertbyViewed(pk: string) {
-    console.log({
-      TableName: TableName,
-      Key: {
-        pk: pk,
-        notifType:"block"
-      },
-      UpdateExpression: 'SET notifViewed = :update',
-      ConditionExpression: 'notifViewed = :notifViewed and begins_with(SK, :type)',
-      ExpressionAttributeValues: {
-        ':notifViewed': false,
-        ':type': 'block',
-        ':update':true
-      },
-    })
+  async updateAllBlockAlertbyViewed(pk: string, sk: string) {
     return dynamoDB
       .update({
         TableName: TableName,
         Key: {
           pk: pk,
-          notifType:"block"
+          sk: sk
         },
         UpdateExpression: 'SET notifViewed = :update',
-        ConditionExpression: 'notifViewed = :notifViewed and begins_with(SK, :type)',
+        ConditionExpression: 'notifViewed = :notifViewed and sk = :sk and notifType = :notifType ',
         ExpressionAttributeValues: {
           ':notifViewed': false,
-          ':type': 'notif#block',
-          ':update':true
+          ':update': true,
+          ':sk': sk,
+          ':notifType': 'block'
         },
       })
       .promise();
@@ -96,7 +83,7 @@ export default class AlertServices {
         TableName: TableName,
         Key: {
           PK: pk,
-          notifDismiss:false
+          notifDismiss: false
         },
         UpdateExpression: 'SET notifDismiss = :notifDismiss AND expDate= :expDate',
         ExpressionAttributeValues: {
@@ -124,7 +111,6 @@ export default class AlertServices {
       })
       .promise();
   }
-  
   async sendNotification(params: NotificationObject) {
     const WebSocket = new AWS.ApiGatewayManagementApi({
       endpoint: process.env.WEB_SOCKET_END_POINT,
