@@ -16,4 +16,7 @@ router.get("/blockNotification", authentication('driver'), new AlertController()
 //update notification viewed status
 router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
 
+//update notification dismissed status
+router.post("/updateDismissedSingleNotification", authentication('driver'), new AlertController().updateDismissedDateInBlockNotification)
+
 export = router;

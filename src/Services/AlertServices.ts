@@ -82,13 +82,17 @@ export default class AlertServices {
       .update({
         TableName: TableName,
         Key: {
-          PK: pk,
-          notifDismiss: false
+          pk: pk,
+          sk: sk,
         },
-        UpdateExpression: 'SET notifDismiss = :notifDismiss AND expDate= :expDate',
+        UpdateExpression: 'SET notifDismiss = :update, expDate= :expDate',
+        ConditionExpression: 'notifDismiss = :notifDismiss and sk = :sk and notifType = :notifType',
         ExpressionAttributeValues: {
-          ':notifDismiss': true,
-          ':expDate': currentTime
+          ':notifDismiss': false,
+          ':update': true,
+          ':expDate': currentTime,
+          ':sk': sk,
+          ':notifType': 'block'
         },
       })
       .promise();
