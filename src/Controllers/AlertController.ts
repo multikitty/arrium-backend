@@ -69,6 +69,27 @@ export default class AlertController {
     })
   }
 
+  public async getAllNotificationList(req: any, res: any) {
+    console.log(req.params.pk)
+    try {
+      const blockNotification: any = await new AlertServices().getBlockNotification(req.body.pk)
+      const invoiceNotification: any = await new AlertServices().getInvoiceNotification(req.body.pk)
+      res.status(200);
+      res.send({
+        success: true,
+        message: "All notifications!",
+        data: invoiceNotification.Items?.concat(blockNotification.Items),
+      });
+    } catch (e) {
+      res.status(500);
+      res.send({
+        success: false,
+        message: "Something went wrong, please try after sometime.",
+        error: e
+      });
+    }
+  }
+
   async updateNotificationViewed(req: any, res: any) {
     const allBlockAlertOfUser = await new AlertServices().getBlockNotification(req.body.pk)
     Promise.all<any>(allBlockAlertOfUser.Items?.map(async (item: any) => {

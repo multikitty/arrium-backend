@@ -13,6 +13,9 @@ router.post("/createBlockNotification", authentication('driver'), alertValidatio
 //get blocks notification
 router.get("/blockNotification", authentication('driver'), new AlertController().getNotificationList);
 
+//get all notification
+router.get("/allNotification", new AlertController().getAllNotificationList)
+
 //update notification viewed status
 router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
 
@@ -21,5 +24,8 @@ router.post("/updateDismissedSingleNotification", authentication('driver'), new 
 
 // update notification dismissed all status
 router.post("/updateDismissedAllNotifications", authentication('driver'), new AlertController().updateDismissedDateInAllBlockNotification)
+
+//update notification viewed status
+router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
 
 export = router;

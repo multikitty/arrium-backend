@@ -76,6 +76,21 @@ export default class AlertServices {
     return dynamoDB.query(queryParams).promise();
   }
 
+  public getInvoiceNotification(pk: string) {
+    let queryParams = {
+      TableName: TableName,
+      ScanIndexForward: true,
+      ConsistentRead: false,
+      KeyConditionExpression: `pk = :bef90`,
+      FilterExpression: 'notifType = :type',
+      ExpressionAttributeValues: {
+        ":bef90": pk,
+        ":type": 'invoice'
+      },
+    }
+    return dynamoDB.query(queryParams).promise();
+  }
+
   async updateAllBlockAlertbyViewed(pk: string, sk: string) {
     return dynamoDB
       .update({
