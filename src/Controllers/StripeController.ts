@@ -170,7 +170,8 @@ export default class StripeController {
             };
             await new StripeServices().updateInvoice(data?.id, invoice_data);
             const currentTime = Math.floor(Date.now() / 1000);
-            await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: invoice_id, notifViewed: false });
+            const inv_num = invoice_id.split('-')[invoice_id.split('-').length - 1]
+            await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: inv_num, notifViewed: false });
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(
