@@ -9,9 +9,10 @@ export default class AlertServices {
       .put({
         Item: {
           pk: data.pk,
-          sk: `${data.currentTime}#${data.notifType}#${data.invID}`,
+          sk: `notif#${data.notifType}#${data.currentTime}#${data.invID}`,
           notifType: data.notifType,
           notifViewed: data.notifViewed,
+          invID: data.invID
         },
         TableName: TableName,
       })
