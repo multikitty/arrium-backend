@@ -16,7 +16,7 @@ export interface ReferralRequestData {
     readonly country : string,
     readonly region : string,
     readonly station : string,
-    readonly numberOfReferral : Number | string,
+    readonly numberOfReferral : number,
     readonly assignTo : string,
 }
 

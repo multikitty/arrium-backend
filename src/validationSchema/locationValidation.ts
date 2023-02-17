@@ -44,7 +44,7 @@ export default class LocationValidation {
 
     public stationType() {
         return [
-            body("stationType").trim().not().isEmpty().withMessage("Station Type is required")
+            body("stationType").trim().toLowerCase().not().isEmpty().withMessage("Station Type is required")
         ]
     }    
 }
