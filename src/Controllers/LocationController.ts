@@ -20,24 +20,43 @@ export default class LocationController {
          country: req.body.country,
          countryCode: req.body.countryCode
       }
-
-      await new LocationServices().setCountry(countryData)
-         .then((result: any) => {
-            res.status(200);
-            res.send({
-               success: true,
-               message: "Country added successfully!",
-               data: result,
-            });
-         })
-         .catch((error: any) => {
-            res.status(500);
+      // getCountry // validate country exist or not
+      await new LocationServices().getCountry(`${req.body.countryCode}#`).then(async(result: PromiseResult<DocumentClient.QueryOutput, AWSError>) => {
+         if(result.Count && result.Count > 0) {
+            res.status(422);
             res.send({
                success: false,
-               message: "Something went wrong, please try after sometime.",
-               error: error
+               message: "Country already exist!",
             });
-         })
+         } else {
+            // create country
+            await new LocationServices().setCountry(countryData)
+            .then((result: any) => {
+               res.status(200);
+               res.send({
+                  success: true,
+                  message: "Country added successfully!",
+                  data: result,
+               });
+            })
+            .catch((error: any) => {
+               res.status(500);
+               res.send({
+                  success: false,
+                  message: "Something went wrong, please try after sometime.",
+                  error: error
+               });
+            })
+         }
+      })
+      .catch((error: any) => {
+         res.status(500);
+         res.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error: error
+         });
+      })
    }
 
    /**
@@ -113,48 +132,68 @@ export default class LocationController {
                   message: "Region already exist!",
                });
             } else {
-               await new ZendeskServices().createZendeskOrganisation(zendeskParams).then(async (resp) => {
-                  if (resp.status === 201 && resp?.data?.organization?.id) {
-                     let regionData: AddRegionObj = {
-                        sk: `${req.body.countryCode}#${req.body.regionCode}`,
-                        pk: "region",
-                        regionName: req.body.regionName,
-                        regionCode: req.body.regionCode,
-                        regionId: req.body.regionId,
-                        zendeskID: resp?.data?.organization?.id
-                     }
-                     await new LocationServices().setRegion(regionData)
-                        .then((result: any) => {
-                           res.status(200);
-                           res.send({
-                              success: true,
-                              message: "Region added successfully!",
-                              data: result,
-                           });
-                        })
-                        .catch((error: any) => {
-                           res.status(500);
+               // validate region ID here
+               await new LocationServices().getRegionByIndex(req.body.regionId)
+                  .then(async (result: any) => {
+                     if (result.Count > 0) {
+                        res.status(200);
+                        res.send({
+                           success: false,
+                           message: 'A Region is already exist with the given Region ID!',
+                        });
+                     } else {
+                        await new ZendeskServices().createZendeskOrganisation(zendeskParams).then(async (resp) => {
+                           if (resp.status === 201 && resp?.data?.organization?.id) {
+                              let regionData: AddRegionObj = {
+                                 sk: `${req.body.countryCode}#${req.body.regionCode}`,
+                                 pk: "region",
+                                 regionName: req.body.regionName,
+                                 regionCode: req.body.regionCode,
+                                 regionId: req.body.regionId,
+                                 zendeskID: resp?.data?.organization?.id
+                              }
+                              await new LocationServices().setRegion(regionData)
+                                 .then((result: any) => {
+                                    res.status(200);
+                                    res.send({
+                                       success: true,
+                                       message: "Region added successfully!",
+                                       data: result,
+                                    });
+                                 })
+                                 .catch((error: any) => {
+                                    res.status(500);
+                                    res.send({
+                                       success: false,
+                                       message: "Something went wrong, please try after sometime.",
+                                       error: error
+                                    });
+                                 })
+                           } else {
+                              res.status(500);
+                              res.send({
+                                 success: false,
+                                 message: "Something went wrong, please try after sometime.",
+                              });
+                           }
+                        }).catch((error: any) => {
+                           res.status(error.response?.status ?? 500);
                            res.send({
                               success: false,
-                              message: "Something went wrong, please try after sometime.",
-                              error: error
+                              message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
+                              error: error?.response?.data
                            });
                         })
-                  } else {
+                     }
+                  })
+                  .catch((error) => {
                      res.status(500);
                      res.send({
                         success: false,
-                        message: "Something went wrong, please try after sometime.",
+                        message: 'Something went wrong, please try after sometime.',
+                        error: error,
                      });
-                  }
-               }).catch((error: any) => {
-                  res.status(error.response?.status ?? 500);
-                  res.send({
-                     success: false,
-                     message: error.response?.statusText ?? "Something went wrong, please try after sometime.",
-                     error: error?.response?.data
                   });
-               })
             }
          })
          .catch((error: any) => {
@@ -240,23 +279,67 @@ export default class LocationController {
          longitude: req.body.longitude
       }
 
-      await new LocationServices().setStation(stationData)
-         .then((result: any) => {
-            res.status(200);
-            res.send({
-               success: true,
-               message: "Station added successfully!",
-               data: result,
-            });
-         })
-         .catch((error: any) => {
-            res.status(500);
+      // check station already exist
+      let keyParams = {
+         sk: stationData.sk,
+         pk: "station",
+      }
+      await new CommonServices().getEntity(keyParams)
+      .then(async (result: PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
+         if (result.Item) {
+            res.status(422);
             res.send({
                success: false,
-               message: "Something went wrong, please try after sometime.",
-               error: error
+               message: "Station already exist!",
             });
-         })
+         } else {
+            // check station exist or not 
+            await new LocationServices().getStationByIndex(req.body.stationId)
+               .then(async (result: any) => {
+                  if (result.Count > 0) {
+                     res.status(200);
+                     res.send({
+                        success: false,
+                        message: 'A Station is already exist with the given Station ID!',
+                     });
+                  } else {
+                     await new LocationServices().setStation(stationData)
+                        .then((result: any) => {
+                           res.status(200);
+                           res.send({
+                              success: true,
+                              message: "Station added successfully!",
+                              data: result,
+                           });
+                        })
+                        .catch((error: any) => {
+                           res.status(500);
+                           res.send({
+                              success: false,
+                              message: "Something went wrong, please try after sometime.",
+                              error: error
+                           });
+                        })
+                  }
+               })
+               .catch((error) => {
+                  res.status(500);
+                  res.send({
+                     success: false,
+                     message: 'Something went wrong, please try after sometime.',
+                     error: error,
+                  });
+               });
+         }
+      })
+      .catch((error: any) => {
+         res.status(500);
+         res.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error: error
+         });
+      })
    }
 
    /**
@@ -325,15 +408,37 @@ export default class LocationController {
          pk: "stationType",
          stationType: req.body.stationType
       }
-
-      await new LocationServices().setStationType(stationData)
-         .then((result: any) => {
-            res.status(200);
-            res.send({
-               success: true,
-               message: "Station type added successfully!",
-               data: result
-            });
+      // validate station type exist or not
+      await new CommonServices().getEntity({
+         pk : stationData.pk,
+         sk : stationData.sk
+      }).then(async (result: PromiseResult<DocumentClient.GetItemOutput, AWSError>) => {
+            if (result.Item) {
+               res.status(422);
+               res.send({
+                  success: false,
+                  message: "Station type already exist!",
+               });
+            } else {
+               // create station type
+               await new LocationServices().setStationType(stationData)
+                  .then((result: any) => {
+                     res.status(200);
+                     res.send({
+                        success: true,
+                        message: "Station type added successfully!",
+                        data: result
+                     });
+                  })
+                  .catch((error: any) => {
+                     res.status(500);
+                     res.send({
+                        success: false,
+                        message: "Something went wrong, please try after sometime.",
+                        error: error
+                     });
+                  })
+            }
          })
          .catch((error: any) => {
             res.status(500);

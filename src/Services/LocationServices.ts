@@ -1,5 +1,5 @@
 import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj } from "../Interfaces/countryInterface"
-import { dynamoDB, TableName } from "../Utils/dynamoDB"
+import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB"
 
 
 export class LocationServices {
@@ -17,6 +17,29 @@ export class LocationServices {
         }
         return dynamoDB.put(params).promise()
     }
+
+     /**
+    * getCountryList 
+    */
+     public getCountry(skBeginsWith : string) {
+        let queryInput = {
+            TableName: TableName,
+            ScanIndexForward: true,
+            ConsistentRead: false,
+            KeyConditionExpression: "#69240 = :69240 And begins_with(#bef91, :bef91)",
+            ExpressionAttributeValues: {
+                ":69240" : "country",
+                ":bef91": `${skBeginsWith}`
+            },
+            ExpressionAttributeNames: {
+                "#69240": "pk",
+                "#bef91": "sk"
+            }
+        }
+
+        return dynamoDB.query(queryInput).promise();
+    }
+
 
     /**
     * getCountryList 
@@ -50,6 +73,7 @@ export class LocationServices {
               regionName : data.regionName,
               regionCode : data.regionCode,
               regionID : data.regionId,
+              iRegID : data.regionId,
               zendeskID : data.zendeskID
             }
         }
@@ -109,6 +133,7 @@ export class LocationServices {
                 stationCode : data.stationCode,
                 stationName : data.stationName,
                 stationID : data.stationId,
+                iStaID : data.stationId,
                 stationType : data.stationType, 
                 address1 : data.address1,
                 address2 : data.address2,
@@ -196,4 +221,29 @@ export class LocationServices {
         }
     }
     
+    // region by index
+    async getRegionByIndex(regionID: string) {
+        let queryParams = {
+            IndexName: GSI.regionByRegionID,
+            KeyConditionExpression: 'iRegID = :iRegID',
+            ExpressionAttributeValues: {
+                ':iRegID': regionID,
+            },
+            TableName: TableName,
+        };
+        return dynamoDB.query(queryParams).promise();
+    }
+
+    // station by index
+    async getStationByIndex(stationID: string) {
+        let queryParams = {
+            IndexName: GSI.stationByStationID,
+            KeyConditionExpression: 'iStaID = :iStaID',
+            ExpressionAttributeValues: {
+                ':iStaID': stationID,
+            },
+            TableName: TableName,
+        };
+        return dynamoDB.query(queryParams).promise();
+    }
 }

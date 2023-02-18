@@ -12,5 +12,7 @@ export const GSI = {
     userByRole : "usersByRole",
     refByCreator : "refByCreator",
     refByAgent : "refByAgent",
-    customerIDs : "customerIDs"
+    customerIDs : "customerIDs",
+    regionByRegionID : "regionByRegionID",
+    stationByStationID : "stationByStationID"
 }
