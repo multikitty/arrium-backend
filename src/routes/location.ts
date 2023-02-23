@@ -13,10 +13,12 @@ router.delete("/country", authentication("admin"),  new LocationController().del
 router.get("/country", authentication("admin"),  new LocationController().fetchAllCountry);
 // For Regions
 router.post("/region", authentication("admin"), new LocationValidation().region(), validationSchema,  new LocationController().addRegion);
+router.put("/region", authentication("admin"), new LocationValidation().updateRegion(), validationSchema,  new LocationController().updateRegion);
 router.delete("/region", authentication("admin"),  new LocationController().deleteRegion);
 router.get("/region", authentication("admin"),  new LocationController().fetchAllRegion);
 // For stations
 router.post("/station", authentication("admin"), new LocationValidation().station(), validationSchema,  new LocationController().addStations);
+router.put("/station", authentication("admin"), new LocationValidation().station(), validationSchema,  new LocationController().addStations);
 router.get("/station", authentication("admin"),  new LocationController().fetchAllStation);
 router.delete("/station", authentication("admin"),  new LocationController().deleteStation);
 

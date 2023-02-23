@@ -15,6 +15,12 @@ export interface AddRegionObj {
     readonly zendeskID : string,
 }
 
+export interface UpdateRegionObj {
+    readonly regSk : string,
+    readonly regionName : string,
+    readonly regionID : string,
+}
+
 export interface AddStationTypeObj {
     readonly sk : string,
     readonly pk : string,
@@ -27,6 +33,21 @@ export interface AddStationObj {
     readonly regionCode : string
     readonly regionId : string,
     readonly stationCode : string
+    readonly stationName : string,
+    readonly stationId : string,
+    readonly stationType : string,
+    readonly address1 : string
+    readonly address2 : string,
+    readonly address3 : string
+    readonly city : string,
+    readonly state : string,
+    readonly postalCode : string,
+    readonly latitude : string,
+    readonly longitude : string,
+}
+
+export interface UpdateStationObj {
+    readonly stationSk : string,
     readonly stationName : string,
     readonly stationId : string,
     readonly stationType : string,

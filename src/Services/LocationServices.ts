@@ -1,4 +1,4 @@
-import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj } from "../Interfaces/countryInterface"
+import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj, UpdateRegionObj } from "../Interfaces/countryInterface"
 import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB"
 
 
@@ -78,6 +78,24 @@ export class LocationServices {
             }
         }
         return dynamoDB.put(params).promise()
+    }
+
+    // update region 
+    public updateRegion(data: UpdateRegionObj) {
+        let params = {
+          TableName: TableName,
+          Key: {
+            pk: "region",
+            sk: data.regSk,
+          },
+          UpdateExpression: `SET regionName= :regionName, regionID= :regionID`,
+          ExpressionAttributeValues: {
+            ":regionName": data.regionName,
+            ":regionID": data.regionID
+          },
+          ReturnValues: 'ALL_NEW',
+        };
+        return dynamoDB.update(params).promise();
     }
 
 
