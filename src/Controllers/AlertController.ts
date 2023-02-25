@@ -70,10 +70,9 @@ export default class AlertController {
   }
 
   public async getAllNotificationList(req: any, res: any) {
-    console.log(req.params.pk)
     try {
-      const blockNotification = await new AlertServices().getBlockNotification(req.body.pk)
-      const invoiceNotification = await new AlertServices().getInvoiceNotification(req.body.pk)
+      const blockNotification = await new AlertServices().getBlockNotification(req.params.pk)
+      const invoiceNotification = await new AlertServices().getInvoiceNotification(req.params.pk)
       res.status(200);
       res.send({
         success: true,
@@ -91,9 +90,30 @@ export default class AlertController {
     }
   }
 
+  async createInvoice(req: any, res: any) {
+    await new AlertServices().insertPaymentAlert({ pk: req.body.pk, currentTime: req.body.currentTime, notifType: 'invoice', invID: req.body.inv_num, notifViewed: false })
+      .then((result: any) => {
+        res.status(200);
+        res.send({
+          success: true,
+          message: " notification added successfully!",
+          data: result,
+        });
+      }).catch((error: any) => {
+        res.status(500);
+        res.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+          error: error
+        });
+      });
+
+  }
+
   async updateNotificationViewed(req: any, res: any) {
     const allBlockAlertOfUser = await new AlertServices().getBlockNotification(req.body.pk)
-    Promise.all<any>(allBlockAlertOfUser.Items?.map(async (item: any) => {
+    const allInvoiceAlertOfUser = await new AlertServices().getInvoiceNotification(req.body.pk)
+    Promise.all<any>([...<[]>allBlockAlertOfUser.Items, ...<[]>allInvoiceAlertOfUser.Items]?.map(async (item: any) => {
       return new AlertServices().updateAllBlockAlertbyViewed(item.pk, item.sk).then((result: any) => {
         return {
           success: true,
@@ -126,7 +146,7 @@ export default class AlertController {
 
   async updateDismissedDateInAllBlockNotification(req: any, res: any) {
     const allBlockAlertOfUser = await new AlertServices().getBlockNotification(req.body.pk)
-    const currentTime = Math.floor(Date.now() / 1000);
+    const currentTime = Date.now();
     Promise.all<any>(allBlockAlertOfUser.Items?.map(async (item: any) => {
       return new AlertServices().updateAllBlockAlertbyDismiss(item.pk, item.sk, currentTime).then((result: any) => {
         return {
@@ -145,7 +165,7 @@ export default class AlertController {
       res.status(200);
       res.send({
         success: true,
-        message: "All notification viewed successfully!",
+        message: "All notification dismissed successfully!",
         data: result,
       });
     }).catch(function (error) {
@@ -159,7 +179,7 @@ export default class AlertController {
   }
 
   async updateDismissedDateInBlockNotification(req: any, res: any) {
-    const currentTime = Math.floor(Date.now() / 1000);
+    const currentTime = Date.now()
     await new AlertServices().updateBlockAlertbyDismiss(req.body.pk, req.body.sk, currentTime).then((result: any) => {
       res.status(200);
       res.send({

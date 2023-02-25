@@ -14,7 +14,7 @@ router.post("/createBlockNotification", authentication('driver'), alertValidatio
 router.get("/blockNotification", authentication('driver'), new AlertController().getNotificationList);
 
 //get all notification
-router.get("/allNotification", authentication('driver'), new AlertController().getAllNotificationList)
+router.get("/allNotification/:pk", authentication('driver'), new AlertController().getAllNotificationList)
 
 //update notification viewed status
 router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
@@ -25,7 +25,6 @@ router.post("/updateDismissedSingleNotification", authentication('driver'), new 
 // update notification dismissed all status
 router.post("/updateDismissedAllNotifications", authentication('driver'), new AlertController().updateDismissedDateInAllBlockNotification)
 
-//update notification viewed status
-router.post("/updateViewedNotification", authentication('driver'), new AlertController().updateNotificationViewed);
-
+// Testing Invoice api
+router.post("/createInvoice", new AlertController().createInvoice);
 export = router;

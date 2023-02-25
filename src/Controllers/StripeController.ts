@@ -169,7 +169,7 @@ export default class StripeController {
                     .format("MMM DD,YYYY")})`,
             };
             await new StripeServices().updateInvoice(data?.id, invoice_data);
-            const currentTime = Math.floor(Date.now() / 1000);
+            const currentTime = Date.now()
             const inv_num = invoice_id.split('-')[invoice_id.split('-').length - 1]
             await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: inv_num, notifViewed: false });
             if (data?.subscription) {
@@ -196,7 +196,7 @@ export default class StripeController {
           if (customer) {
             const { pk, sk } = customer?.metadata;
             if (pk && sk) {
-              const currentTime = Math.floor(Date.now() / 1000);
+              const currentTime = Date.now();
               await new AlertServices().updatePaymentAlert(pk, sk, currentTime);
               const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
               console.log({ user });

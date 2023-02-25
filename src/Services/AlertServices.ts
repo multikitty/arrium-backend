@@ -66,15 +66,16 @@ export default class AlertServices {
       ConsistentRead: false,
       KeyConditionExpression: `#bef90 = :bef90 and begins_with(#bef91,:bef91)`,
       ExpressionAttributeValues: {
-        ":bef90": pk,
-        ":bef91": `notif#block#`
+        ':bef90': pk,
+        ':bef91': `notif#block#`,
+        ':notifDismiss': false
       },
-      "ExpressionAttributeNames": {
-        "#bef90": "pk",
-        "#bef91": "sk"
+      ExpressionAttributeNames: {
+        '#bef90': 'pk',
+        '#bef91': 'sk'
       }
     }
-    return dynamoDB.query(queryParams).promise();
+    return dynamoDB.query({ ...queryParams, FilterExpression: `notifDismiss = :notifDismiss` }).promise();
   }
 
   public getInvoiceNotification(pk: string) {
@@ -82,17 +83,20 @@ export default class AlertServices {
       TableName: TableName,
       ScanIndexForward: true,
       ConsistentRead: false,
-      KeyConditionExpression: `pk = :bef90`,
-      FilterExpression: 'notifType = :type',
+      KeyConditionExpression: `#bef90 = :bef90 and begins_with(#bef91,:bef91)`,
       ExpressionAttributeValues: {
-        ":bef90": pk,
-        ":type": 'invoice'
+        ':bef90': pk,
+        ':bef91': `notif#invoice#`
       },
+      ExpressionAttributeNames: {
+        '#bef90': 'pk',
+        '#bef91': 'sk'
+      }
     }
     return dynamoDB.query(queryParams).promise();
   }
 
-  async updateAllBlockAlertbyViewed(pk: string, sk: string) {
+  public updateAllBlockAlertbyViewed(pk: string, sk: string) {
     return dynamoDB
       .update({
         TableName: TableName,
@@ -101,18 +105,17 @@ export default class AlertServices {
           sk: sk
         },
         UpdateExpression: 'SET notifViewed = :update',
-        ConditionExpression: 'notifViewed = :notifViewed and sk = :sk and notifType = :notifType ',
+        ConditionExpression: 'notifViewed = :notifViewed and sk = :sk',
         ExpressionAttributeValues: {
           ':notifViewed': false,
           ':update': true,
           ':sk': sk,
-          ':notifType': 'block'
         },
       })
       .promise();
   }
 
-  async updateBlockAlertbyDismiss(pk: string, sk: string, currentTime: number) {
+  public updateBlockAlertbyDismiss(pk: string, sk: string, currentTime: number) {
     return dynamoDB
       .update({
         TableName: TableName,
@@ -133,7 +136,7 @@ export default class AlertServices {
       .promise();
   }
 
-  async updateAllBlockAlertbyDismiss(pk: string, sk: string, currentTime: number) {
+  public updateAllBlockAlertbyDismiss(pk: string, sk: string, currentTime: number) {
     return dynamoDB
       .update({
         TableName: TableName,
