@@ -50,8 +50,6 @@ router.post(
   authentication("driver"),
   new AlertController().updateDismissedDateInAllBlockNotification
 );
-//get blocks notification
-router.get("/allNotification", new AlertController().getAllNotificationList);
 
 // Testing Invoice api
 router.post("/createInvoice", new AlertController().createInvoice);
