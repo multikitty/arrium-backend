@@ -1,4 +1,4 @@
-import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj } from "../Interfaces/countryInterface"
+import { AddCountryObj, AddRegionObj, AddStationObj, AddStationTypeObj, UpdateRegionObj, UpdateStationObj } from "../Interfaces/countryInterface"
 import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB"
 
 
@@ -80,6 +80,25 @@ export class LocationServices {
         return dynamoDB.put(params).promise()
     }
 
+    // update region 
+    public updateRegion(data: UpdateRegionObj) {
+        let params = {
+          TableName: TableName,
+          Key: {
+            pk: "region",
+            sk: data.regSk,
+          },
+          UpdateExpression: `SET regionName= :regionName, regionID= :regionID, iRegID= :iRegID`,
+          ExpressionAttributeValues: {
+            ":regionName": data.regionName,
+            ":regionID": data.regionID,
+            ":iRegID": data.regionID
+          },
+          ReturnValues: 'ALL_NEW',
+        };
+        return dynamoDB.update(params).promise();
+    }
+
 
     /**
     * getRegionList 
@@ -148,6 +167,49 @@ export class LocationServices {
         return dynamoDB.put(params).promise()
     }
 
+    // update region 
+    public updateStation(data: UpdateStationObj) {
+        let params = {
+          TableName: TableName,
+          Key: {
+            pk: "station",
+            sk: data.stationSk,
+          },
+          UpdateExpression: `SET 
+            stationName= :stationName, 
+            iStaID= :iStaID,
+            stationID= :stationID,
+            stationType= :stationType,
+            address1= :address1,
+            address2= :address2,
+            address3= :address3,
+            city= :city,
+            #attrState= :state,
+            postalCode= :postalCode,
+            latitude= :latitude,
+            longitude= :longitude
+            `,
+        ExpressionAttributeNames: {
+            '#attrState': 'state',
+        },
+        ExpressionAttributeValues: {
+            ":stationName": data.stationName,
+            ":iStaID": data.stationId,
+            ":stationID": data.stationId,
+            ":stationType": data.stationType,
+            ":address1": data.address1,
+            ":address2": data.address2,
+            ":address3": data.address3,
+            ":city": data.city,
+            ":state": data.state,
+            ":postalCode": data.postalCode,
+            ":latitude": data.latitude,
+            ":longitude": data.longitude
+          },
+          ReturnValues: 'ALL_NEW',
+        };
+        return dynamoDB.update(params).promise();
+    }
 
     // set station type
     public setStationType(data : AddStationTypeObj) {
