@@ -285,7 +285,7 @@ export default class AlertController {
         res.status(200);
         res.send({
           success: true,
-          message: "Update sucessfully!",
+          message: "All notification viewed successfully!",
           data: result,
         });
       })
