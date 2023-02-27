@@ -306,7 +306,7 @@ export const SignupController = {
                   let updateParams : UpdateCurrentStepAndZendeskUsrID = {
                     sk : request.body.sk,
                     pk : request.body.pk,
-                    currentStep : "finished",
+                    currentStep : "holding",
                     zendeskUsrID : resp?.data?.user?.id
                   }
                   await new UserServices().updateCurrentStepAndZendeskID(updateParams)

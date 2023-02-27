@@ -104,8 +104,6 @@ export const authSchema = {
       .not()
       .isEmpty()
       .withMessage('Amazon flex password is required')
-      .isLength({ min: 8 })
-      .withMessage('Amazon flex password must be at least 8 characters long.'),
   ],
 
   emailSchema: [

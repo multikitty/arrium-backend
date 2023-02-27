@@ -5,6 +5,7 @@ import { EntitySkPk } from '../Interfaces/commonInterface';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { AWSError } from 'aws-sdk';
+import { UpdateFlexInfoObj } from '../Interfaces/flexInterfaces';
 
 export default class UserServices {
   // Fetch User by GSI Index from GSI-Login
@@ -166,6 +167,28 @@ export default class UserServices {
     return dynamoDB.update(params).promise();
   }
 
+
+  // update flex details by user (driver)
+  public updateFlexDetailsByDriver(data: UpdateFlexInfoObj) {
+    let params = {
+      TableName: TableName,
+      Key: {
+        pk: data.pk,
+        sk: data.sk,
+      },
+      UpdateExpression: `SET 
+        amznFlexUser= :amznFlexUser,
+        amznFlexPassword= :amznFlexPassword
+      `,
+      ExpressionAttributeValues: {
+        ":amznFlexUser": data.amznFlexUser,
+        ":amznFlexPassword": data.amznFlexPassword
+      },
+      ReturnValues: 'ALL_NEW',
+    };
+    return dynamoDB.update(params).promise();
+  }
+
   // update user's regionCode and countryCode
   async updateUserCountryRegion(data: any) {
     return dynamoDB
@@ -177,7 +200,8 @@ export default class UserServices {
         },
         UpdateExpression: `SET 
             flexCountry= :flexCountry,
-            #attrRegion= :region
+            #attrRegion= :region,
+            currentSteps= :currentSteps
           `,
         ExpressionAttributeNames: {
           '#attrRegion': 'region',
@@ -185,6 +209,7 @@ export default class UserServices {
         ExpressionAttributeValues: {
           ':flexCountry': data.country,
           ':region': data.region,
+          ':currentSteps': "finished"
         },
         ReturnValues: 'ALL_NEW',
       })
