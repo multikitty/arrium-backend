@@ -34,6 +34,8 @@ router.get("/list-by-role", authentication("admin"), new UserController().fetchU
 
 router.post("/add-user", authentication("admin"), new UserValidation().addUser(), validationSchema, new UserController().addUser);
 
+router.put("/update-flex-info", authentication("driver"), authSchema.updateAmazonFlexSchema, validationSchema, new UserController().updateFlexDetailsByDriver);
+
 router.post(
   "/request-verify-email",
   authentication("driver"),

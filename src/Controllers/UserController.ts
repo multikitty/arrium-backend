@@ -13,6 +13,7 @@ import { ZendeskUpdateUser } from "../Interfaces/zendeskInterface";
 import ZendeskServices from "../Services/ZendeskServices";
 import StripeServices from "../Services/StripeServices";
 import NotificationServices from "../Services/NotificationServices";
+import { SignupServices } from "Services/SignupServices";
 
 export default class UserController {
   // get logged in user data
@@ -857,6 +858,40 @@ export default class UserController {
         response.send({
           success: true,
           message: "Configuration tokens updated successfully.",
+          data: result.Attributes
+        });
+      } else {
+        response.status(500);
+        response.send({
+          success: false,
+          message: "Something went wrong, please try after sometime.",
+        });
+      }
+    }).catch((error) => {
+      response.status(500);
+      response.send({
+        success: false,
+        message: 'Something went wrong, please try after sometime.',
+        error: error
+      });
+    })
+  }
+
+  // update flex password and email
+  async updateFlexDetailsByDriver(request: Request, response: Response) {
+    let flexData = {
+      pk: request.body.pk,
+      sk: `flexDetails#${request.body.pk}`,
+      amznFlexUser: request.body.amznFlexUser,
+      amznFlexPassword: request.body.amznFlexPassword,
+    };
+    // update flex data
+    await new UserServices().updateFlexDetailsByDriver(flexData).then((result : PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
+      if (result.Attributes) {
+        response.status(200);
+        response.send({
+          success: true,
+          message: "Flex details updated successfully.",
           data: result.Attributes
         });
       } else {
