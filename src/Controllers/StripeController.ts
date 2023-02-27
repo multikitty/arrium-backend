@@ -141,12 +141,11 @@ export default class StripeController {
                   update_user = {
                     sk,
                     pk,
-                    fieldName: 'status',
-                    fieldValue: 'expired',
+                    fieldName: "status",
+                    fieldValue: "expired",
                   };
                   await new UserServices().updateProfile(update_user);
                 }
-
               }
               console.log("&****", { scheduled_subscriptions });
               //show plan page
@@ -161,17 +160,59 @@ export default class StripeController {
             const product = await new StripeServices().getProduct(productId);
             const invoice_id = data.id;
             const invoice_data = {
-              description: `${plan_type[0].toUpperCase() + plan_type.slice(1)
-                }: ${product?.name} (${moment
-                  .unix(data?.lines?.data[0]?.period?.start)
-                  .format("MMM DD,YYYY")} - ${moment
-                    .unix(data?.lines?.data[0]?.period?.end)
-                    .format("MMM DD,YYYY")})`,
+              description: `${
+                plan_type[0].toUpperCase() + plan_type.slice(1)
+              }: ${product?.name} (${moment
+                .unix(data?.lines?.data[0]?.period?.start)
+                .format("MMM DD,YYYY")} - ${moment
+                .unix(data?.lines?.data[0]?.period?.end)
+                .format("MMM DD,YYYY")})`,
             };
             await new StripeServices().updateInvoice(data?.id, invoice_data);
-            const currentTime = Date.now()
-            const inv_num = invoice_id.split('-')[invoice_id.split('-').length - 1]
-            await new AlertServices().insertPaymentAlert({ pk: pk, currentTime: currentTime, notifType: 'invoice', invID: inv_num, notifViewed: false });
+            const currentTime = Date.now();
+            const inv_num =
+              invoice_id.split("-")[invoice_id.split("-").length - 1];
+            await new AlertServices().insertPaymentAlert({
+              pk: pk,
+              currentTime: currentTime,
+              notifType: "invoice",
+              invID: inv_num,
+              notifViewed: false,
+            });
+            const connectionData = await new AlertServices()
+              .getConnectionId(pk)
+              .then((result) => {
+                return result.Items;
+              });
+            connectionData?.map(async (item: any) => {
+              return await new AlertServices()
+                .sendNotification({
+                  connectionId: item.connectionId,
+                  data: {
+                    pk: pk,
+                    currentTime: currentTime,
+                    notifType: "invoice",
+                    invID: inv_num,
+                    notifViewed: false,
+                  },
+                })
+                .then((result: any) => {
+                  res.status(200);
+                  res.send({
+                    success: true,
+                    message: "Send sucessfully!",
+                    data: result,
+                  });
+                })
+                .catch((error: any) => {
+                  res.status(500);
+                  res.send({
+                    success: false,
+                    message: "Something went wrong, please try after sometime.",
+                    error: error,
+                  });
+                });
+            });
             if (data?.subscription) {
               const sub_id = data.subscription;
               const subscription = await new StripeServices().getSubscription(
@@ -185,23 +226,17 @@ export default class StripeController {
           }
           break;
         case "invoice.paid":
-          const invoice_id = data.id;
           const customer = await new StripeServices().getCustomer(stripeId);
-          const notificationBody = {
-            invoiceId: invoice_id,
-            pk: pk,
-            currentTime: Date.now(),
-          };
-          // await new AlertServices().updateAlert(notificationBody);
           if (customer) {
             const { pk, sk } = customer?.metadata;
             if (pk && sk) {
               const currentTime = Date.now();
               await new AlertServices().updatePaymentAlert(pk, sk, currentTime);
-              const user = (await new UserServices().getUserData({ sk, pk }))?.Item;
+              const user = (await new UserServices().getUserData({ sk, pk }))
+                ?.Item;
               console.log({ user });
               if (user) {
-                if (user?.status !== 'Active') {
+                if (user?.status !== "Active") {
                   let update_data = {
                     sk,
                     pk,
@@ -210,14 +245,51 @@ export default class StripeController {
                   };
                   await new UserServices().updateProfile(update_data);
                 }
-                const lineItem = data?.lines?.data[0]
-
-                console.log({ lineItem, lineItem_length: data?.lines?.data?.length })
+                const lineItem = data?.lines?.data[0];
+                const connectionData = await new AlertServices()
+                  .getConnectionId(pk)
+                  .then((result) => {
+                    return result.Items;
+                  });
+                connectionData?.map(async (item: any) => {
+                  return await new AlertServices()
+                    .sendNotification({
+                      connectionId: item.connectionId,
+                      data: {
+                        pk: pk,
+                        currentTime: currentTime,
+                        notifType: "invoice",
+                        invID: data?.id,
+                        notifViewed: false,
+                      },
+                    })
+                    .then((result: any) => {
+                      res.status(200);
+                      res.send({
+                        success: true,
+                        message: "Send sucessfully!",
+                        data: result,
+                      });
+                    })
+                    .catch((error: any) => {
+                      res.status(500);
+                      res.send({
+                        success: false,
+                        message:
+                          "Something went wrong, please try after sometime.",
+                        error: error,
+                      });
+                    });
+                });
+                console.log({
+                  lineItem,
+                  lineItem_length: data?.lines?.data?.length,
+                });
                 if (lineItem) {
-                  //GET PRODUCT META AND TYPE 
+                  //GET PRODUCT META AND TYPE
                   const prodId = lineItem?.price?.product;
-                  const product = await new StripeServices().getProduct(prodId)
-                  console.log({ product, meta: product.metadata })
+                  const product = await new StripeServices().getProduct(prodId);
+                  console.log({ product, meta: product.metadata });
                 }
               }
             }
@@ -291,15 +363,15 @@ export default class StripeController {
       let update_data = {
         sk,
         pk,
-        fieldName: 'planType',
-        fieldValue: 'trial',
+        fieldName: "planType",
+        fieldValue: "trial",
       };
       await new UserServices().updateProfile(update_data);
       update_data = {
         sk,
         pk,
-        fieldName: 'status',
-        fieldValue: 'active',
+        fieldName: "status",
+        fieldValue: "active",
       };
       await new UserServices().updateProfile(update_data);
       const user = await new StripeServices().updateStripeClientId({
@@ -386,13 +458,14 @@ export default class StripeController {
         customer: user.stripeID,
         unit_amount_decimal: plan.amount,
         currency: plan.currency,
-        description: `${plan?.metadata["plan type"][0].toUpperCase() +
+        description: `${
+          plan?.metadata["plan type"][0].toUpperCase() +
           plan?.metadata["plan type"].slice(1)
-          }: ${product?.name} (${moment(free_trial_end_date).format(
-            "MMM DD,YYYY"
-          )} - ${moment(new Date(month_end.format("YYYY-MM-DD hh:mm:ss"))).format(
-            "MMM DD,YYYY"
-          )})`,
+        }: ${product?.name} (${moment(free_trial_end_date).format(
+          "MMM DD,YYYY"
+        )} - ${moment(new Date(month_end.format("YYYY-MM-DD hh:mm:ss"))).format(
+          "MMM DD,YYYY"
+        )})`,
         period: {
           start: moment(free_trial_end_date).unix(), //free trial end-date
           end: month_end.endOf("day").unix(),
@@ -449,7 +522,9 @@ export default class StripeController {
       }
       let invoices = await new StripeServices().getInvoices(data);
       if (invoices?.length) {
-        invoices = invoices?.data?.sort((a: any, b: any) => a?.created - b.created)
+        invoices = invoices?.data?.sort(
+          (a: any, b: any) => a?.created - b.created
+        );
       }
 
       const invoices_data = invoices?.data?.map((invoice: any) => {
@@ -464,8 +539,8 @@ export default class StripeController {
             : null,
           paid_at: invoice?.status_transitions?.paid_at
             ? moment
-              .unix(invoice?.status_transitions?.paid_at)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.status_transitions?.paid_at)
+                .format("MMM DD,YYYY")
             : null,
           invoice_url: invoice?.hosted_invoice_url,
           paid_status: new StripeServices().getPaidStatus({
@@ -474,13 +549,13 @@ export default class StripeController {
           }),
           period_start: invoice?.lines?.data[0]?.period?.start
             ? moment
-              .unix(invoice?.lines?.data[0]?.period?.start)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.lines?.data[0]?.period?.start)
+                .format("MMM DD,YYYY")
             : null,
           period_end: invoice?.lines?.data[0]?.period?.end
             ? moment
-              .unix(invoice?.lines?.data[0]?.period?.end)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.lines?.data[0]?.period?.end)
+                .format("MMM DD,YYYY")
             : null,
         };
         return data;
@@ -507,7 +582,7 @@ export default class StripeController {
       }
       if (end_before && !has_more) {
         starting_after = invoices_data[invoices_data?.length - 1]?.id;
-        has_more = true
+        has_more = true;
       }
 
       return res?.status(200).json({
@@ -520,7 +595,7 @@ export default class StripeController {
         has_next_page: has_more ? true : false,
         nextPage: has_more ? +page + 1 : null,
         prevPage: ending_before ? +page - 1 : null,
-        message: 'Successfully fetched invoices',
+        message: "Successfully fetched invoices",
       });
     } catch (error) {
       return res
@@ -556,7 +631,9 @@ export default class StripeController {
       }
       let invoices = await new StripeServices().getInvoices(data);
       if (invoices?.length) {
-        invoices = invoices?.data?.sort((a: any, b: any) => a?.created - b.created)
+        invoices = invoices?.data?.sort(
+          (a: any, b: any) => a?.created - b.created
+        );
       }
       const invoices_data = invoices?.data?.map((invoice: any) => {
         const data = {
@@ -570,8 +647,8 @@ export default class StripeController {
             : null,
           paid_at: invoice?.status_transitions?.paid_at
             ? moment
-              .unix(invoice?.status_transitions?.paid_at)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.status_transitions?.paid_at)
+                .format("MMM DD,YYYY")
             : null,
           invoice_url: invoice?.hosted_invoice_url,
           paid_status: new StripeServices().getPaidStatus({
@@ -580,13 +657,13 @@ export default class StripeController {
           }),
           period_start: invoice?.lines?.data[0]?.period?.start
             ? moment
-              .unix(invoice?.lines?.data[0]?.period?.start)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.lines?.data[0]?.period?.start)
+                .format("MMM DD,YYYY")
             : null,
           period_end: invoice?.lines?.data[0]?.period?.end
             ? moment
-              .unix(invoice?.lines?.data[0]?.period?.end)
-              .format("MMM DD,YYYY")
+                .unix(invoice?.lines?.data[0]?.period?.end)
+                .format("MMM DD,YYYY")
             : null,
         };
         return data;
@@ -599,7 +676,11 @@ export default class StripeController {
         if (page > 1) {
           ending_before = invoices_data[0]?.id;
         }
-      } else if (has_more && invoices_data?.length && invoices_data?.length <= 1) {
+      } else if (
+        has_more &&
+        invoices_data?.length &&
+        invoices_data?.length <= 1
+      ) {
         starting_after = invoices_data[0]?.id;
         ending_before = invoices_data[0]?.id;
       } else if (!has_more && invoices_data?.length && !end_before) {
@@ -611,7 +692,7 @@ export default class StripeController {
       }
       if (end_before && !has_more) {
         starting_after = invoices_data[invoices_data?.length - 1]?.id;
-        has_more = true
+        has_more = true;
       }
 
       return res?.status(200).json({
@@ -624,7 +705,7 @@ export default class StripeController {
         has_next_page: has_more ? true : false,
         nextPage: has_more ? +page + 1 : null,
         prevPage: ending_before ? +page - 1 : null,
-        message: 'Successfully fetched invoices',
+        message: "Successfully fetched invoices",
       });
     } catch (error) {
       return res

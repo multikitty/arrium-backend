@@ -48,6 +48,24 @@ export interface UpdateAlertObject {
 }
 
 export interface NotificationObject {
-  readonly connectionId: string;
-  readonly message: string;
+  pk?: string;
+  sk?: string;
+  notifType?: string;
+  currentTime?: number;
+  invID?: number;
+  notifViewed?: boolean;
+  expDate?: number;
+  offerID?: string;
+  price?: string;
+  bStartTimeU?: number;
+  bEndTimeU?: number;
+  stationCode?: string;
+  stationName?: string;
+  sessionTimeU?: number;
+  notifDismiss?: boolean;
+}
+
+export interface NotificationWSObject {
+  connectionId: string;
+  data: NotificationObject;
 }
