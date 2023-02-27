@@ -18,7 +18,7 @@ router.delete("/region", authentication("admin"),  new LocationController().dele
 router.get("/region", authentication("admin"),  new LocationController().fetchAllRegion);
 // For stations
 router.post("/station", authentication("admin"), new LocationValidation().station(), validationSchema,  new LocationController().addStations);
-router.put("/station", authentication("admin"), new LocationValidation().station(), validationSchema,  new LocationController().addStations);
+router.put("/station", authentication("admin"), new LocationValidation().stationUpate(), validationSchema,  new LocationController().updateStation);
 router.get("/station", authentication("admin"),  new LocationController().fetchAllStation);
 router.delete("/station", authentication("admin"),  new LocationController().deleteStation);
 
