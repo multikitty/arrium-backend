@@ -26,6 +26,39 @@ export default class ZendeskServices {
       )
   }
 
+  // delete org in zendesk
+  async deleteZendeskOrganisation(params: any) {
+    await axios.delete(`${process.env.ZENDESK_BASE_URL}api/v2/organizations/${params.zendeskOrgId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        "Accept-Encoding": "gzip,deflate,compress",
+        'Authorization': `Basic ${process.env.ZENDESK_API_KEY_BASE_64}`
+      }
+    }).then((result: any) => {
+      return result.data
+    }).catch((error: any) => {
+      throw new Error(error.response.data.details);
+    })
+  }
+
+
+  // delete org in zendesk
+  async updateZendeskOrganisation(params: any) {
+    await axios.put(`${process.env.ZENDESK_BASE_URL}api/v2/organizations/${params.zendeskOrgId}`, { "organization": params }, {
+      headers: {
+        'Content-Type': 'application/json',
+        "Accept-Encoding": "gzip,deflate,compress",
+        'Authorization': `Basic ${process.env.ZENDESK_API_KEY_BASE_64}`
+      }
+    }).then((result: any) => {
+      return result.data
+    }).catch((error: any) => {
+      throw new Error(error.response.data.details);
+    })
+  }
+
+
+
   // get org list from zendesk
   async getZendeskOrganizationsList() {
     await axios
