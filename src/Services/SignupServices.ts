@@ -18,7 +18,7 @@ export const SignupServices = {
           startDate: (Date.now() / 1000) | 0, //time in unix,
           accountStatus: 'active',
           planType: 'basic',
-          region : "",
+          regionCode : "",
           otp : "",
           pricingPlan : false,
           country: data.country

@@ -46,7 +46,7 @@ export default class MailServices {
         replyTo : [],
         subject : `Email Verification`,
         message : `
-            <p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify?token=${data.token}</p>
+            <p>Please follow the below link to verify your email address</p><br /><p>https://arrium.io/signupEmailVerify/?token=${data.token}</p>
           `
       }
     }
@@ -62,7 +62,7 @@ export default class MailServices {
         replyTo : [],
         subject : "Reset Password",
         message :`
-            <p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password?token=${data.token}</p></br>
+            <p>Please follow the below link to reset your password</p><br /><p>https://arrium.io/reset-password/?token=${data.token}</p></br>
           `
       }
     }

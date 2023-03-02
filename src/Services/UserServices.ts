@@ -102,7 +102,7 @@ export default class UserServices {
         #attrRegion= :region
       `,
       ExpressionAttributeNames: {
-        '#attrRegion': 'region',
+        '#attrRegion': 'regionCode',
       },
       ExpressionAttributeValues: {
         ':flexUser': data.flexUser,
@@ -204,7 +204,7 @@ export default class UserServices {
             currentSteps= :currentSteps
           `,
         ExpressionAttributeNames: {
-          '#attrRegion': 'region',
+          '#attrRegion': 'regionCode',
         },
         ExpressionAttributeValues: {
           ':flexCountry': data.country,
@@ -462,7 +462,7 @@ export default class UserServices {
         phoneVerified : false,
         currentSteps: 'finished',
         planType: 'basic',
-        region : "",
+        regionCode : "",
         otp : "",
       },
       TableName: TableName,
