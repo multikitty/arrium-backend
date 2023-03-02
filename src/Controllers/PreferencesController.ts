@@ -268,7 +268,6 @@ export default class PreferencesController {
         let scheduleDataArr = req.body.schedules;
         let batchSize = 25;
         let batchItemsList : any[] = [];
-        let allItemsList : any[] = []; 
         let failedItems : any = [];
         for (let i = 0; i < scheduleDataArr.length; i++) {
             const listItem = scheduleDataArr[i];
@@ -276,8 +275,8 @@ export default class PreferencesController {
             let scheduleData : SchedulePreferenceObj = {
                 pk : req.body.pk,
                 sk : `schedule#${req.body.pk}#${i+1}`,
-                day : listItem.day,
-                startTime : listItem.startTime,
+                asDay : listItem.day,
+                asStartTime : listItem.startTime,
                 active : listItem.active,
             }
 
@@ -289,46 +288,21 @@ export default class PreferencesController {
             };
             // add schedule item in array
             batchItemsList.push(prefItem)
-            // schedule item for python application
-            let scheduleItem = {
-                run_at : listItem.startTime,
-                weekday : listItem.day,
-                active : listItem.active,
-            }
-            allItemsList.push(scheduleItem)
             // add items to DB
             if(batchItemsList.length === batchSize || i+1 === scheduleDataArr.length) {
-                // UPDATE SCHEDULES ON PYTHON APPLICATION
-                await axios.post(`${process.env.AUTMATION_TOOL_BASE_URL}schedule-task/`, {
-                    user_pk: req.body.pk,
-                    user_sk: req.body.sk,
-                    schedule: allItemsList
-                }, {
-                    headers: {
-                    'Authorization': `${process.env.AUTOMATION_TOOL_KEY}` //python app api key
-                    }
-                }).then(async (result : any) => {
-                     // execute batch write operation
-                    await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
-                        batchItemsList = [] // clear batchItemsList
-                        // store unprocessed (failed items)
-                        failedItems.push(result.UnprocessedItems)
-                        if(i+1 === scheduleDataArr.length) {
-                            res.status(200);
-                            res.send({
-                                success: true,
-                                message: "Availability schedule saved successfully.",
-                                data: failedItems
-                            });
-                        }
-                    }).catch((error : any) => {
-                        res.status(500);
+                // execute batch write operation
+                await new CommonServices().batchWriteData(batchItemsList).then(async (result: any) => {
+                    batchItemsList = [] // clear batchItemsList
+                    // store unprocessed (failed items)
+                    failedItems.push(result.UnprocessedItems)
+                    if(i+1 === scheduleDataArr.length) {
+                        res.status(200);
                         res.send({
-                            success: false,
-                            message: "Something went wrong, please try after sometime.",
-                            error : error
-                        });  
-                    })
+                            success: true,
+                            message: "Availability schedule saved successfully.",
+                            data: failedItems
+                        });
+                    }
                 }).catch((error : any) => {
                     res.status(500);
                     res.send({
@@ -336,9 +310,8 @@ export default class PreferencesController {
                         message: "Something went wrong, please try after sometime.",
                         error : error
                     });  
-                });
+                })
             }  
-
         }
     }
 
