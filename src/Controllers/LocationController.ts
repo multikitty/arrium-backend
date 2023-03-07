@@ -221,6 +221,15 @@ export default class LocationController {
                if (result.Items) {
                   let resultItem = result?.Items[0]
                   if ((resultItem?.sk === req.body.regSk) || result.Items.length === 0) {
+                     // update zendesk org name
+
+                     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< need to fetch zendeskOrgID from LSI of region >>>>>>>>>>>>>>>>>>>>>
+                     // let zendeskParams: ZendeskCreateOrganization = {
+                     //    name: `${req.body.regionName}(${resultItem.regionCode})`,
+                     //    organization_fields: { flexCountry: resultItem.countryCode }
+                     // }
+
+
                      await new LocationServices().updateRegion(req.body).then((result: PromiseResult<DocumentClient.UpdateItemOutput, AWSError>) => {
                         if (result.Attributes) {
                            res.status(200);
@@ -275,29 +284,60 @@ export default class LocationController {
       * deleteRegion
       */
    public async deleteRegion(req: Request, res: Response) {
-      let deleteItem: EntitySkPk = {
-         sk: req.body.sortKey,
-         pk: req.body.partitionKey
-      }
-      // delete
-      await new CommonServices().deleteItem(deleteItem)
-         .then((result: any) => {
-            res.status(200);
-            res.send({
-               success: true,
-               message: "Region deleted successfully!",
-               data: result,
+      try {
+         let deleteItem: EntitySkPk = {
+            sk: req.body.sortKey,
+            pk: req.body.partitionKey
+         }
+
+         // get region =>
+         let regionData = await new CommonServices().getEntity(deleteItem);
+         if (regionData.Item) {
+            let zendeskOrgID = regionData.Item.zendeskOrgID;
+            // delete zendesk org
+            await new ZendeskServices().deleteZendeskOrganisation(zendeskOrgID).then(async () => {
+               await new CommonServices().deleteItem(deleteItem)
+                  .then((result: any) => {
+                     res.status(200);
+                     res.send({
+                        success: true,
+                        message: "Region deleted successfully!",
+                        data: result,
+                     });
+                  })
+                  .catch((error: any) => {
+                     res.status(500);
+                     res.send({
+                        success: false,
+                        message: "Something went wrong, please try after sometime.",
+                        error: error
+                     });
+                  })
+            }).catch((error) => {
+               res.status(404);
+               res.send({
+                  success: false,
+                  message: "ZedneskOrgID invalid.",
+                  error: error
+               });
             });
-         })
-         .catch((error: any) => {
-            res.status(500);
+         } else {
+            res.status(404);
             res.send({
                success: false,
-               message: "Something went wrong, please try after sometime.",
-               error: error
+               message: "Region not found."
             });
-         })
+         }
+      } catch (error) {
+         res.status(500);
+         res.send({
+            success: false,
+            message: "Something went wrong, please try after sometime.",
+            error: error
+         });
+      }
    }
+
 
    /**
    * fetchAllRegion 

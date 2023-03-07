@@ -74,7 +74,7 @@ export class LocationServices {
               regionCode : data.regionCode,
               regionID : data.regionId,
               iRegID : data.regionId,
-              zendeskID : data.zendeskID
+              zendeskOrgID : data.zendeskID
             }
         }
         return dynamoDB.put(params).promise()
