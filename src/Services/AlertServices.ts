@@ -195,11 +195,6 @@ export default class AlertServices {
   }
 
   public async sendNotification(params: NotificationWSObject) {
-    AWS.config.update({
-      accessKeyId: "AKIAZIMZWJU7NXPPQ56D",
-      secretAccessKey: "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",
-      region: "eu-west-1",
-    });
     const WebSocket = new AWS.ApiGatewayManagementApi({
       endpoint: process.env.WEB_SOCKET_END_POINT,
     });
