@@ -5,6 +5,7 @@ import {
   ZendeskCreateTicket,
   ZendeskPrimaryEmailParams,
   ZendeskUpdateUser,
+  ZendeskFAQListByLang
 } from "../Interfaces/zendeskInterface";
 
 const axios = require("axios");
@@ -16,6 +17,22 @@ export default class ZendeskServices {
       .post(
         `${process.env.ZENDESK_BASE_URL}api/v2/organizations`,
         { organization: params },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Encoding": "gzip,deflate,compress",
+            Authorization: `Basic ${process.env.ZENDESK_API_KEY_BASE_64}`,
+          },
+        },
+      )
+  }
+
+  // get all sections
+  async getSections(language:string) {
+    console.log("language",language, `${process.env.ZENDESK_BASE_URL}api/v2/help_center/${language}/sections` )
+    return await axios
+      .get(
+        `${process.env.ZENDESK_BASE_URL}api/v2/help_center/${language}/sections`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -215,5 +232,22 @@ export default class ZendeskServices {
       .catch((error: any) => {
         return error;
       });
+  }
+
+
+  // get all categories in zendesk FAQ
+  public async getAllFAQListByLang(params: ZendeskFAQListByLang) {
+    console.log(`${process.env.ZENDESK_BASE_URL}api/v2/help_center/${params.language}/sections/${params.sectionId}/articles`)
+    return await axios
+      .get(
+        `${process.env.ZENDESK_BASE_URL}api/v2/help_center/${params.language}/sections/${params.sectionId}/articles`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Encoding": "gzip,deflate,compress",
+            Authorization: `Basic ${process.env.ZENDESK_API_KEY_BASE_64}`,
+          },
+        },
+      )
   }
 }

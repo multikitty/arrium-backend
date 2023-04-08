@@ -26,6 +26,7 @@ import referral from './routes/referral';
 import timezone from './routes/timezone';
 import sesTemplates from './routes/sesTemplates';
 import alert from './routes/alert';
+import zendesk from './routes/zendesk';
 
 // Testing route
 app.get('/', (req: Request, res: Response) => {
@@ -57,6 +58,7 @@ app.use('/v1/referral', referral);
 app.use('/v1/timezone', timezone);
 app.use('/v1/templates', sesTemplates);
 app.use('/v1/alert', alert);
+app.use('/v1/zendesk', zendesk);
 
 // Handling 404 Page Not Found
 app.use((req, res, next) => {

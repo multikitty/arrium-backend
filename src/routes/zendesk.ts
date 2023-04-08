@@ -11,5 +11,8 @@ router.post("/upload", authentication("driver"), bodyParser.raw({type: ["image/j
 // create ticket in zendesk
 router.post("/createTicket", authentication("driver"), new ZendeskController().createTicket);
 
+//get FAQ
+router.get("/getFaq", authentication("all"), new ZendeskController().getFAQLists);
+
 
 export = router;
