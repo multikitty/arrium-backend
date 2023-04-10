@@ -83,10 +83,10 @@ export default class ZendeskController {
   // create Ticket controller
   async getFAQLists(request: any, response: any) {
     try {
-      const language = request.body.language;
-      console.log(language)
+      const language = request.query.language;
+      console.log(language);
       await new ZendeskServices()
-        .getSections(request.body.language)
+        .getSections(request.query.language)
         .then(async (result) => {
           const env =
             process.env.NODE_ENV == "production"
@@ -95,11 +95,11 @@ export default class ZendeskController {
               ? "Development"
               : "Staging";
 
-          console.log(result?.data.sections)
+          console.log(result?.data.sections);
           const sections = result?.data.sections || [];
           console.log("sections", sections);
           let sectionId = sections.filter((item: any) => item.name == env);
-          sectionId = sectionId[0].id
+          sectionId = sectionId[0].id;
           console.log("sectionId", sectionId);
           const params: ZendeskFAQListByLang = {
             language: language,
@@ -109,7 +109,7 @@ export default class ZendeskController {
           await new ZendeskServices()
             .getAllFAQListByLang(params)
             .then((result) => {
-              console.log(result)
+              console.log(result);
               response.status(200);
               response.send({
                 success: false,

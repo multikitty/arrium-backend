@@ -117,7 +117,7 @@ export default class UserController {
                   userPk: request.body.userPk,
                   userSk: request.body.userSk,
                   country: result.Attributes.country,
-                  region: result.Attributes.region,
+                  region: result.Attributes.regionCode,
                 };
                 await new UserServices()
                   .updateUserCountryRegion(countryRegionData)
