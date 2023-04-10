@@ -1,20 +1,24 @@
-import bcrypt from 'bcryptjs';
-import { AddUserObj, UpdateCurrentStepAndZendeskUsrID, UpdatePricingPlanObj } from '../Interfaces/userInterface';
-import { dynamoDB, GSI, TableName } from '../Utils/dynamoDB';
-import { EntitySkPk } from '../Interfaces/commonInterface';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { PromiseResult } from 'aws-sdk/lib/request';
-import { AWSError } from 'aws-sdk';
-import { UpdateFlexInfoObj } from '../Interfaces/flexInterfaces';
+import bcrypt from "bcryptjs";
+import {
+  AddUserObj,
+  UpdateCurrentStepAndZendeskUsrID,
+  UpdatePricingPlanObj,
+} from "../Interfaces/userInterface";
+import { dynamoDB, GSI, TableName } from "../Utils/dynamoDB";
+import { EntitySkPk } from "../Interfaces/commonInterface";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { PromiseResult } from "aws-sdk/lib/request";
+import { AWSError } from "aws-sdk";
+import { UpdateFlexInfoObj } from "../Interfaces/flexInterfaces";
 
 export default class UserServices {
   // Fetch User by GSI Index from GSI-Login
   async getUserIndexByEmail(email: string) {
     let queryParams = {
       IndexName: GSI.login,
-      KeyConditionExpression: 'email = :email',
+      KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: {
-        ':email': email,
+        ":email": email,
       },
       TableName: TableName,
     };
@@ -24,9 +28,9 @@ export default class UserServices {
   async getCustomerIdByIndex(customerID: string) {
     let queryParams = {
       IndexName: GSI.customerIDs,
-      KeyConditionExpression: 'customerID = :customerID',
+      KeyConditionExpression: "customerID = :customerID",
       ExpressionAttributeValues: {
-        ':customerID': customerID,
+        ":customerID": customerID,
       },
       TableName: TableName,
     };
@@ -35,9 +39,9 @@ export default class UserServices {
 
   // method for generating random 6 digits customerIDs
   /**
-    * generateRandomCustomerID
-    */
-  public async generateRandomCustomerID(countryCode : string) {
+   * generateRandomCustomerID
+   */
+  public async generateRandomCustomerID(countryCode: string) {
     let exist = false;
     let cID;
     do {
@@ -45,16 +49,19 @@ export default class UserServices {
       cID = `${countryCode}-${randomDigits}`;
       // check value exist or not in db
       await this.getCustomerIdByIndex(cID)
-        .then((response : PromiseResult<DocumentClient.QueryOutput, AWSError>) => {
-          if(response?.Count &&  response?.Count > 0) {
-            exist = true;
-          } else {
-            exist = false;
+        .then(
+          (response: PromiseResult<DocumentClient.QueryOutput, AWSError>) => {
+            if (response?.Count && response?.Count > 0) {
+              exist = true;
+            } else {
+              exist = false;
+            }
           }
-        }).catch(() => {
+        )
+        .catch(() => {
           throw new Error("Failed to generate customerID.");
-        })
-    } while (exist);  
+        });
+    } while (exist);
     return cID;
   }
 
@@ -102,11 +109,11 @@ export default class UserServices {
         #attrRegion= :region
       `,
       ExpressionAttributeNames: {
-        '#attrRegion': 'regionCode',
+        "#attrRegion": "regionCode",
       },
       ExpressionAttributeValues: {
-        ':flexUser': data.flexUser,
-        ':flexPassword': data.flexPassword,
+        ":flexUser": data.flexUser,
+        ":flexPassword": data.flexPassword,
         // ':devModel': data.devModel,
         // ':devType': data.devType,
         // ':devId': data.devId,
@@ -121,28 +128,27 @@ export default class UserServices {
         ":usrAgent": data.userAgent,
         ":accToken": data.accessToken,
         ":refToken": data.refreshToken,
-        ':flexId': data.flexId,
-        ':country': data.country,
-        ':region': data.region
+        ":flexId": data.flexId,
+        ":country": data.country,
+        ":region": data.region,
       },
-      ReturnValues: 'ALL_NEW',
+      ReturnValues: "ALL_NEW",
     };
     return dynamoDB.update(params).promise();
 
-    // old column update query 
-    // devModel= :devModel, 
+    // old column update query
+    // devModel= :devModel,
     // devType= :devType,
-    // devID= :devId,  
-    // devSerial= :devSerialNumber, 
-    // osVersion= :osVersion, 
-    // flexVersion= :flexVersion, 
+    // devID= :devId,
+    // devSerial= :devSerialNumber,
+    // osVersion= :osVersion,
+    // flexVersion= :flexVersion,
     // awsreg1= :awsReg1,
     // cogid1= :cogId1,
     // awsreg2= :awsReg2,
-    // cogid2= :cogId2, 
+    // cogid2= :cogId2,
     // amznID= :amznId,
   }
-
 
   /**
    * updateFlexTokens
@@ -160,13 +166,12 @@ export default class UserServices {
       `,
       ExpressionAttributeValues: {
         ":accToken": data.accessToken,
-        ":refToken": data.refreshToken
+        ":refToken": data.refreshToken,
       },
-      ReturnValues: 'ALL_NEW',
+      ReturnValues: "ALL_NEW",
     };
     return dynamoDB.update(params).promise();
   }
-
 
   // update flex details by user (driver)
   public updateFlexDetailsByDriver(data: UpdateFlexInfoObj) {
@@ -182,9 +187,9 @@ export default class UserServices {
       `,
       ExpressionAttributeValues: {
         ":amznFlexUser": data.amznFlexUser,
-        ":amznFlexPassword": data.amznFlexPassword
+        ":amznFlexPassword": data.amznFlexPassword,
       },
-      ReturnValues: 'ALL_NEW',
+      ReturnValues: "ALL_NEW",
     };
     return dynamoDB.update(params).promise();
   }
@@ -204,14 +209,14 @@ export default class UserServices {
             currentSteps= :currentSteps
           `,
         ExpressionAttributeNames: {
-          '#attrRegion': 'regionCode',
+          "#attrRegion": "regionCode",
         },
         ExpressionAttributeValues: {
-          ':flexCountry': data.country,
-          ':region': data.region,
-          ':currentSteps': "finished"
+          ":flexCountry": data.country,
+          ":region": data.region,
+          ":currentSteps": "finished",
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
@@ -241,24 +246,24 @@ export default class UserServices {
           stationType= :stationType
         `,
         ExpressionAttributeNames: {
-          '#attrRole': 'role',
+          "#attrRole": "role",
         },
         ExpressionAttributeValues: {
-          ':firstname': data.firstname,
-          ':lastname': data.lastname,
-          ':phoneNumber': data.phoneNumber,
+          ":firstname": data.firstname,
+          ":lastname": data.lastname,
+          ":phoneNumber": data.phoneNumber,
           ":dialCode": data.dialCode,
-          ':email': data.email,
-          ':emailVerified': data.emailVerified,
-          ':tzName': data.tzName,
-          ':role': data.userRole,
-          ':accountStatus': data.status,
-          ':startDate': data.startDate,
-          ':endDate': data.endDate,
-          ':planType': data.planType,
-          ':stationType': data.stationType,
+          ":email": data.email,
+          ":emailVerified": data.emailVerified,
+          ":tzName": data.tzName,
+          ":role": data.userRole,
+          ":accountStatus": data.status,
+          ":startDate": data.startDate,
+          ":endDate": data.endDate,
+          ":planType": data.planType,
+          ":stationType": data.stationType,
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
@@ -278,6 +283,7 @@ export default class UserServices {
     //       TableName: TableName,
     //       IndexName: GSI.login,
     //       ConsistentRead: false,
+
     //       ExclusiveStartKey: {
     //         pk: data.pk,
     //         sk: data.sk,
@@ -301,9 +307,9 @@ export default class UserServices {
         },
         UpdateExpression: `set emailVerified = :emailVerified`,
         ExpressionAttributeValues: {
-          ':emailVerified': true,
+          ":emailVerified": true,
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
@@ -318,9 +324,9 @@ export default class UserServices {
         },
         UpdateExpression: `set ${data.fieldName} = :fieldName`,
         ExpressionAttributeValues: {
-          ':fieldName': data.fieldValue,
+          ":fieldName": data.fieldValue,
         },
-        ReturnValues: 'ALL_NEW', //will return all Attributes in response
+        ReturnValues: "ALL_NEW", //will return all Attributes in response
       })
       .promise();
   }
@@ -333,7 +339,7 @@ export default class UserServices {
           pk: data.pk,
           sk: data.sk,
         },
-        AttributesToGet: ['password'],
+        AttributesToGet: ["password"],
       })
       .promise();
   }
@@ -348,10 +354,29 @@ export default class UserServices {
         },
         UpdateExpression: `set phoneNumber= :phoneNumber, phoneVerified= :phoneVerified`,
         ExpressionAttributeValues: {
-          ':phoneNumber': data.phoneNumber,
-          ':phoneVerified': true,
+          ":phoneNumber": data.phoneNumber,
+          ":phoneVerified": true,
         },
-        ReturnValues: 'ALL_NEW', //will return all Attributes in response
+        ReturnValues: "ALL_NEW", //will return all Attributes in response
+      })
+      .promise();
+  }
+
+  //  update update current steps
+  async updateCurrentSteps(data: any) {
+    console.log("data,data", data);
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          pk: data.pk,
+          sk: data.sk,
+        },
+        UpdateExpression: `set currentSteps= :currentSteps`,
+        ExpressionAttributeValues: {
+          ":currentSteps": data.currentStep,
+        },
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
@@ -366,7 +391,7 @@ export default class UserServices {
         },
         UpdateExpression: `set password = :password`,
         ExpressionAttributeValues: {
-          ':password': bcrypt.hashSync(data.newPassword, 10),
+          ":password": bcrypt.hashSync(data.newPassword, 10),
         },
       })
       .promise();
@@ -385,10 +410,10 @@ export default class UserServices {
         },
         UpdateExpression: `set email= :email, emailVerified= :emailVerified`,
         ExpressionAttributeValues: {
-          ':email': data.email,
-          ':emailVerified': false,
+          ":email": data.email,
+          ":emailVerified": false,
         },
-        ReturnValues: 'ALL_NEW', //will return all Attributes in response
+        ReturnValues: "ALL_NEW", //will return all Attributes in response
       })
       .promise();
   }
@@ -406,19 +431,19 @@ export default class UserServices {
         },
         UpdateExpression: `set currentSteps= :currentSteps, zendeskUserID= :zendeskUserID`,
         ExpressionAttributeValues: {
-          ':currentSteps': data.currentStep,
-          ":zendeskUserID" : data.zendeskUsrID
+          ":currentSteps": data.currentStep,
+          ":zendeskUserID": data.zendeskUsrID,
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: "ALL_NEW",
       })
       .promise();
   }
 
   // Get user list by role
   /**
-    * getUserByRole
-    */
-  public async getUserByRole(role : string | string[] | undefined) {
+   * getUserByRole
+   */
+  public async getUserByRole(role: string | string[] | undefined) {
     let queryInput = {
       TableName: TableName,
       IndexName: GSI.userByRole,
@@ -426,48 +451,51 @@ export default class UserServices {
       ScanIndexForward: true,
       KeyConditionExpression: "#8dca0 = :8dca0",
       ExpressionAttributeValues: {
-        ":8dca0": role
+        ":8dca0": role,
       },
       ExpressionAttributeNames: {
-        "#8dca0": "role"
-      }
-    }
+        "#8dca0": "role",
+      },
+    };
     return await dynamoDB.query(queryInput).promise();
   }
 
-  // add user 
+  // add user
   /**
-    * insertUser
-    */
-  public insertUser(data : AddUserObj) {
+   * insertUser
+   */
+  public insertUser(data: AddUserObj) {
     return dynamoDB
-    .put({
-      Item: {
-        pk: data.userPK,
-        sk: data.userSK,
-        firstname : data.firstname, 
-        lastname : data.lastname, 
-        phoneNumber: data.phoneNumber, 
-        dialCode : data.dialCode,
-        email: data.email,
-        emailVerified: data.emailVerified,
-        tzName : data.tzName,
-        role: data.userRole,
-        accountStatus: data.status,
-        startDate: data.startDate,
-        endDate : data.endDate,
-        country: data.country,
-        customerID: data.customerId,
-        password: bcrypt.hashSync(Math.random().toString(20).substring(2), 10),
-        phoneVerified : false,
-        currentSteps: 'finished',
-        planType: 'basic',
-        regionCode : "",
-        otp : "",
-      },
-      TableName: TableName,
-    })
-    .promise();
+      .put({
+        Item: {
+          pk: data.userPK,
+          sk: data.userSK,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          phoneNumber: data.phoneNumber,
+          dialCode: data.dialCode,
+          email: data.email,
+          emailVerified: data.emailVerified,
+          tzName: data.tzName,
+          role: data.userRole,
+          accountStatus: data.status,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          country: data.country,
+          customerID: data.customerId,
+          password: bcrypt.hashSync(
+            Math.random().toString(20).substring(2),
+            10
+          ),
+          phoneVerified: false,
+          currentSteps: "finished",
+          planType: "basic",
+          regionCode: "",
+          otp: "",
+        },
+        TableName: TableName,
+      })
+      .promise();
   }
 
   // udpate pricing plan page status
@@ -481,8 +509,8 @@ export default class UserServices {
         },
         UpdateExpression: `set pricingPlan= :pricingPlan`,
         ExpressionAttributeValues: {
-          ':pricingPlan': data.status
-        }
+          ":pricingPlan": data.status,
+        },
       })
       .promise();
   }
@@ -500,10 +528,10 @@ export default class UserServices {
         },
         UpdateExpression: `set otp= :otp, phoneVerified= :phoneVerified`,
         ExpressionAttributeValues: {
-          ':otp': data.otp,
-          ':phoneVerified': false
+          ":otp": data.otp,
+          ":phoneVerified": false,
         },
-        ReturnValues: 'ALL_NEW', //will return all Attributes in response
+        ReturnValues: "ALL_NEW", //will return all Attributes in response
       })
       .promise();
   }

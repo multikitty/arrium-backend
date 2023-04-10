@@ -46,6 +46,11 @@ export interface ZendeskMakePrimary {
   zendeskUserIdentityId: string;
 }
 
+export interface ZendeskFAQListByLang {
+  language: string;
+  sectionId:string;
+}
+
 export interface ZendeskPrimaryEmailParams{
   email:string,
   zendeskUserId:string
