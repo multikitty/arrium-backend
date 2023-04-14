@@ -14,7 +14,7 @@ export default class ZendeskController {
     await new ZendeskServices()
       .uploadAttechment(
         fileName,
-        fs.createReadStream(`uploads/${fileName}.jpg`),
+        fs.createReadStream(`uploads/${fileName}.jpg`)
       )
       .then(async (result: any) => {
         response.status(200);
@@ -84,7 +84,6 @@ export default class ZendeskController {
   async getFAQLists(request: any, response: any) {
     try {
       const language = request.query.language;
-      console.log(language);
       await new ZendeskServices()
         .getSections(request.query.language)
         .then(async (result) => {
@@ -94,13 +93,9 @@ export default class ZendeskController {
               : process.env.NODE_ENV == "development"
               ? "Development"
               : "Staging";
-
-          console.log(result?.data.sections);
           const sections = result?.data.sections || [];
-          console.log("sections", sections);
           let sectionId = sections.filter((item: any) => item.name == env);
           sectionId = sectionId[0].id;
-          console.log("sectionId", sectionId);
           const params: ZendeskFAQListByLang = {
             language: language,
             sectionId: sectionId,
@@ -109,12 +104,38 @@ export default class ZendeskController {
           await new ZendeskServices()
             .getAllFAQListByLang(params)
             .then((result) => {
-              console.log(result);
+              let FAQQuestions = result;
+              const UserSegmentID = {
+                driver: "7695497162013",
+                admin: "7695510112157",
+                sales: "9888424069277",
+              };
+              switch (request.query.role) {
+                case "driver":
+                  FAQQuestions = result.data.articles.filter(
+                    (item: any) =>
+                      item.user_segment_id === Number(UserSegmentID.driver)
+                  );
+                  break;
+                case "sales":
+                  FAQQuestions = result.data.articles.filter(
+                    (item: any) =>
+                      item.user_segment_id === Number(UserSegmentID.sales)
+                  );
+                  break;
+                case "admin":
+                  FAQQuestions = result.data.articles.filter(
+                    (item: any) =>
+                      item.user_segment_id === Number(UserSegmentID.admin)
+                  );
+                  break;
+                default:
+              }
               response.status(200);
               response.send({
                 success: false,
                 message: "File Uploaded sucessfully!",
-                result: result.data.articles,
+                result: FAQQuestions,
               });
             })
             .catch((error) => {
