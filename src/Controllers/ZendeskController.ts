@@ -104,14 +104,14 @@ export default class ZendeskController {
           await new ZendeskServices()
             .getAllFAQListByLang(params)
             .then((result) => {
-              console.log("result", result.data.articles);
               let FAQQuestions = result;
               const UserSegmentID = {
                 driver: "7695497162013",
                 admin: "7695510112157",
                 sales: "9888424069277",
               };
-              switch (request.query.role) {
+              console.log("request.body.role", request.body.role, "driver");
+              switch (request.body.role) {
                 case "driver":
                   FAQQuestions = result.data.articles.filter(
                     (item: any) =>
@@ -132,11 +132,11 @@ export default class ZendeskController {
                   break;
                 default:
               }
-              FAQQuestions = result.data.articles.filter(
-                (item: any) => !item.draft
-              );
+
+              FAQQuestions = FAQQuestions.filter((item: any) => !item.draft);
 
               response.status(200);
+
               response.send({
                 success: false,
                 message: "File Uploaded sucessfully!",
