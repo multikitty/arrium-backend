@@ -104,6 +104,7 @@ export default class ZendeskController {
           await new ZendeskServices()
             .getAllFAQListByLang(params)
             .then((result) => {
+              console.log("result", result.data.articles);
               let FAQQuestions = result;
               const UserSegmentID = {
                 driver: "7695497162013",
@@ -131,6 +132,10 @@ export default class ZendeskController {
                   break;
                 default:
               }
+              FAQQuestions = result.data.articles.filter(
+                (item: any) => !item.draft
+              );
+
               response.status(200);
               response.send({
                 success: false,
