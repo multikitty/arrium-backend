@@ -110,7 +110,6 @@ export default class ZendeskController {
                 admin: "7695510112157",
                 sales: "9888424069277",
               };
-              console.log("request.body.role", request.body.role, "driver");
               switch (request.body.role) {
                 case "driver":
                   FAQQuestions = result.data.articles.filter(
@@ -140,7 +139,7 @@ export default class ZendeskController {
               response.send({
                 success: false,
                 message: "File Uploaded sucessfully!",
-                result: FAQQuestions,
+                result: FAQQuestions || [],
               });
             })
             .catch((error) => {
