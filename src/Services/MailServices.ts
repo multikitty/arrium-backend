@@ -5,8 +5,8 @@ export default class MailServices {
       type: "mail",
       data: {
         to: "info@braincuber.com",
-        from: "notification@arrium.io",
-        replyTo: [],
+        from: "support@arrium.io",
+        replyTo: "support@arrium.io",
         subject: `New Account Setup`,
         message: `
             <p>Hi Admin,</p>
@@ -70,7 +70,7 @@ export default class MailServices {
         replyTo: "support@arrium.io",
         subject: "Password Reset",
         message: `
-            <p>Hi</p>
+            <p>Hi ${data.firstname} ${data.lastname}</p>
             <p>We’ve received a request to reset your password.</p>
             <p>Click <a href="https://arrium.io/reset-password/?token=${data.token}">here<a/> to reset your password.</p>
             <p>Or, you can copy and paste this link into a web browser: <a href="https://arrium.io/reset-password">insert link here<a/></p>
@@ -90,8 +90,8 @@ export default class MailServices {
       type: "mail",
       data: {
         to: data.user.userEmail,
-        from: "notification@arrium.io",
-        replyTo: [],
+        from: "support@arrium.io",
+        replyTo: "support@arrium.io",
         subject: "Offer(s) Accepted",
         message: `
           <p>Hi ${data.user.userName}</p>
