@@ -308,6 +308,7 @@ export default class PreferencesController {
         active: listItem.active,
       };
 
+      console.log("scheduleData", scheduleData)
       // Create block item object
       let prefItem = {
         PutRequest: {
@@ -321,6 +322,8 @@ export default class PreferencesController {
         batchItemsList.length === batchSize ||
         i + 1 === scheduleDataArr.length
       ) {
+
+        console.log("batchItemsList", batchItemsList)
         // execute batch write operation
         await new CommonServices()
           .batchWriteData(batchItemsList)

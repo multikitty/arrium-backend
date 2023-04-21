@@ -5,7 +5,11 @@ router.use(express.json());
 import { automationToolAuth } from "../Middlewares/automationToolAuth";
 import AutomationToolController from "../Controllers/AutomationToolController";
 import BlockController from "../Controllers/BlockController";
+import { authentication } from "../Middlewares/authentication";
 
+
+
+router.post("/creact-schedule", authentication("driver"), new AutomationToolController().creactAutomationSchedule);
 
 router.post("/flex-details-preferences", automationToolAuth, new AutomationToolController().fetchFlexAndPreferences);
 //add blocks
