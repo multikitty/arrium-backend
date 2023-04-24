@@ -37,7 +37,7 @@ export const SignupController = {
             // check referral code
             if (request.body.refCode) {
               // create referral code pattern
-              refCode = request.body.country + "-" + request.body.refCode;
+              refCode = request.body.refCode;
               // validate referral code is correct
               await new ReferralServices()
                 .findReferralCode(refCode)

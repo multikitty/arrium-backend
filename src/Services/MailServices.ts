@@ -6,7 +6,7 @@ export default class MailServices {
       data: {
         to: "info@braincuber.com",
         from: "support@arrium.io",
-        replyTo: "support@arrium.io",
+        replyTo: ["support@arrium.io"],
         subject: `New Account Setup`,
         message: `
             <p>Hi Admin,</p>
@@ -27,7 +27,7 @@ export default class MailServices {
       data: {
         to: data.userEmail,
         from: "support@arrium.io",
-        replyTo: "support@arrium.io",
+        replyTo: ["support@arrium.io"],
         subject: `Arrium account is ready`,
         message: `
             <p>Hi ${data.userName}</p>
@@ -47,7 +47,7 @@ export default class MailServices {
       data: {
         to: data.email,
         from: "support@arrium.io",
-        replyTo: "support@arrium.io",
+        replyTo: ["support@arrium.io"],
         subject: `Verify your email address`,
         message: `
             <p>Hi</p>
@@ -67,7 +67,7 @@ export default class MailServices {
       data: {
         to: data.email,
         from: "support@arrium.io",
-        replyTo: "support@arrium.io",
+        replyTo: ["support@arrium.io"],
         subject: "Password Reset",
         message: `
             <p>Hi ${data.firstname} ${data.lastname}</p>
@@ -91,7 +91,7 @@ export default class MailServices {
       data: {
         to: data.user.userEmail,
         from: "support@arrium.io",
-        replyTo: "support@arrium.io",
+        replyTo: ["support@arrium.io"],
         subject: "Offer(s) Accepted",
         message: `
           <p>Hi ${data.user.userName}</p>
