@@ -1,0 +1,4973 @@
+{
+	"info": {
+		"_postman_id": "7e7bc54a-10ad-4a5e-98c9-df94c42cb530",
+		"name": "Arrium Project Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Signup",
+			"item": [
+				{
+					"name": "Signup - Registration First step",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1eac1416-f69c-45e2-99ab-907ae4ca3b96",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"if(jsonData.data.token){\r",
+									"postman.setEnvironmentVariable(\"token\",jsonData.data.token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "f0e45e60-0bf7-43c3-87b1-10a07da8ce5a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"dipanshu.jaiswal@scaleupally.io\",\r\n    \"password\": \"Dev@1234\",\r\n    \"country\": \"UK\",\r\n    \"refCode\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}signup/registration"
+					},
+					"response": [
+						{
+							"id": "27aaa887-9e25-4297-b07b-84c220d16ffb",
+							"name": "Signup - Registration First step",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"dipanshu@mailinator.com\",\r\n    \"password\": \"Dev@1234\",\r\n    \"country\": \"UK\",\r\n    \"refCode\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signup/registration"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:29:08 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "284"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"11c-YZsTf3DeRCaoddDZZvLukphdRiY\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User Registration Success!\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTY3OTg1MSIsInNrIjoiZHJpdmVyI1VLLTY3OTg1MSIsInVzZXJSb2xlIjoiZHJpdmVyIiwiaWF0IjoxNjc1MTYwOTQ4LCJleHAiOjE2NzUyNDczNDh9.B63u_r1s3Qbpq8tKXF222LwlrR1Ug056hC0xFvtqaZo\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Singup - Account Info",
+					"_postman_id": "d81cf219-c2c0-4275-82c8-789b45ee0b18",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Dipanshu\",\r\n    \"lastname\" : \"Dev\",\r\n    \"country\": \"UK\",\r\n    \"dialCode\": \"+91\",\r\n    \"phoneNumber\" : \"1234567890\",\r\n    \"tzName\": \"Asia/Calcutta\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}signup/account-info"
+					},
+					"response": [
+						{
+							"id": "269d3121-94cd-4cf9-9df1-26973c29fc0b",
+							"name": "Singup - Account Info",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Dipanshu\",\r\n    \"lastname\" : \"Dev\",\r\n    \"country\": \"UK\",\r\n    \"dialCode\": \"+91\",\r\n    \"phoneNumber\" : \"1234567890\",\r\n    \"tzName\": \"Asia/Calcutta\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signup/account-info"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:29:37 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "69"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"45-WPETbWbI3f8zNOzGXzB7Tu2BWyE\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Account information updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Signup - OTP Confirmation",
+					"_postman_id": "f604d38a-042f-48d2-a466-2f48eeeed647",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"otp\": \"8096\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}signup/otp-confirmation"
+					},
+					"response": [
+						{
+							"id": "4b217014-0523-455b-ba4e-208d7fa67c96",
+							"name": "Signup - OTP Confirmation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"otp\": \"4749\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signup/otp-confirmation"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:32:29 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "97"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"61-yLDF2U6ox9YhC5O5mUh7iYuc9VE\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": false,\n    \"message\": \"Incorrect OTP. Please try again, or go back to re-enter your number\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Amazon Flex Info",
+					"_postman_id": "edbd110a-28d0-40a8-b1c3-46470e4d73eb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amznFlexUser\" : \"flex123@mailinator.com\",\r\n    \"amznFlexPassword\" : \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}signup/update-amazon-flex-info"
+					},
+					"response": [
+						{
+							"id": "f020e4b9-7572-43ad-b362-abb1904343c7",
+							"name": "Update Amazon Flex Info",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amznFlexUser\" : \"m.hussain5787@gmail.com\",\r\n    \"amznFlexPassword\" : \"#London02\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signup/update-amazon-flex-info"
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "259"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"103-TD1gtlY8TsmolnmSNBAJ+8JCVcc\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 19 Jan 2023 07:50:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": false,\n    \"message\": \"Unprocessable Entity\",\n    \"error\": {\n        \"error\": \"RecordInvalid\",\n        \"description\": \"Record validation errors\",\n        \"details\": {\n            \"email\": [\n                {\n                    \"description\": \"Email: deepanshu4534@gmail.com is already being used by another user\",\n                    \"error\": \"DuplicateValue\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"id": "b0430811-7c9c-4fb5-806c-a7e33b6d1558",
+							"name": "Update Amazon Flex Info",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amznFlexUser\" : \"flex@mailinator.com\",\r\n    \"amznFlexPassword\" : \"123456789\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signup/update-amazon-flex-info"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:33:14 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "67"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"43-aQxc2MOHta0QsLAr7WFc65S5Nt8\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Amazon Flex info updated successfully.\"\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "5ea7aa5d-22d9-4fd2-bbcf-41735a13aeec"
+		},
+		{
+			"name": "Signin",
+			"item": [
+				{
+					"name": "SignIn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c327be3-60ff-4c43-96b7-ec544028ebf7",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"if(jsonData?.data?.userData.token){\r",
+									"postman.setEnvironmentVariable(\"token\",jsonData.data.userData.token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "f714276c-507c-4c9d-b3bb-38cf4bb9c9b1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"strictSSL": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"dipanshu.jaiswal@scaleupally.io\",\r\n    \"password\": \"Dev@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}signin"
+					},
+					"response": [
+						{
+							"id": "2680e43a-d472-451f-a718-735ef240cba9",
+							"name": "SignIn",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"deepanshu4534@gmail.com\",\r\n    \"password\": \"Dev@1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}signin"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:33:41 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "915"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"393-t6bIOQYBGHXa0VGEsCNi9MwVjIQ\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Getting login data!\",\n    \"data\": {\n        \"userData\": {\n            \"phoneNumber\": \"7982442350\",\n            \"currentSteps\": \"amazon_flex\",\n            \"email\": \"deepanshu4534@gmail.com\",\n            \"country\": \"UK\",\n            \"lastname\": \"Dev\",\n            \"accountStatus\": \"active\",\n            \"role\": \"driver\",\n            \"flexCountry\": \"uk\",\n            \"firstname\": \"Dipanshu\",\n            \"sk\": \"driver#UK-311717\",\n            \"regionCode\": \"REG-1\",\n            \"pk\": \"UK-311717\",\n            \"dialCode\": \"+91\",\n            \"customerID\": \"UK-311717\",\n            \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTMxMTcxNyIsInNrIjoiZHJpdmVyI1VLLTMxMTcxNyIsInVzZXJSb2xlIjoiZHJpdmVyIiwiaWF0IjoxNjc1MTYxMjIxLCJleHAiOjE2NzUyNDc2MjF9.bs9JF16BDZRe0YXw-Ec57EKnn9vLAbXDWHAyu3b_puQ\"\n        },\n        \"flexData\": {\n            \"flexID\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\n            \"usrAgent\": \"userAgent2344\",\n            \"refToken\": \"refrestoeknjkjk1234\",\n            \"sk\": \"flexDetails#UK-311717\",\n            \"accToken\": \"accesstoken1234\",\n            \"regionCode\": \"REG-1\",\n            \"pk\": \"UK-311717\",\n            \"country\": \"uk\",\n            \"amznFlexPassword\": \"#London02\",\n            \"amznFlexUser\": \"m.hussain5787@gmail.com\"\n        },\n        \"isFreeTrial\": false\n    }\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "38ca2d96-4e55-439c-a5cb-2453b92dac0b"
+		},
+		{
+			"name": "Forgot Password",
+			"item": [
+				{
+					"name": "Forgot Password",
+					"_postman_id": "a5406791-3e1c-4cf5-8482-fa88f6a1f648",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"shivam.kumar@scaleupally.io\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}forgot-password"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Password - verify token",
+					"_postman_id": "f70c9aa2-dbe1-46f4-a87c-adc62e060e6f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"verficationToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTkwMDAzOCIsInNrIjoic2FsZXMjOTAwMDM4IiwidXNlclJvbGUiOiJzYWxlcyIsImlhdCI6MTY3MDIzNDc2NCwiZXhwIjoxNjcwMjM2NTY0fQ.6_kx2P9gaG3gwFiVw67Uxnp4p33nBTaluvDcAenJbvU\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}forgot-password/verify-token"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"_postman_id": "188f966a-b0c1-4a26-bad7-a843a11ec4c8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"verficationToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTkwMDAzOCIsInNrIjoic2FsZXMjOTAwMDM4IiwidXNlclJvbGUiOiJzYWxlcyIsImlhdCI6MTY3MDIzNDc2NCwiZXhwIjoxNjcwMjM2NTY0fQ.6_kx2P9gaG3gwFiVw67Uxnp4p33nBTaluvDcAenJbvU\",\r\n    \"password\": \"Shiv@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}forgot-password/update-password"
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "eb51145f-a1d0-4e2f-83af-5627156c9e4b"
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get Logged in user data",
+					"_postman_id": "346bbbcd-f9ee-408f-8c18-d5cfaecddf0c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}user"
+					},
+					"response": [
+						{
+							"id": "083e16d0-ada1-46a9-897d-dc2e7df0cf75",
+							"name": "Get Logged in user data",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}user"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:37:58 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "537"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"219-h/N9/EGujDSmxzjKC8zaZ+rpPFE\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User data retrived successfully\",\n    \"data\": {\n        \"phoneNumber\": \"7982442350\",\n        \"pricingPlan\": false,\n        \"planType\": \"basic\",\n        \"refCode\": \"UK-311717\",\n        \"tzName\": \"Asia/Calcutta\",\n        \"currentSteps\": \"amazon_flex\",\n        \"otp\": 7172,\n        \"email\": \"deepanshu4sss4@gmail.com\",\n        \"country\": \"UK\",\n        \"emailVerified\": false,\n        \"lastname\": \"Dev\",\n        \"accountStatus\": \"active\",\n        \"role\": \"driver\",\n        \"flexCountry\": \"uk\",\n        \"firstname\": \"Dipanshu\",\n        \"startDate\": 1674114210,\n        \"sk\": \"driver#UK-311717\",\n        \"phoneVerified\": true,\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-311717\",\n        \"dialCode\": \"+91\",\n        \"customerID\": \"UK-311717\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get user list",
+					"_postman_id": "81b70f30-fe98-4ca4-ad3c-ac3b15df3c3b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}user/list"
+					},
+					"response": [
+						{
+							"id": "e07077d9-6e2d-461c-9103-7156aa8bbce9",
+							"name": "Get user list",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}user/list",
+									"host": [
+										"{{url}}user"
+									],
+									"path": [
+										"list"
+									],
+									"query": [
+										{
+											"key": "nextPage",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "sk",
+											"value": "driver#900007",
+											"disabled": true
+										},
+										{
+											"key": "pk",
+											"value": "UK-900007",
+											"disabled": true
+										},
+										{
+											"key": "customerID",
+											"value": "900007",
+											"disabled": true
+										},
+										{
+											"key": "pkEmail",
+											"value": "mudittiwari2000+28_07_22_01@gmail.com",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1147"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"47b-g/1+iwh9sUDmUsyY5tKSNaOqmGU\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Sep 2022 07:43:01 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User data retrieved successfully.\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"phoneNumber\": \"8887779993\",\n                \"currentSteps\": \"finished\",\n                \"pkEmail\": \"dipanshu.jaiswal@scaleupally.io\",\n                \"emailVerified\": false,\n                \"lastname\": \"roy\",\n                \"password\": \"$2a$10$u1ChJ2YndiQncveLZsfjjukVmSMvaOeGojvyuvAaHsSgBtMnOHBfm\",\n                \"accountStatus\": \"active\",\n                \"role\": \"admin\",\n                \"firstname\": \"Dev\",\n                \"sk\": \"admin#900010\",\n                \"phoneVerified\": true,\n                \"pk\": \"IN-900010\",\n                \"dialCode\": \"+91\",\n                \"customerID\": \"900010\"\n            },\n            {\n                \"phoneNumber\": \"123456789\",\n                \"country\": \"UK\",\n                \"pkEmail\": \"ross.geller@gmail.com\",\n                \"emailVerified\": \"Verified\",\n                \"lastname\": \"Geller\",\n                \"password\": \"dfdsfds\",\n                \"accountStatus\": \"active\",\n                \"role\": \"driver\",\n                \"firstname\": \"Ross\",\n                \"sk\": \"userdetails\",\n                \"regionCode\": \"London - Wembley\",\n                \"pk\": \"UK-900001\",\n                \"dialCode\": \"+44\",\n                \"customerID\": \"UK-900001\"\n            },\n            {\n                \"phoneNumber\": \"8887779993\",\n                \"currentSteps\": \"finished\",\n                \"pkEmail\": \"dev@mailinator.com\",\n                \"emailVerified\": false,\n                \"lastname\": \"Tiwari\",\n                \"password\": \"$2a$10$.L4RLROhhh7ksy.yVk3MXekP7sTHsXGAE6/C4AHPUqHjMHFtY5Oqq\",\n                \"accountStatus\": \"active\",\n                \"role\": \"driver\",\n                \"firstname\": \"Mudit\",\n                \"sk\": \"driver#900009\",\n                \"phoneVerified\": true,\n                \"pk\": \"IN-900009\",\n                \"dialCode\": \"+91\",\n                \"customerID\": \"900009\"\n            }\n        ],\n        \"Count\": 3,\n        \"ScannedCount\": 3\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get user list by role",
+					"_postman_id": "fb2bcff1-ed56-48bb-a3f1-61180ec19895",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}user/list-by-role?role=sales",
+							"host": [
+								"{{url}}user"
+							],
+							"path": [
+								"list-by-role"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "sales"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "487aadb3-c922-4bf3-9a9c-802761677528",
+							"name": "Get user list by role",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}user/list-by-role?role=driver",
+									"host": [
+										"{{url}}user"
+									],
+									"path": [
+										"list-by-role"
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "driver",
+											"type": "text"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1181"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"49d-Zq9V8pnO5tNmvD5Cxhf9KBWUrwI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 30 Nov 2022 06:26:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User data retrieved successfully.\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"firstname\": \"Mudit\",\n                \"lastname\": \"Tiwari\",\n                \"sk\": \"driver#900035\",\n                \"role\": \"driver\",\n                \"pk\": \"ES-900035\"\n            },\n            {\n                \"firstname\": \"Mudit\",\n                \"lastname\": \"Tiwari\",\n                \"sk\": \"driver#900036\",\n                \"role\": \"driver\",\n                \"pk\": \"ES-900036\"\n            },\n            {\n                \"firstname\": \"Mudit\",\n                \"sk\": \"driver#900037\",\n                \"lastname\": \"Tiwari\",\n                \"role\": \"driver\",\n                \"pk\": \"GB-900037\"\n            },\n            {\n                \"firstname\": \"Ross\",\n                \"lastname\": \"Geller\",\n                \"sk\": \"userdetails\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900001\"\n            },\n            {\n                \"firstname\": \"Dipanshu\",\n                \"lastname\": \"Dev\",\n                \"sk\": \"driver#900028\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900028\"\n            },\n            {\n                \"firstname\": \"Shivam\",\n                \"lastname\": \"Kumar\",\n                \"sk\": \"driver#900029\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900029\"\n            },\n            {\n                \"firstname\": \"Nina\",\n                \"lastname\": \"Williams\",\n                \"sk\": \"driver#900031\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900031\"\n            },\n            {\n                \"firstname\": \"Tom\",\n                \"lastname\": \"Williams\",\n                \"sk\": \"driver#900032\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900032\"\n            },\n            {\n                \"sk\": \"driver#900033\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900033\"\n            },\n            {\n                \"sk\": \"driver#900034\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900034\"\n            },\n            {\n                \"firstname\": \"Shin\",\n                \"lastname\": \"Williams\",\n                \"sk\": \"driver#900036\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900036\"\n            },\n            {\n                \"firstname\": \"Jin\",\n                \"sk\": \"driver#900037\",\n                \"lastname\": \"Williams\",\n                \"role\": \"driver\",\n                \"pk\": \"UK-900037\"\n            }\n        ],\n        \"Count\": 12,\n        \"ScannedCount\": 12\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Request email verify",
+					"_postman_id": "41b15e7f-4319-4a49-96ab-7bdce48cea65",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"dipanshu.jaiswal@scaleupally.io\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/request-verify-email"
+					},
+					"response": [
+						{
+							"id": "1cbe6104-ce54-4f2d-b130-5e4cbe63fbf3",
+							"name": "Request email verify",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"deepnashu4534@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/request-verify-email"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 10:39:28 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"41-vQzhgmX6iPnjzjXt6z6aRh13An8\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Verification email sent successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Verify Email",
+					"_postman_id": "77cc3b00-3a98-46f9-9d2f-785238be55eb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"verficationToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTU3MzMwOSIsInNrIjoiYWRtaW4jVUstNTczMzA5IiwidXNlclJvbGUiOiJhZG1pbiIsImlhdCI6MTY3NTE2Mjc4NiwiZXhwIjoxNjc1MTYzNjg2fQ.6uz_fAxlLm8rDKiF8wR4nkXQG_5gc6N1pguPDB05XjY\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/verify-email"
+					},
+					"response": [
+						{
+							"id": "c3036303-6b5f-467b-bdfb-276c0ec3c941",
+							"name": "Verify Email",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"verficationToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwayI6IlVLLTU3MzMwOSIsInNrIjoiYWRtaW4jVUstNTczMzA5IiwidXNlclJvbGUiOiJhZG1pbiIsImlhdCI6MTY3NTE2Mjc4NiwiZXhwIjoxNjc1MTYzNjg2fQ.6uz_fAxlLm8rDKiF8wR4nkXQG_5gc6N1pguPDB05XjY\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/verify-email"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "61"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3d-eChvxbx+oCmzBYklIulWBGcI9BM\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:07:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Your email verified successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Profile",
+					"_postman_id": "fadab49d-2859-4c42-bf4f-49234877960c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fieldName\": \"firstname\",\r\n    \"fieldValue\": \"Dipanshu\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/update-profile"
+					},
+					"response": [
+						{
+							"id": "0ca80a83-a59a-4bbb-8cb6-385814cd529a",
+							"name": "Update Profile",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fieldName\": \"firstname\",\r\n    \"fieldValue\": \"Dipanshu\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/update-profile"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "587"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"24b-2K3A+bq42VT8p4zyXhRJK8Sa1B4\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:14:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Updated successfully\",\n    \"data\": {\n        \"Attributes\": {\n            \"phoneNumber\": \"7982442350\",\n            \"pricingPlan\": false,\n            \"planType\": \"basic\",\n            \"refCode\": \"\",\n            \"tzName\": \"Asia/Calcutta\",\n            \"currentSteps\": \"amazon_flex\",\n            \"otp\": 4749,\n            \"email\": \"dipanshu.jaiswal@scaleupally.io\",\n            \"country\": \"UK\",\n            \"emailVerified\": true,\n            \"lastname\": \"Dev\",\n            \"accountStatus\": \"active\",\n            \"password\": \"$2a$10$q3dzENpVypQ8ZRVLP1omtuQU9ACphXxxkGaXWI1hcwW5cbogpzFay\",\n            \"role\": \"admin\",\n            \"firstname\": \"Dipanshu\",\n            \"startDate\": 1674112309,\n            \"sk\": \"admin#UK-573309\",\n            \"phoneVerified\": true,\n            \"regionCode\": \"\",\n            \"pk\": \"UK-573309\",\n            \"dialCode\": \"+91\",\n            \"customerID\": \"UK-573309\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update email address",
+					"_postman_id": "37f08b58-136b-4bdb-bd7c-1fdcb38ccf39",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"newuser@mailinator.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/update-email"
+					},
+					"response": [
+						{
+							"id": "94b6dd16-3c21-411e-a5f4-539e2c678239",
+							"name": "Update email address",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"newuser@mailinator.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/update-email"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1482"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5ca-JaNuPRfKN0ym79MK2eExKZFou7A\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:19:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Email updated successfully, please check verification mail.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Send OTP",
+					"_postman_id": "c74d399d-cce2-4e50-9b90-b7db4f2e35d5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/send-otp"
+					},
+					"response": [
+						{
+							"id": "c5bcd4e1-3cc2-4215-b0c8-3b5d54d4460e",
+							"name": "Send OTP",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/send-otp"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "50"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"32-pRwUobPmRoJzFLVY41CvCHoem1Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:21:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"OTP sent successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update password",
+					"_postman_id": "d2d269e3-5a56-4613-adb0-78de3735f40a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Dev@1234\",\r\n    \"newPassword\": \"Dev@1234\",\r\n    \"confirmPassword\": \"Dev@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/update-password"
+					},
+					"response": [
+						{
+							"id": "6c7b5d58-27b3-4251-9c46-a8e8113cf79d",
+							"name": "Update password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"Dev@1234\",\r\n    \"newPassword\": \"Dev@1234\",\r\n    \"confirmPassword\": \"Dev@1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/update-password"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "62"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3e-finrIXyAISzsGDuCNswT4FPuDuI\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:22:01 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"New Password updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Approve user account",
+					"_postman_id": "7218db86-79ff-47bc-9547-049ae78f7114",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userSK\": \"driver#UK-311717\",\r\n    \"userPK\": \"UK-311717\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/approve-account"
+					},
+					"response": [
+						{
+							"id": "02a9e7b5-53b6-4270-9755-e1209c1b7fca",
+							"name": "Approve user account",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userSK\": \"driver#UK-311717\",\r\n    \"userPK\": \"UK-311717\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/approve-account"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a-tSc/kZMfWW+rHpA7wtJ87ax328Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 11:59:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Account configured mail sent.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update user Account Info",
+					"_postman_id": "32d43abf-dcb7-475b-b251-4f59f00acfe1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userSK\": \"driver#UK-311717\",\r\n    \"userPK\": \"UK-311717\",\r\n    \"firstname\": \"Dev\",\r\n    \"lastname\": \"Dipanshu\",\r\n    \"phoneNumber\": \"7982442350\",\r\n    \"dialCode\": \"+91\",\r\n    \"email\": \"deepanshu4534@gmail.com\",\r\n    \"emailVerified\": true,\r\n    \"tzName\": \"Asia/Calcutta\",\r\n    \"userRole\": \"driver\",\r\n    \"status\": \"active\",\r\n    \"planType\": \"basic\",\r\n    \"stationType\": \"Logistics\",\r\n    \"startDate\": 1656659704,\r\n    \"endDate\": null,\r\n    \"passwordChangeRequest\": false,\r\n    \"zendeskUserID\": \"8372713117213\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/update-account-info"
+					},
+					"response": [
+						{
+							"id": "8c0aef6d-dfd0-4972-afba-945e818a7a18",
+							"name": "Update user Account Info",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userSK\": \"driver#UK-311717\",\r\n    \"userPK\": \"UK-311717\",\r\n    \"firstname\": \"Dev\",\r\n    \"lastname\": \"Dipanshu\",\r\n    \"phoneNumber\": \"7982442350\",\r\n    \"dialCode\": \"+91\",\r\n    \"email\": \"deepanshu4534@gmail.com\",\r\n    \"emailVerified\": true,\r\n    \"tzName\": \"Asia/Calcutta\",\r\n    \"userRole\": \"driver\",\r\n    \"status\": \"active\",\r\n    \"planType\": \"basic\",\r\n    \"stationType\": \"Logistics\",\r\n    \"startDate\": 1656659704,\r\n    \"endDate\": null,\r\n    \"passwordChangeRequest\": false,\r\n    \"zendeskUserID\": \"8372713117213\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/update-account-info"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1546"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"60a-no8zdx0EzdU5qt3+gkXqh+NpNAw\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 12:06:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User Account Information updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Pricing plan status",
+					"_postman_id": "b48b8368-eabf-4c92-9ecb-7ffd51e6c1e2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userSK\": \"admin#UK-311717\",\r\n    \"userPK\": \"UK-311717\",\r\n    \"pricingPlan\" : false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/pricing-plan"
+					},
+					"response": [
+						{
+							"id": "76e8c9bf-2bf2-4d49-96b1-4c0e047f4c9d",
+							"name": "Update Pricing plan status",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userSK\": \"admin#UK-311717\",\r\n    \"userPK\": \"UK-311717\",\r\n    \"pricingPlan\" : false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/pricing-plan"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"39-3Yn8tOz+/3eXljrbkJ//FyXz8PY\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 12:00:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Pricing plan status updated.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Add new user",
+					"_postman_id": "70e25ad4-7ed2-4bcc-b391-26f376a5adb6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Shivam\",\r\n    \"lastname\": \"kumar\",\r\n    \"phoneNumber\": \"1234567890\",\r\n    \"dialCode\": \"+91\",\r\n    \"email\": \"sales1@mailinator.com\",\r\n    \"emailVerified\": true,\r\n    \"tzName\": \"Asia/Calcutta\",\r\n    \"userRole\": \"sales\",\r\n    \"status\": \"active\",\r\n    \"country\" : \"uk\",\r\n    \"startDate\": 1669873520,\r\n    \"endDate\": \"\",\r\n    \"passwordChangeRequest\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/add-user"
+					},
+					"response": [
+						{
+							"id": "ea4fef4f-67c3-45ba-bc4a-01e5b98b22aa",
+							"name": "Add new user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Shivam\",\r\n    \"lastname\": \"kumar\",\r\n    \"phoneNumber\": \"1234567890\",\r\n    \"dialCode\": \"+91\",\r\n    \"email\": \"sales1@mailinator.com\",\r\n    \"emailVerified\": true,\r\n    \"tzName\": \"Asia/Calcutta\",\r\n    \"userRole\": \"sales\",\r\n    \"status\": \"active\",\r\n    \"country\" : \"uk\",\r\n    \"startDate\": 1669873520,\r\n    \"endDate\": \"\",\r\n    \"passwordChangeRequest\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/add-user"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "63"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3f-337MLC6DUuRh6//GyiLD4QDl610\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 19 Jan 2023 07:19:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"User added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Configuration details",
+					"_postman_id": "0478720c-a7cd-443d-b1cd-4b48a0386a12",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "Bearer {{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}user/flex-details/UK-311717"
+					},
+					"response": [
+						{
+							"id": "8b231ea9-c798-4552-a56e-8926cef6e911",
+							"name": "Configuration details",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}user/flex-details/UK-900042"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "360"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"168-qTTUCwN2p+GtV8B3fUNPW3lDpfI\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Dec 2022 06:13:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Flex details retrieved successfully\",\n    \"data\": {\n        \"flexID\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\n        \"usrAgent\": \"userAgent2344\",\n        \"refToken\": \"refrestoeknjkjk1234\",\n        \"sk\": \"flexDetails#UK-900042\",\n        \"accToken\": \"accesstoken1234\",\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-900042\",\n        \"country\": \"uk\",\n        \"amznFlexPassword\": \"hjhkjjlkjjj12345\",\n        \"amznFlexUser\": \"m.abcd@gmail.com\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update configuration details (Flex details)",
+					"_postman_id": "8d426780-23a2-4cc4-8c59-86395e9a8234",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userPk\": \"UK-311717\",\r\n    \"userSk\": \"driver#UK-311717\",\r\n    \"flexUser\": \"m.hussain5787@gmail.com\",\r\n    \"flexPassword\": \"#London02\",\r\n    \"accessToken\": \"Atna|EwICIAlhu2FzYu_FXu9Rd3cuN6xJjhLYjtAUnMgeYq6mA4O7Iy8MsDOliLaWzOHucIpAOD6qegi1GYtMDRiY6GyCuwqhp2P73K5x0PYWEN18rpquncyy1p6uqwJgjYxg9wPQuKqMqgpP7Z5-JyWPp53MdMT2uRyt5uLfVLWIQrKFP9BnmNQrSPkS8ujImtsmBzhXqYOIXIFDpTNI8F0uCxo786HmFX34sWjcWLd6JpVGRi9DVI_75_aMKfxKBbP-6XWlEjnUB4Y-9FA6d11RNLHmY8uS9Y5Eu7j_8-crDAciGKruY7smVauLeMM3bOQrVwYwxC-pRjyjYAL1rl4Jgcw_v97q\",\r\n    \"refreshToken\": \"Atnr|EwICICL1lauD2JwAy6e6O2ZgYVbM0lEH05t9pwAzwsKYECRmRI2r9mgBuLCUkCsdmhRUwGz_eBvXDo_Y-d3IGeMPUPfVjo5R3VOHk2cLTO_XETpAQu9ATV0iulSK_BjqKzNMJfEjuu62uYhnS8N4WbO_NwY0d1vA3lJoLS5_mfvXxpvDG4w4-B8sl02CSm73wFI4HwzIXllA1eFompYSa2WlyrE7eRC2dsWpCG6neY7C8Si1o7_jcwmSQc1dOonueV3arMq62EK_2hDgNf8D1tlF8OqS15ZKNUHlNEzRp7txLps-wbR2qVOVkoVA-FKvy0a6ojU\",\r\n    \"userAgent\": \"iOS/16.2 (iPhone Darwin) Model/iPhone Platform/iPhone13,1 RabbitiOS/2.110.12\", \r\n    \"flexId\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\r\n    \"country\": \"uk\",\r\n    \"region\": \"REG-1\",\r\n    \"zendeskUserID\": \"8372713117213\",\r\n    \"zendeskOrgID\": \"8216482522909\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/flex-details/update"
+					},
+					"response": [
+						{
+							"id": "8162a24d-f902-467b-ae13-f98d62bad0fc",
+							"name": "Update configuration details (Flex details)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userPk\": \"UK-900042\",\r\n    \"userSk\": \"driver#900042\",\r\n    \"flexUser\": \"m.hussain5787@gmail.com\",\r\n    \"flexPassword\": \"#London02\",\r\n    \"accessToken\": \"accesstoken1234\",\r\n    \"refreshToken\": \"refrestoeknjkjk1234\",\r\n    \"userAgent\": \"userAgent2344\", \r\n    \"flexId\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\r\n    \"country\": \"uk\",\r\n    \"region\": \"REG-1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/flex-details/update"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "368"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"170-SMvQ/o0WooNafEgJDKlfEGbnOSs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Dec 2022 06:08:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Configuration details updated successfully.\",\n    \"data\": {\n        \"flexID\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\n        \"usrAgent\": \"userAgent2344\",\n        \"refToken\": \"refrestoeknjkjk1234\",\n        \"sk\": \"flexDetails#UK-900042\",\n        \"accToken\": \"accesstoken1234\",\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-900042\",\n        \"country\": \"uk\",\n        \"amznFlexPassword\": \"#London02\",\n        \"amznFlexUser\": \"m.hussain5787@gmail.com\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update flex details (for user profile)",
+					"_postman_id": "3026bf0f-9d87-4caf-895f-747a301600d7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amznFlexUser\": \"abcdTest1234@gmail.com\",\r\n    \"amznFlexPassword\": \"#123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/update-flex-info"
+					},
+					"response": [
+						{
+							"id": "d3227681-9ab4-469b-ab82-8e202168015c",
+							"name": "Update configuration details (Flex details)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userPk\": \"UK-900042\",\r\n    \"userSk\": \"driver#900042\",\r\n    \"flexUser\": \"m.hussain5787@gmail.com\",\r\n    \"flexPassword\": \"#London02\",\r\n    \"accessToken\": \"accesstoken1234\",\r\n    \"refreshToken\": \"refrestoeknjkjk1234\",\r\n    \"userAgent\": \"userAgent2344\", \r\n    \"flexId\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\r\n    \"country\": \"uk\",\r\n    \"region\": \"REG-1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/flex-details/update"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "368"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"170-SMvQ/o0WooNafEgJDKlfEGbnOSs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Dec 2022 06:08:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Configuration details updated successfully.\",\n    \"data\": {\n        \"flexID\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\n        \"usrAgent\": \"userAgent2344\",\n        \"refToken\": \"refrestoeknjkjk1234\",\n        \"sk\": \"flexDetails#UK-900042\",\n        \"accToken\": \"accesstoken1234\",\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-900042\",\n        \"country\": \"uk\",\n        \"amznFlexPassword\": \"#London02\",\n        \"amznFlexUser\": \"m.hussain5787@gmail.com\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update configuration tokens",
+					"_postman_id": "353aed72-0bf0-416d-8f33-132c76b6cadd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userPk\": \"UK-311717\",\r\n    \"userSk\": \"driver#UK-311717\",\r\n    \"accessToken\": \"acces\",\r\n    \"refreshToken\": \"Atnr|EwICICL1lauD2JwAy6e6O2ZgYVbM0lEH05t9pwAzwsKYECRmRI2r9mgBuLCUkCsdmhRUwGz_eBvXDo_Y-d3IGeMPUPfVjo5R3VOHk2cLTO_XETpAQu9ATV0iulSK_BjqKzNMJfEjuu62uYhnS8N4WbO_NwY0d1vA3lJoLS5_mfvXxpvDG4w4-B8sl02CSm73wFI4HwzIXllA1eFompYSa2WlyrE7eRC2dsWpCG6neY7C8Si1o7_jcwmSQc1dOonueV3arMq62EK_2hDgNf8D1tlF8OqS15ZKNUHlNEzRp7txLps-wbR2qVOVkoVA-FKvy0a6ojU\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}user/flex-details/update-tokens"
+					},
+					"response": [
+						{
+							"id": "c3535371-cedf-4133-a15a-b377289b2428",
+							"name": "Update configuration details (Flex details)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userPk\": \"UK-900042\",\r\n    \"userSk\": \"driver#900042\",\r\n    \"flexUser\": \"m.hussain5787@gmail.com\",\r\n    \"flexPassword\": \"#London02\",\r\n    \"accessToken\": \"accesstoken1234\",\r\n    \"refreshToken\": \"refrestoeknjkjk1234\",\r\n    \"userAgent\": \"userAgent2344\", \r\n    \"flexId\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\r\n    \"country\": \"uk\",\r\n    \"region\": \"REG-1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}user/flex-details/update"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "368"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"170-SMvQ/o0WooNafEgJDKlfEGbnOSs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Dec 2022 06:08:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Configuration tokens updated successfully.\",\n    \"data\": {\n        \"flexID\": \"468BEF07-A29F-4BA3-A420-3BFED2974003\",\n        \"usrAgent\": \"userAgent2344\",\n        \"refToken\": \"refrestoeknjkjk1234\",\n        \"sk\": \"flexDetails#UK-900042\",\n        \"accToken\": \"accesstoken1234\",\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-900042\",\n        \"country\": \"uk\",\n        \"amznFlexPassword\": \"#London02\",\n        \"amznFlexUser\": \"m.hussain5787@gmail.com\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get user account info for admin",
+					"_postman_id": "2f956b6b-af63-4bc0-b452-c58bf7992ba2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{url}}user/get?pk=UK-311717&sk=driver%23UK-311717",
+							"host": [
+								"{{url}}user"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "pk",
+									"value": "UK-311717"
+								},
+								{
+									"key": "sk",
+									"value": "driver#UK-311717"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "8173bd6c-016c-45b8-bde8-abf7f911aa0a",
+							"name": "Get user account info for admin",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									],
+									"options": {
+										"urlencoded": {}
+									}
+								},
+								"url": {
+									"raw": "{{url}}user/get?pk=UK-311717&sk=driver%23UK-311717",
+									"host": [
+										"{{url}}user"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "pk",
+											"value": "UK-311717"
+										},
+										{
+											"key": "sk",
+											"value": "driver%23UK-311717"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "542"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21e-c0m3phAUtA5wMIVnAhXwO3EKCsM\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 31 Jan 2023 12:04:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Customer data retrieved successfully\",\n    \"data\": {\n        \"phoneNumber\": \"7982442350\",\n        \"pricingPlan\": false,\n        \"planType\": \"basic\",\n        \"refCode\": \"UK-311717\",\n        \"tzName\": \"Asia/Calcutta\",\n        \"currentSteps\": \"amazon_flex\",\n        \"otp\": 7172,\n        \"email\": \"deepanshu4534@gmail.com\",\n        \"country\": \"UK\",\n        \"emailVerified\": false,\n        \"lastname\": \"Dev\",\n        \"accountStatus\": \"active\",\n        \"role\": \"driver\",\n        \"flexCountry\": \"uk\",\n        \"firstname\": \"Dipanshu\",\n        \"startDate\": 1674114210,\n        \"sk\": \"driver#UK-311717\",\n        \"phoneVerified\": true,\n        \"regionCode\": \"REG-1\",\n        \"pk\": \"UK-311717\",\n        \"dialCode\": \"+91\",\n        \"customerID\": \"UK-311717\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "b4f8168f-b0a9-4468-92bd-ca9a862edf6c"
+		},
+		{
+			"name": "Block",
+			"item": [
+				{
+					"name": "Add Blocks",
+					"_postman_id": "3d4312f7-0310-461e-bdb4-3b68383597c8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"blockItems\": [\r\n        {\r\n            \"bDay\": \"\",\r\n            \"bDate\": \"\",\r\n            \"status\": \"Accepted\",\r\n            \"duration\": \"\",\r\n            \"price\": 19.5,\r\n            \"bStartTime\": 1657017900,\r\n            \"bEndTime\": 1657023300,\r\n            \"stationCode\": \"ULO6\",\r\n            \"stationName\": \"Wembley\",\r\n            \"currency\": \"GBP\",\r\n            \"offerId\": \"Ok9mZmVySWQuRW5jcnlwdGlvbktleS1wbkVYMkwAAAAA0Blixhfu1q0YgtqRojJFCQJLgXY9doHa421lrT5prnuZooY8lsI2ux93IfYat+GCJnKXUsAaXS8bUHUWV21cvY4UiVPEg61wXY9Ty5Fsoxu7JMJwxBXAh316Kjaye40XtT0ik0WmTmpyzTb+P+3I+Xu8ChXLDFW2sZmwWrAhiNzFK5YOU3zUDzk9E042g2m4P9izgn3JqnhYWLbPU1EpDcYiAvHRv9Pm4nWsEajJfIiBqKrE4v5qwywMXdCs9viGecXurxA0jbfcpoiM5cWYP7xLHbjuw7BFpgY/V2lo+bC5zqcKRmsId0lsYqJJrMf+qYflVy5QyRAzQ0pmff+KbZ4DTF6pp8cgWaLAjzELzI3KtEbS44psY0kA308VP9UrmsrJq+2P2cZTB1KP/VHGUF9xN6/WLbnXQsywxMp9lwA6NXwiSXaig9YkGnSEUtmmMGbuk4TEityArhsCA//vFDWGH7dgMM3WLl4VtuiZazEyPKiRErx7f/Ty6Hpw8Perdz4fi87W+SMZyqJmdZjkrBpa2/UafRwGnBgLO8gn|3MB3n4G9N13o9XDhIM5VlFty55aRuLK22CbRL9mBce4=\",\r\n            \"surgeMultiplier\": null,\r\n            \"projectedTips\": 0,\r\n            \"acceptedAt\": 1663668703,\r\n            \"priorityOffer\": false\r\n        },\r\n        {\r\n            \"bDay\": \"\",\r\n            \"bDate\": \"\",\r\n            \"status\": \"Accepted\",\r\n            \"duration\": \"\",\r\n            \"price\": 26,\r\n            \"bStartTime\": 1657198800,\r\n            \"bEndTime\": 1657206000,\r\n            \"stationCode\": \"ULO6\",\r\n            \"stationName\": \"Wembley\",\r\n            \"currency\": \"GBP\",\r\n            \"offerId\": \"Ok9mZmVySWQuRW5jcnlwdGlvbktleS1wbkVYMkwAAAAA0Blixhfu1q0YgtqRojJFCQJLgXY9doHa421lrT5prnuZooY8lsI2ux93IfYat+GCJnKXUsAaXS8bUHUWV21cvY4UiVPEg61wXY9Ty5Fsoxu7JMJwxBXAh316Kjaye40XtT0ik0WnRmVzzTb+P+3I8XnhXBXLdiXPqJGsTNtdj8+mVJN8U3yLXWBvTxo+iCDwPtCzzGSYqHpBF7bGXU9mU8Z/AqWHutTn5SOlEajFft2IqPeQ4bclyy4LSMmh9K/NNpTrql98ibTa8dje5MTPN+5JHbj417tFpwY7Umtr/L60z6QKRGYAf0psYqtKqcT9pYzgVS1cyRBNS1dicJ2KbZQET1yup8khUaLAjzEV0N/EvRaAt91uZBlX10hHbYYryp/Pp72C28YHAgjc+1CRBlp8Za3efLeCFcG3kpt6kFtqOywkHyGjh4d2GHiCWIz7MGTtltaW2Y7RrktTU/y8RD2EGrcxNJCCeA4TteiYaTc1PauVR+t4fqLzvX9x86KmfGAZ25yN/yBIzfQ2dZgCB+U8BVSUPEMOoAX07GNOiQ==|2WsUVZO/F9hcCmst8RN6vYhDrO85NnFGJWvKOIbzCJQ=\",\r\n            \"surgeMultiplier\": null,\r\n            \"projectedTips\": 0,\r\n            \"acceptedAt\": 1663668703,\r\n            \"priorityOffer\": false\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}block/add"
+					},
+					"response": []
+				},
+				{
+					"name": "Get searched blocks list",
+					"_postman_id": "86ab2e93-274e-492f-a84c-92033cf2deb2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}block/"
+					},
+					"response": []
+				},
+				{
+					"name": "Stop block search",
+					"_postman_id": "ffa59585-7ef0-42cb-9c11-cc2f82d4d8e5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}block/stop-search/7f6bdaf6-fe8f-4111-8a7c-551c59b87b84"
+					},
+					"response": []
+				},
+				{
+					"name": "Start search",
+					"_postman_id": "d3184b6a-4657-4d2a-a015-10d85eeb1f70",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}block/start-search"
+					},
+					"response": [
+						{
+							"id": "65662cf3-6091-4d68-b4ab-2e00567a6545",
+							"name": "Start search",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}block/start-search"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "109"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"6d-HWjDSp4P8N3QUSQoOPnJE+k8S6U\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 18 Nov 2022 09:42:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Search started!\",\n    \"taskStatus\": 100,\n    \"taskId\": \"dc0e34ea-da7a-47f8-b7ee-fb5e1033548e\"\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "5d493bf3-0202-47b1-9427-37efd0305a8a"
+		},
+		{
+			"name": "Preferences",
+			"item": [
+				{
+					"name": "Add Preferences",
+					"_postman_id": "e51f82d1-6ae3-4882-b766-5d8081571f54",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"days\": [\r\n        {\r\n            \"label\": \"Mon\",\r\n            \"value\": \"mon\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Tue\",\r\n            \"value\": \"tue\",\r\n            \"active\": true\r\n        },\r\n        {\r\n            \"label\": \"Wed\",\r\n            \"value\": \"wed\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Thu\",\r\n            \"value\": \"thu\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Fri\",\r\n            \"value\": \"fri\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Sat\",\r\n            \"value\": \"sat\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Sun\",\r\n            \"value\": \"sat\",\r\n            \"active\": false\r\n        }\r\n    ],\r\n    \"preferences\": [\r\n        {\r\n            \"stationCode\": \"STA-1\",\r\n            \"regionId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"stationId\": \"facafe0c-8de6-4401-af0a-bfa5a7591887\",\r\n            \"day\": \"\",\r\n            \"tta\": \"15\",\r\n            \"minPay\": 39,\r\n            \"minHourlyRate\": \"\",\r\n            \"startTime\": \"17:30\",\r\n            \"endTime\": \"23:59\",\r\n            \"active\": \"Y\"\r\n        },\r\n        {\r\n            \"stationCode\": \"STA-2\",\r\n            \"regionId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"stationId\": \"1841d728-57ce-41da-a1c3-d901a202109b\",\r\n            \"day\": \"\",\r\n            \"tta\": \"15\",\r\n            \"minPay\": 39,\r\n            \"minHourlyRate\": \"\",\r\n            \"startTime\": \"17:30\",\r\n            \"endTime\": \"23:59\",\r\n            \"active\": \"Y\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}preference/add"
+					},
+					"response": [
+						{
+							"id": "f3a0fc07-67a8-4eaf-87cd-337ac11b0acd",
+							"name": "Add Preferences",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"days\": [\r\n        {\r\n            \"label\": \"Mon\",\r\n            \"value\": \"mon\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Tue\",\r\n            \"value\": \"tue\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Wed\",\r\n            \"value\": \"wed\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Thu\",\r\n            \"value\": \"thu\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Fri\",\r\n            \"value\": \"fri\",\r\n            \"active\": true\r\n        },\r\n        {\r\n            \"label\": \"Sat\",\r\n            \"value\": \"sat\",\r\n            \"active\": false\r\n        },\r\n        {\r\n            \"label\": \"Sun\",\r\n            \"value\": \"sat\",\r\n            \"active\": false\r\n        }\r\n    ],\r\n    \"preferences\": [\r\n        {\r\n            \"stationCode\": \"STA-1\",\r\n            \"regionId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"stationId\": \"facafe0c-8de6-4401-af0a-bfa5a7591887\",\r\n            \"day\": \"\",\r\n            \"tta\": \"30\",\r\n            \"minPay\": 2,\r\n            \"minHourlyRate\": 3,\r\n            \"startTime\": \"09:00\",\r\n            \"endTime\": \"18:00\",\r\n            \"active\": \"Y\"\r\n        },\r\n        {\r\n            \"stationCode\": \"STA-2\",\r\n            \"regionId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"stationId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"day\": \"\",\r\n            \"tta\": \"30\",\r\n            \"minPay\": 2,\r\n            \"minHourlyRate\": 3,\r\n            \"startTime\": \"09:00\",\r\n            \"endTime\": \"18:00\",\r\n            \"active\": \"Y\"\r\n        },\r\n        {\r\n            \"stationCode\": \"STA-3\",\r\n            \"regionId\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n            \"stationId\": \"1841d728-57ce-41da-a1c3-d901a202109b\",\r\n            \"day\": \"\",\r\n            \"tta\": \"30\",\r\n            \"minPay\": 2,\r\n            \"minHourlyRate\": 3,\r\n            \"startTime\": \"09:00\",\r\n            \"endTime\": \"18:00\",\r\n            \"active\": \"Y\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}preference/add"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "72"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"48-WvLaznzoDHHBIZX3uGU7uVoDKBs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 28 Nov 2022 07:13:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Preferences saved successfully.\",\n    \"data\": [\n        {}\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Update preferences schedule",
+					"_postman_id": "dd6519ec-a084-41e2-bb0c-af7281f9a73e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"schedules\" : [\r\n        {\r\n            \"day\" : \"mon\",\r\n            \"startTime\" : \"09:00\",\r\n            \"active\" : true\r\n        },\r\n        {\r\n            \"day\" : \"wed\",\r\n            \"startTime\" : \"12:00\",\r\n            \"active\" : true\r\n        },\r\n        {\r\n            \"day\" : \"wed\",\r\n            \"startTime\" : \"12:00\",\r\n            \"active\" : true\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}preference/schedule"
+					},
+					"response": [
+						{
+							"id": "1e792b76-09f6-46d4-86ef-52ec42e9bb03",
+							"name": "Update preferences schedule",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"schedules\" : [\r\n        {\r\n            \"day\" : \"mon\",\r\n            \"startTime\" : \"09:00\",\r\n            \"active\" : true\r\n        },\r\n        {\r\n            \"day\" : \"wed\",\r\n            \"startTime\" : \"12:00\",\r\n            \"active\" : true\r\n        },\r\n        {\r\n            \"day\" : \"tue\",\r\n            \"startTime\" : \"01:00\",\r\n            \"active\" : false\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}preference/schedule"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "82"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"52-gp2bt3xXo+9Eh8qF1QTHDpglRB4\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Nov 2022 06:03:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Availability schedule saved successfully.\",\n    \"data\": [\n        {}\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Preferences",
+					"_postman_id": "0ed2b4c8-8be9-4019-bdb6-c21236183837",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}preference?day=1",
+							"host": [
+								"{{url}}preference"
+							],
+							"query": [
+								{
+									"key": "day",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "579a0a57-3974-4132-a2a3-5f644d6471e9",
+							"name": "Get Preferences",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}preference/"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1092"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"444-UJNGxQADRq4oY6KpemyQRHw5D+o\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 18 Oct 2022 11:26:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Preferences list fetched successfully.\",\n    \"data\": [\n        {\n            \"station\": {\n                \"stationCode\": \"CU06\",\n                \"stationType\": \"logistics\",\n                \"stationID\": \"b23f4e9f-58d3-4930-9c41-c290dc7fb743\",\n                \"stationName\": \"Test Station\",\n                \"sk\": \"uk#ULO6#CU06\",\n                \"regionCode\": \"ULO6\",\n                \"pk\": \"station\",\n                \"regionName\": \"region ul06\",\n                \"regionID\": \"testregionid123\"\n            },\n            \"preference\": {\n                \"bDay\": \"mon\",\n                \"tta\": \"30\",\n                \"active\": \"Y\",\n                \"bEndTime\": \"18:00\",\n                \"minPay\": 2,\n                \"bStartTime\": \"09:00\",\n                \"stationID\": \"b23f4e9f-58d3-4930-9c41-c290dc7fb743\",\n                \"sk\": \"availability#1#mon#CU06\",\n                \"minHourlyRate\": 3,\n                \"pk\": \"IND-900016\",\n                \"regionID\": \"testregionid123\"\n            }\n        },\n        {\n            \"station\": {\n                \"stationCode\": \"CU13\",\n                \"stationType\": \"logistics\",\n                \"stationID\": \"b23f4e9f-58d3-4930-9c41-c290dc7fb743sdsds\",\n                \"stationName\": \"Test Station 2\",\n                \"sk\": \"uk#ULO6#CU13\",\n                \"regionCode\": \"ULO6\",\n                \"pk\": \"station\",\n                \"regionName\": \"region ul06\",\n                \"regionID\": \"testregionid123\"\n            },\n            \"preference\": {\n                \"bDay\": \"mon\",\n                \"tta\": \"30\",\n                \"active\": \"Y\",\n                \"bEndTime\": \"18:00\",\n                \"minPay\": 2,\n                \"bStartTime\": \"09:00\",\n                \"stationID\": \"b23f4e9f-58d3-4930-9c41-c290dc7fb743sdsds\",\n                \"sk\": \"availability#1#mon#CU13\",\n                \"minHourlyRate\": 3,\n                \"pk\": \"IND-900016\",\n                \"regionID\": \"testregionid123\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Preferences Schedule",
+					"_postman_id": "568bf47e-e89a-4edb-9830-661ea9523051",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}preference/schedule"
+					},
+					"response": [
+						{
+							"id": "4e176076-dc52-49cb-8f92-cad743d8e391",
+							"name": "Get Preferences Schedule",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}preference/schedule"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "349"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15d-0PLslzyenlOECigQlvJfDg5EO6w\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Nov 2022 09:43:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Data fetched successfully\",\n    \"data\": [\n        {\n            \"asStartTime\": \"09:00\",\n            \"sk\": \"schedule#IND-900016#1\",\n            \"active\": true,\n            \"asDay\": \"mon\",\n            \"pk\": \"IND-900016\"\n        },\n        {\n            \"asStartTime\": \"12:00\",\n            \"sk\": \"schedule#IND-900016#2\",\n            \"active\": true,\n            \"asDay\": \"wed\",\n            \"pk\": \"IND-900016\"\n        },\n        {\n            \"asStartTime\": \"01:00\",\n            \"sk\": \"schedule#IND-900016#3\",\n            \"active\": false,\n            \"asDay\": \"tue\",\n            \"pk\": \"IND-900016\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "8c9bedeb-4523-49a0-8ef0-99778f9837eb"
+		},
+		{
+			"name": "Model and Versions",
+			"item": [
+				{
+					"name": "Add Phone Model",
+					"_postman_id": "4341b4ee-c01e-4971-8127-51f4c1c9e788",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"modelName\": \"I phfdfone 2\",\r\n    \"modelId\" : \"321dfdf321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}model-versions/phone-model/add"
+					},
+					"response": []
+				},
+				{
+					"name": "Add OS version",
+					"_postman_id": "cf478a0d-b8b0-4bd4-ac00-2de82800a4a6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"osVersion\" : \"IOS 12.4.5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}model-versions/os-version/add"
+					},
+					"response": []
+				},
+				{
+					"name": "Add flex version",
+					"_postman_id": "4ef88bb5-8007-47ab-922d-9770e2002dc2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"flexVersion\" : \"12.4.2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}model-versions/flex-version/add"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone model, os version, flex version List",
+					"_postman_id": "ff00bb2a-6a0a-4d70-acfe-15bd79017269",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{live_url}}model-versions/list?entityName=phoneModel",
+							"host": [
+								"{{live_url}}model-versions"
+							],
+							"path": [
+								"list"
+							],
+							"query": [
+								{
+									"key": "next_page",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "sk",
+									"value": "phoneModel%236",
+									"disabled": true
+								},
+								{
+									"key": "pk",
+									"value": "phoneModel",
+									"disabled": true
+								},
+								{
+									"key": "entityName",
+									"value": "phoneModel"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Phone model, os version, flex version",
+					"_postman_id": "4e02bba1-ac29-4681-a451-f496db733975",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deletePk\":\"phoneModel\",\r\n    \"deleteSk\":\"phoneModel#11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{live_url}}model-versions/delete"
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "623734ba-6872-462b-93e5-631c7ffca55a"
+		},
+		{
+			"name": "Locations",
+			"item": [
+				{
+					"name": "Add Country",
+					"_postman_id": "3de22849-44be-4023-be8c-6a2873fe01db",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"country\" : \"India\",\r\n    \"countryCode\" : \"IN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/country"
+					},
+					"response": [
+						{
+							"id": "12a9e30f-6a19-4de4-93ba-bf17f03bf504",
+							"name": "Add Country",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"country\" : \"United Kingdom\",\r\n    \"countryCode\" : \"UK\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/country"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:45:18 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "66"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42-cWuVwT9oSpcDx7utIoBCgChfpNQ\""
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Country added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Add Region",
+					"_postman_id": "af3c17a7-4a70-4bea-a697-3f424eaa20c2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"countryCode\" : \"IN\",\r\n    \"regionName\" : \"For Testing\",\r\n    \"regionCode\" : \"Test-123\",\r\n    \"regionId\" : \"test1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/region"
+					},
+					"response": [
+						{
+							"id": "064158e4-e091-4bd7-b358-643173507561",
+							"name": "Add Region - zendesk error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"UK\",\r\n    \"regionName\" : \"Region1234\",\r\n    \"regionCode\" : \"Reg-7980\",\r\n    \"regionId\" : \"123456788889\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/region"
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "239"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ef-+yR0qBHRXzc+vz5WiXdkE5aMGSU\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:46:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": false,\n    \"message\": \"Unprocessable Entity\",\n    \"error\": {\n        \"error\": \"RecordInvalid\",\n        \"description\": \"Record validation errors\",\n        \"details\": {\n            \"name\": [\n                {\n                    \"description\": \"Name: Region1234(REG-7980) has already been taken\",\n                    \"error\": \"DuplicateValue\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"id": "ed98c512-03e3-4209-a740-ad14665c8a15",
+							"name": "Add Region",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"UK\",\r\n    \"regionName\" : \"newRegion\",\r\n    \"regionCode\" : \"Reg-79567880\",\r\n    \"regionId\" : \"123456788889\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/region"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"41-1khkQF3KSte4LzQAZA5wT60WQtQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:47:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Region added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Region",
+					"_postman_id": "5c0a48c2-a124-4879-b914-58df3dcefae3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"regSk\" : \"gb#ULO6\", \r\n    \"regionName\" : \"Wembley\", \r\n    \"regionID\" : \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/region"
+					},
+					"response": [
+						{
+							"id": "247f4b34-c392-4833-9c2f-76524e4c7be0",
+							"name": "Add Region - zendesk error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"UK\",\r\n    \"regionName\" : \"Region1234\",\r\n    \"regionCode\" : \"Reg-7980\",\r\n    \"regionId\" : \"123456788889\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/region"
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "239"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ef-+yR0qBHRXzc+vz5WiXdkE5aMGSU\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:46:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": false,\n    \"message\": \"Unprocessable Entity\",\n    \"error\": {\n        \"error\": \"RecordInvalid\",\n        \"description\": \"Record validation errors\",\n        \"details\": {\n            \"name\": [\n                {\n                    \"description\": \"Name: Region1234(REG-7980) has already been taken\",\n                    \"error\": \"DuplicateValue\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"id": "aae3d463-22c0-49a1-aca2-3ff3cb20f04d",
+							"name": "Add Region",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"UK\",\r\n    \"regionName\" : \"newRegion\",\r\n    \"regionCode\" : \"Reg-79567880\",\r\n    \"regionId\" : \"123456788889\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/region"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"41-1khkQF3KSte4LzQAZA5wT60WQtQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:47:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Region added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Country",
+					"_postman_id": "80f6560f-280c-4759-ace0-baa46ae05c4f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sortKey\" : \"IND#India\",\r\n    \"partitionKey\" : \"country\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/country"
+					},
+					"response": [
+						{
+							"id": "57af04d3-092c-46a8-bfb6-770c8cd7d1f3",
+							"name": "Delete Country",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sortKey\" : \"IND#India\",\r\n    \"partitionKey\" : \"country\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/country"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"name": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Country deleted successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Region",
+					"_postman_id": "1a92cdc9-90fa-4456-890e-b4b4f70e6d70",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sortKey\" : \"in#TEST-123\",\r\n    \"partitionKey\" : \"region\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/region"
+					},
+					"response": [
+						{
+							"id": "f89d548c-2201-45e6-83a7-cd70cb48382a",
+							"name": "Delete Region",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sortKey\" : \"IND#TestRegionCode\",\r\n    \"partitionKey\" : \"region\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/region"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"name": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\r\n    \"success\": true,\r\n    \"message\": \"Region deleted successfully!\",\r\n    \"data\": {}\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Country List",
+					"_postman_id": "21139dfc-bc2f-4947-b538-87133ea402d5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}location/country"
+					},
+					"response": [
+						{
+							"id": "4689650d-bfe0-427b-b8a1-c79e94a0c4d5",
+							"name": "Get Country List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}location/country"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "284"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"11c-W58rAS+MNpGEvq1JC1W861e9vyg\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:50:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Country list fetched successfully!\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"sk\": \"uk#UnitedKingdom\",\n                \"pk\": \"country\",\n                \"country\": \"United Kingdom\",\n                \"countryCode\": \"uk\"\n            },\n            {\n                \"sk\": \"uk#united kingdom\",\n                \"pk\": \"country\",\n                \"country\": \"united kingdom\",\n                \"countryCode\": \"uk\"\n            }\n        ],\n        \"Count\": 2,\n        \"ScannedCount\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Region List",
+					"_postman_id": "512fac6c-34be-476b-87f5-57a332aec4a8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}location/region?country_code=in",
+							"host": [
+								"{{url}}location"
+							],
+							"path": [
+								"region"
+							],
+							"query": [
+								{
+									"key": "country_code",
+									"value": "in"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "9c598888-86b3-4ce8-a43d-a5c5f3edd38c",
+							"name": "Get Region List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}location/region?country_code=in",
+									"host": [
+										"{{url}}location"
+									],
+									"path": [
+										"region"
+									],
+									"query": [
+										{
+											"key": "country_code",
+											"value": "in"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "266"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"10a-l7yYrzjptMyPoY0FZBXsv5G+CWY\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 07 Mar 2023 10:11:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Regions list fetched successfully!\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"iRegID\": \"test1234\",\n                \"sk\": \"in#TEST-123\",\n                \"regionCode\": \"TEST-123\",\n                \"zendeskOrgID\": 9707228190621,\n                \"pk\": \"region\",\n                \"regionName\": \"For Testing\",\n                \"regionID\": \"test1234\"\n            }\n        ],\n        \"Count\": 1,\n        \"ScannedCount\": 1\n    }\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "53fb1b71-7e97-44d7-a0c1-2a24d20c8fe7"
+		},
+		{
+			"name": "Stations",
+			"item": [
+				{
+					"name": "Add Station",
+					"_postman_id": "6b8174de-8391-4001-a910-8972957ea739",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"countryCode\" : \"uk\",\r\n    \"regionName\" : \"New Region\",\r\n    \"regionCode\" : \"REG-2\",\r\n    \"regionId\" : \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n    \"stationName\" : \"Station 123\",\r\n    \"stationCode\" : \"STA-145\",\r\n    \"stationId\" : \"12345\",\r\n    \"stationType\" : \"logistics\",\r\n    \"address1\" : \"\",\r\n    \"address2\" : \"\",\r\n    \"address3\" : \"\",\r\n    \"city\" : \"\",\r\n    \"state\" : \"\",\r\n    \"postalCode\" : \"\",\r\n    \"latitude\" : \"\",\r\n    \"longitude\" : \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/station"
+					},
+					"response": [
+						{
+							"id": "1d5e1905-2981-4b43-8541-edc6dc4ec5df",
+							"name": "Add Station",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"uk\",\r\n    \"regionName\" : \"Region 1\",\r\n    \"regionCode\" : \"REG-1\",\r\n    \"regionId\" : \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n    \"stationName\" : \"Station 2\",\r\n    \"stationCode\" : \"STA-2\",\r\n    \"stationId\" : \"1841d728-57ce-41da-a1c3-d901a202109b\",\r\n    \"stationType\" : \"Logistics\",\r\n    \"address1\" : \"\",\r\n    \"address2\" : \"\",\r\n    \"address3\" : \"\",\r\n    \"city\" : \"\",\r\n    \"state\" : \"\",\r\n    \"postalCode\" : \"\",\r\n    \"latitude\" : \"\",\r\n    \"longitude\" : \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/station"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "66"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42-hQ6NLFtoFxoAZTQeFUS86nL5X0Y\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:51:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Station",
+					"_postman_id": "32b805d2-222f-4cb5-aafc-d1b6180b99ba",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stationSk\" : \"uk#REG-2#STA-145\",\r\n    \"stationName\" : \"Station 123\",\r\n    \"stationId\" : \"12345678\",\r\n    \"stationType\" : \"logistics\",\r\n    \"address1\" : \"\",\r\n    \"address2\" : \"\",\r\n    \"address3\" : \"\",\r\n    \"city\" : \"\",\r\n    \"state\" : \"\",\r\n    \"postalCode\" : \"\",\r\n    \"latitude\" : \"\",\r\n    \"longitude\" : \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/station"
+					},
+					"response": [
+						{
+							"id": "3cba8fd7-82e0-4bdc-8117-2e428df48a4b",
+							"name": "Add Station",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"countryCode\" : \"uk\",\r\n    \"regionName\" : \"Region 1\",\r\n    \"regionCode\" : \"REG-1\",\r\n    \"regionId\" : \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\r\n    \"stationName\" : \"Station 2\",\r\n    \"stationCode\" : \"STA-2\",\r\n    \"stationId\" : \"1841d728-57ce-41da-a1c3-d901a202109b\",\r\n    \"stationType\" : \"Logistics\",\r\n    \"address1\" : \"\",\r\n    \"address2\" : \"\",\r\n    \"address3\" : \"\",\r\n    \"city\" : \"\",\r\n    \"state\" : \"\",\r\n    \"postalCode\" : \"\",\r\n    \"latitude\" : \"\",\r\n    \"longitude\" : \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/station"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "66"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42-hQ6NLFtoFxoAZTQeFUS86nL5X0Y\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:51:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Add Station Type",
+					"_postman_id": "c57e2b8b-8f6f-487b-a4be-05aaf9562f66",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stationType\" : \"testing\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/station-type"
+					},
+					"response": [
+						{
+							"id": "bda5d493-2368-4487-ad10-2ec5f436c509",
+							"name": "Add Station Type",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"stationType\" : \"logistics\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/station-type"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "71"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"47-EdGZ8it8h9ZFV7V6LuYQ6Lmfa3s\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:51:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station type added successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Station Type List",
+					"_postman_id": "70db0ff5-2655-4c23-b442-0a3905dfa6fa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}location/station-type"
+					},
+					"response": [
+						{
+							"id": "65caf6f2-a4d6-4555-93f6-6e31ab203637",
+							"name": "Get Station Type List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}location/station-type"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "266"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"10a-fvM9M2CzojCN1L3UH0RN6WJGDLs\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:51:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station Type list fetched successfully!\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"sk\": \"stationType#Logistics\",\n                \"stationType\": \"Logistics\",\n                \"pk\": \"stationType\"\n            },\n            {\n                \"sk\": \"stationType#logistics\",\n                \"stationType\": \"logistics\",\n                \"pk\": \"stationType\"\n            }\n        ],\n        \"Count\": 2,\n        \"ScannedCount\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Station  List",
+					"_postman_id": "5f76cbf2-6d43-4036-9201-0a57fba8d337",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}location/station?countryCode=uk",
+							"host": [
+								"{{url}}location"
+							],
+							"path": [
+								"station"
+							],
+							"query": [
+								{
+									"key": "countryCode",
+									"value": "uk"
+								},
+								{
+									"key": "regionCode",
+									"value": "REG-2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "683a9a40-1aa2-4c34-9709-d64c1426a6c9",
+							"name": "Get Station  List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}location/station?countryCode=uk&regionCode=REG-1",
+									"host": [
+										"{{url}}location"
+									],
+									"path": [
+										"station"
+									],
+									"query": [
+										{
+											"key": "countryCode",
+											"value": "uk"
+										},
+										{
+											"key": "regionCode",
+											"value": "REG-1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "735"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2df-EvU/rFfMIM0iKTX63Zli1hxi59I\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:52:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station list fetched successfully!\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"stationCode\": \"STA-1\",\n                \"stationType\": \"Logistics\",\n                \"stationID\": \"facafe0c-8de6-4401-af0a-bfa5a7591887\",\n                \"stationName\": \"Station 1\",\n                \"sk\": \"uk#REG-1#STA-1\",\n                \"regionCode\": \"REG-1\",\n                \"pk\": \"station\",\n                \"regionName\": \"Region 1\",\n                \"regionID\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\"\n            },\n            {\n                \"address3\": \"\",\n                \"stationName\": \"Station 2\",\n                \"regionID\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\",\n                \"state\": \"\",\n                \"city\": \"\",\n                \"stationCode\": \"STA-2\",\n                \"stationType\": \"Logistics\",\n                \"stationID\": \"1841d728-57ce-41da-a1c3-d901a202109b\",\n                \"longitude\": \"\",\n                \"sk\": \"uk#REG-1#STA-2\",\n                \"regionCode\": \"REG-1\",\n                \"pk\": \"station\",\n                \"regionName\": \"Region 1\",\n                \"postalCode\": \"\",\n                \"latitude\": \"\",\n                \"address1\": \"\",\n                \"address2\": \"\"\n            }\n        ],\n        \"Count\": 2,\n        \"ScannedCount\": 2\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Station type",
+					"_postman_id": "bfcc1cd6-06d9-4fa4-a685-d5c614e064df",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sortKey\" : \"stationType#Logistics\",\r\n    \"partitionKey\" : \"stationType\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/station-type"
+					},
+					"response": [
+						{
+							"id": "9149a3a5-4390-498d-9ed3-6992a5c4551c",
+							"name": "Delete Station type",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sortKey\" : \"stationType#logistics\",\r\n    \"partitionKey\" : \"stationType\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/station-type"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"name": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\r\n    \"success\": true,\r\n    \"message\": \"Station type deleted successfully!\",\r\n    \"data\": {}\r\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Station",
+					"_postman_id": "c6424e84-4999-4461-bf30-7d51b5bec081",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sortKey\" : \"IND#TestRegionCode#STA1\",\r\n    \"partitionKey\" : \"station\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}location/station"
+					},
+					"response": [
+						{
+							"id": "c07fec02-0514-4180-b902-a0a5c7b18c9b",
+							"name": "Delete Station",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"sortKey\" : \"IND#TestRegionCode#STA1\",\r\n    \"partitionKey\" : \"station\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}location/station"
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"name": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Station deleted successfully!\",\n    \"data\": {}\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "0d31fecc-cc2c-4754-8c79-b9e6cfdd729c"
+		},
+		{
+			"name": "Automation Tool APIs",
+			"item": [
+				{
+					"name": "Get Flex Details and Preferences",
+					"_postman_id": "c98c1deb-e95f-46e4-a408-13fa4e079251",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzayI6ImRyaXZlciM5MDAwMjgiLCJwayI6IlVLLTkwMDAyOCJ9.EvuE8yYvAGW2hzDPDkKbpL0SOY6tZilU7l_Af5gy-1o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userPK\" : \"UK-900028\",\r\n    \"userSK\" : \"driver#900028\",\r\n    \"verifyRequestToken\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzayI6ImRyaXZlciM5MDAwMjgiLCJwayI6IlVLLTkwMDAyOCJ9.aqm-50_KRNgI5DnE3O0x2L45O8ib9xrFLciyeHCtXB0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{live_url}}automation-tool/flex-details-preferences"
+					},
+					"response": [
+						{
+							"id": "e419fe70-6c84-40cd-84a2-87ff392d3ee9",
+							"name": "Get Flex Details and Preferences",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userPK\" : \"IN-900010\",\r\n    \"userSK\" : \"admin#900010\",\r\n    \"verifyRequestToken\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NjM4NTI1MzUsImV4cCI6MTY5NTM4ODUzNSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsInNrIjoiYWRtaW4jOTAwMDEwIiwicGsiOiJJTi05MDAwMTAifQ.SRRSQYIIXQE0YqDSf_GGCstU2OWoFx1vEp82utpKrT4\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}automation-tool/flex-details-preferences"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "729"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2d9-RRW5oblXejv38R41UUTjiwofD7M\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 22 Sep 2022 13:51:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Details fetched successfully.\",\n    \"data\": {\n        \"flexDetails\": {\n            \"sk\": \"flexDetails#IN-900010\",\n            \"pk\": \"IN-900010\",\n            \"amznFlexUser\": \"amznflex1211@gmail.com\",\n            \"amznFlexPassword\": \"12345678\"\n        },\n        \"preferences\": [\n            {\n                \"bDay\": \"mon\",\n                \"tta\": \"30\",\n                \"active\": \"Y\",\n                \"bEndTime\": \"18:00\",\n                \"minPay\": 2,\n                \"bStartTime\": \"09:00\",\n                \"stationID\": \"facafe0c-8de6-4401-af0a-bfa5a7591887\",\n                \"sk\": \"availability#1#mon#DHA1\",\n                \"minHourlyRate\": 3,\n                \"pk\": \"IN-900010\",\n                \"regionID\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\"\n            },\n            {\n                \"bDay\": \"mon\",\n                \"tta\": \"30\",\n                \"active\": \"Y\",\n                \"bEndTime\": \"18:00\",\n                \"minPay\": 2,\n                \"bStartTime\": \"09:00\",\n                \"stationID\": \"facafe0c-8de6-4401-af0a-bfa5a7591887\",\n                \"sk\": \"availability#1#mon#DHA2\",\n                \"minHourlyRate\": 3,\n                \"pk\": \"IN-900010\",\n                \"regionID\": \"7292175f-7b9c-4051-8904-b9c6e0a49d69\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Add Blocks",
+					"_postman_id": "87f9875a-0861-4463-974c-a5787ee2697e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzayI6ImRyaXZlciM5MDAwMjgiLCJwayI6IlVLLTkwMDAyOCJ9.EvuE8yYvAGW2hzDPDkKbpL0SOY6tZilU7l_Af5gy-1o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"verifyRequestToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzayI6ImRyaXZlciM5MDAwMjgiLCJwayI6IlVLLTkwMDAyOCJ9.aqm-50_KRNgI5DnE3O0x2L45O8ib9xrFLciyeHCtXB0\",\r\n    \"blockItems\": [\r\n        {\r\n            \"bDay\": \"\",\r\n            \"bDate\": \"\",\r\n            \"status\": \"Accepted\",\r\n            \"duration\": \"\",\r\n            \"price\": 19.5,\r\n            \"bStartTime\": 1657017900,\r\n            \"bEndTime\": 1669335362,\r\n            \"stationCode\": \"ULO6\",\r\n            \"stationName\": \"STA-1\",\r\n            \"currency\": \"GBP\",\r\n            \"offerId\": \"Ok9mZmVySWQuRW5jcnlwdGlvbktleS1wbkVYMkwAAAAA0Blixhfu1q0YgtqRojJFCQJLgXY9doHa421lrT5prnuZooY8lsI2ux93IfYat+GCJnKXUsAaXS8bUHUWV21cvY4UiVPEg61wXY9Ty5Fsoxu7JMJwxBXAh316Kjaye40XtT0ik0WmTmpyzTb+P+3I+Xu8ChXLDFW2sZmwWrAhiNzFK5YOU3zUDzk9E042g2m4P9izgn3JqnhYWLbPU1EpDcYiAvHRv9Pm4nWsEajJfIiBqKrE4v5qwywMXdCs9viGecXurxA0jbfcpoiM5cWYP7xLHbjuw7BFpgY/V2lo+bC5zqcKRmsId0lsYqJJrMf+qYflVy5QyRAzQ0pmff+KbZ4DTF6pp8cgWaLAjzELzI3KtEbS44psY0kA308VP9UrmsrJq+2P2cZTB1KP/VHGUF9xN6/WLbnXQsywxMp9lwA6NXwiSXaig9YkGnSEUtmmMGbuk4TEityArhsCA//vFDWGH7dgMM3WLl4VtuiZazEyPKiRErx7f/Ty6Hpw8Perdz4fi87W+SMZyqJmdZjkrBpa2/UafRwGnBgLO8gn|3MB3n4G9N13o9XDhIM5VlFty55aRuLK22CbRL9mBce4=\",\r\n            \"surgeMultiplier\": null,\r\n            \"projectedTips\": 0,\r\n            \"acceptedAt\": 1663668703,\r\n            \"priorityOffer\": false\r\n        },\r\n        {\r\n            \"bDay\": \"\",\r\n            \"bDate\": \"\",\r\n            \"status\": \"Accepted\",\r\n            \"duration\": \"\",\r\n            \"price\": 19.5,\r\n            \"bStartTime\": 1657103400,\r\n            \"bEndTime\": 1669335362,\r\n            \"stationCode\": \"STA-2\",\r\n            \"stationName\": \"Wembley\",\r\n            \"currency\": \"GBP\",\r\n            \"offerId\": \"Ok9mZmVySWQuRW5jcnlwdGlvbktleS1wbkVYMkwAAAAA0Blixhfu1q1NgtDFp2BJCQJJ2yttdoHT5WxlrGRtq3uYqdw6l5Fg6UQkI/wat+GCJnKXUsAaXS8bUHUWV21cvY4UiVPEg61wXY9Ty5Fsoxu7JMJwxBXAh316Kjaye40XtT0ik0WnT25/zTb+P+3I+Xu8ChXLDFW2sZmwWrAhiNzFK5YOU3yECDI+Thoy0Wm+PYTggn2YqX9YA77HAFEuUc5/B/eFv4nrtHqsEaicKt3ToquQtv5smXlZXdCmoqmGeZSxqRBp37OH8IuN68ueZLpLHbjuw7BFpgY/V2lo+bC5zqcKRmsId0lsYqJJrMf+qYflVy5QyRAzQ0pmff+KbZ4DTF6opsMtWaLAjzELnd7F4keFuNxuNkoBg0kTOdMpz8PF9r2P3pFTBAjcp1TLAl5xMvyPfL+BFM3nlc94kQhoZCt4GXWi1dEjTHGEVdr9Yja6ldXFi4za/xMGVPa/QTuFH+VmZ8yELVsS5LvOa2Qxb/7FQOwod/Oh7X0n9qKkcz4ficvQ+XRMzfI2KJz+JRGdXogcY0+NqB6nDkb/|nB8Gitrr6DxEP2t4tuC+WCgF47EZU2997gYl3bInkZY=\",\r\n            \"surgeMultiplier\": null,\r\n            \"projectedTips\": 0,\r\n            \"acceptedAt\": 1663668703,\r\n            \"priorityOffer\": false\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{live_url}}automation-tool/add-blocks"
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "adf16edf-3840-4733-9c3d-9d7019375f44"
+		},
+		{
+			"name": "Referral",
+			"item": [
+				{
+					"name": "Create referral code",
+					"_postman_id": "6d75e33f-9ddf-4886-8291-f23dcb1d2c69",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"country\" : \"UK\",\r\n    \"region\" : \"REG-1\",\r\n    \"station\" : \"STA-1\",\r\n    \"numberOfReferral\" : 10,\r\n    \"assignTo\" : \"UK-270825\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}referral"
+					},
+					"response": [
+						{
+							"id": "16f0d1d0-31b1-439a-b677-7475fac81367",
+							"name": "Create referral code",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"country\" : \"UK\",\r\n    \"region\" : \"REG-1\",\r\n    \"station\" : \"STA-1\",\r\n    \"numberOfReferral\" : 2,\r\n    \"assignTo\" : \"UK-900038\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}referral"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "77"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4d-xK1tULC8f2N13jl+G3trXnp2es8\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Dec 2022 11:13:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Referral codes created successfully.\",\n    \"data\": [\n        {}\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get referral code list by creator",
+					"_postman_id": "b0214ff1-a383-4ee2-a1b9-e567912262dc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}referral/by-creator?userpk=UK-573309",
+							"host": [
+								"{{url}}referral"
+							],
+							"path": [
+								"by-creator"
+							],
+							"query": [
+								{
+									"key": "userpk",
+									"value": "UK-573309"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "e81a6b53-563d-4d82-b72d-250c7b3f4b4a",
+							"name": "Get referral code list by creator",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}referral/by-creator?userpk=UK-900027",
+									"host": [
+										"{{url}}referral"
+									],
+									"path": [
+										"by-creator"
+									],
+									"query": [
+										{
+											"key": "userpk",
+											"value": "UK-900027"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "968"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3c8-jL657h6lJVUEVQT78YSGNINldTs\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Dec 2022 10:32:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Referral list retrieved successfully.\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"refCode\": \"UK900039\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:44:53.624Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900039\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900040\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:44:53.624Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900040\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900041\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:46:04.984Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900041\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900042\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:46:04.984Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900042\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            }\n        ],\n        \"Count\": 4,\n        \"ScannedCount\": 4\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get referral code list by sales agent",
+					"_postman_id": "2ae6fb1b-c45e-4260-8720-456444dcb7a6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}referral/by-sales-agent?userpk=UK-900038",
+							"host": [
+								"{{url}}referral"
+							],
+							"path": [
+								"by-sales-agent"
+							],
+							"query": [
+								{
+									"key": "userpk",
+									"value": "UK-900038"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "67e51510-7719-48bd-a3c0-e43be235e167",
+							"name": "Get referral code list by sales agent",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}referral/by-sales-agent?userpk=UK-900038",
+									"host": [
+										"{{url}}referral"
+									],
+									"path": [
+										"by-sales-agent"
+									],
+									"query": [
+										{
+											"key": "userpk",
+											"value": "UK-900038"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "968"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3c8-jL657h6lJVUEVQT78YSGNINldTs\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Dec 2022 10:48:02 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Referral list retrieved successfully.\",\n    \"data\": {\n        \"Items\": [\n            {\n                \"refCode\": \"UK900039\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:44:53.624Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900039\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900040\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:44:53.624Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900040\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900041\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:46:04.984Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900041\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            },\n            {\n                \"refCode\": \"UK900042\",\n                \"refActive\": true,\n                \"refGenBy\": \"UK-900027\",\n                \"refGen\": \"2022-12-05T12:46:04.984Z\",\n                \"refGenFor\": \"UK-900038\",\n                \"sk\": \"referral#UK900042\",\n                \"region\": \"REG-1\",\n                \"pk\": \"referral\",\n                \"country\": \"UK\",\n                \"station\": \"STA-1\"\n            }\n        ],\n        \"Count\": 4,\n        \"ScannedCount\": 4\n    }\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "de632e22-dda6-4032-a4b7-73563a92b560"
+		},
+		{
+			"name": "Timezone",
+			"item": [
+				{
+					"name": "Get timezone list / Get time zone by country",
+					"_postman_id": "65430a0b-b17b-445a-97d9-66383b1a1f31",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}timezone/list",
+							"host": [
+								"{{url}}timezone"
+							],
+							"path": [
+								"list"
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "NZ",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "e1b4d67b-cd3d-4379-a7ac-c036fabe3fc6",
+							"name": "Get timezone list / Get time zone by country",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}timezone/list?country=NZ",
+									"host": [
+										"{{url}}timezone"
+									],
+									"path": [
+										"list"
+									],
+									"query": [
+										{
+											"key": "country",
+											"value": "NZ"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "335"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"14f-heanYeXm7LBRMknoZluPRWLhY68\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:55:09 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Timezone list fetched\",\n    \"data\": {\n        \"status\": \"OK\",\n        \"message\": \"\",\n        \"zones\": [\n            {\n                \"countryCode\": \"NZ\",\n                \"countryName\": \"New Zealand\",\n                \"zoneName\": \"Pacific/Auckland\",\n                \"gmtOffset\": 46800,\n                \"timestamp\": 1675299307\n            },\n            {\n                \"countryCode\": \"NZ\",\n                \"countryName\": \"New Zealand\",\n                \"zoneName\": \"Pacific/Chatham\",\n                \"gmtOffset\": 49500,\n                \"timestamp\": 1675302007\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get timezone by zone name",
+					"_postman_id": "8c99e81a-5a47-4888-be99-3aa21c2cda03",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}timezone/by-zone?zone=America/Chicago",
+							"host": [
+								"{{url}}timezone"
+							],
+							"path": [
+								"by-zone"
+							],
+							"query": [
+								{
+									"key": "zone",
+									"value": "America/Chicago"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "65f7d04c-6402-4eae-b6f2-2634063053b7",
+							"name": "Get timezone by zone name",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}timezone/by-zone?zone=America/Chicago",
+									"host": [
+										"{{url}}timezone"
+									],
+									"path": [
+										"by-zone"
+									],
+									"query": [
+										{
+											"key": "zone",
+											"value": "America/Chicago"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "178"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"b2-4vLNE7dKU/drlWx0cN9wYFOVrUU\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Feb 2023 11:55:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"success\": true,\n    \"message\": \"Timezone Data fetched\",\n    \"data\": {\n        \"status\": \"OK\",\n        \"message\": \"\",\n        \"zoneName\": \"America/Chicago\",\n        \"gmtOffset\": -21600,\n        \"zoneStart\": 1667718000,\n        \"zoneEnd\": 1678607999\n    }\n}"
+						}
+					]
+				}
+			],
+			"_postman_id": "90c7cae3-c9bc-4dd9-a965-cd529a2cf184"
+		}
+	],
+	"variable": [
+		{
+			"id": "e87457bb-a99a-4856-8c97-33a590e1b452",
+			"key": "url",
+			"value": "http://localhost:9000/",
+			"type": "string"
+		}
+	]
+}
