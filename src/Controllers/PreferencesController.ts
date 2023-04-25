@@ -297,6 +297,7 @@ export default class PreferencesController {
     let batchSize = 25;
     let batchItemsList: any[] = [];
     let failedItems: any = [];
+    let scheduleList: any = [];
     for (let i = 0; i < scheduleDataArr.length; i++) {
       const listItem = scheduleDataArr[i];
       // schedule data
@@ -307,7 +308,6 @@ export default class PreferencesController {
         asStartTime: listItem.startTime,
         active: listItem.active,
       };
-
       // Create block item object
       let prefItem = {
         PutRequest: {
@@ -316,6 +316,11 @@ export default class PreferencesController {
       };
       // add schedule item in array
       batchItemsList.push(prefItem);
+      scheduleList.push({
+        ...scheduleData,
+        token: req.headers["x-access-token"],
+        scheduleNumber: i + 1,
+      });
       // add items to DB
       if (
         batchItemsList.length === batchSize ||
@@ -328,6 +333,11 @@ export default class PreferencesController {
             batchItemsList = []; // clear batchItemsList
             // store unprocessed (failed items)
             failedItems.push(result.UnprocessedItems);
+
+            await new PreferenceServices().creactAutomationSchedule(
+              scheduleList
+            );
+
             if (i + 1 === scheduleDataArr.length) {
               res.status(200);
               res.send({

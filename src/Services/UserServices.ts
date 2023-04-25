@@ -25,6 +25,19 @@ export default class UserServices {
     return dynamoDB.query(queryParams).promise();
   }
 
+  public async getPlansData(data: EntitySkPk) {
+    return dynamoDB
+      .get({
+        TableName: TableName,
+        Key: {
+          pk: data.pk,
+          sk: data.sk,
+        },
+        ProjectionExpression: "planType",
+      })
+      .promise();
+  }
+
   async getCustomerIdByIndex(customerID: string) {
     let queryParams = {
       IndexName: GSI.customerIDs,

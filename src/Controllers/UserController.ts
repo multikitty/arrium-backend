@@ -412,7 +412,7 @@ export default class UserController {
             });
           } else {
             await new UserServices()
-              .updateEmailVerify(request.body)
+              .updateEmailVerify(decoded)
               .then((result) => {
                 response.status(200);
                 response.send({
