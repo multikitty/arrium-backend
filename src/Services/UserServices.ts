@@ -432,6 +432,29 @@ export default class UserServices {
   }
 
   /**
+   * changePhoneNumberPhoneNumber
+   */
+  public changePhoneNumberPhoneNumber(data: any) {
+    return dynamoDB
+      .update({
+        TableName: TableName,
+        Key: {
+          sk: data.sk,
+          pk: data.pk,
+        },
+        UpdateExpression: `set dialCode= :dialCode, phoneNumber= :phoneNumber,phoneVerified= :phoneVerified, otp= :otp`,
+        ExpressionAttributeValues: {
+          ":dialCode": data.dialCode,
+          ":phoneNumber": data.phoneNumber,
+          ":phoneVerified": false,
+          ":otp": data.otp,
+        },
+        ReturnValues: "ALL_NEW",
+      })
+      .promise();
+  }
+
+  /**
    * udpate current step of user
    */
   public updateCurrentStepAndZendeskID(data: UpdateCurrentStepAndZendeskUsrID) {
