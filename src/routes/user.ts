@@ -126,4 +126,11 @@ router.post(
   new UserController().updateEmail
 );
 
+router.post(
+  "/update-phone-number",
+  authentication("driver"),
+  validationSchema,
+  new UserController().updatePhoneNumber
+);
+
 export = router;

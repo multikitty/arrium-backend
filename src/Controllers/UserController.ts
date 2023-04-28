@@ -695,6 +695,33 @@ export default class UserController {
       });
   }
 
+  /**
+   * Update Phone Number
+   */
+  public async updatePhoneNumber(req: Request, res: Response) {
+    req.body.otp = Math.floor(Math.random() * 9000 + 1000);
+    let userPhone = req.body.dialCode + "" + req.body.phoneNumber;
+    await new UserServices()
+      .changePhoneNumberPhoneNumber(req.body)
+      .then(async (result) => {
+        await new NotificationServices()
+          .sendOTPSMS({ otp: req.body.otp, userPhoneNumber: userPhone })
+          .then(() => {
+            res.status(200);
+            res.send({
+              success: true,
+              message: "Account information updated successfully",
+            });
+          })
+          .catch(() => {
+            res.status(500);
+            res.send({
+              success: false,
+              message: "Something went wrong, please try after sometime.",
+            });
+          });
+      });
+  }
   async updatephoneNumber(request: any, response: any) {
     if (request.body.otp === "1234") {
       try {
