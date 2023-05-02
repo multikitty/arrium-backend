@@ -198,46 +198,92 @@ export default class PreferencesController {
                   let stationsData = result.Items;
                   let prefParams = {
                     userPK: req.body.pk,
-                    day: req.query.day,
+                    day: undefined,
                   };
                   await new PreferenceServices()
                     .getPreferenceByUser(prefParams)
-                    .then((result: any) => {
-                      let preferencesData = result.Items;
-                      let responseData = [];
-                      for (let i = 0; i < stationsData.length; i++) {
-                        const station = stationsData[i];
-                        if (preferencesData.length > 0) {
-                          let matchedPreference = _.findWhere(preferencesData, {
-                            stationID: station.stationID,
-                          });
-                          if (matchedPreference) {
-                            let data = {
-                              station: station,
-                              preference: matchedPreference,
-                            };
-                            responseData.push(data);
-                          } else {
-                            let data = {
-                              station: station,
-                              preference: [],
-                            };
-                            responseData.push(data);
+                    .then(async (result: any) => {
+                      await new UserServices()
+                        .getUserData(req.body)
+                        .then((UserDataResult) => {
+                          if (UserDataResult.Item) {
+                            let preferencesData = result.Items;
+                            let responseData = [];
+                            for (let i = 0; i < stationsData.length; i++) {
+                              const station = stationsData[i];
+                              if (preferencesData.length > 0) {
+                                let matchedPreference = _.findWhere(
+                                  preferencesData,
+                                  {
+                                    stationID: station.stationID,
+                                  }
+                                );
+
+                                let matchedPreferenceFilterBybDy = _.findWhere(
+                                  preferencesData,
+                                  {
+                                    stationID: station.stationID,
+                                    bDay: req.query.day,
+                                  }
+                                );
+                                if (req.query.day === undefined) {
+                                  if (matchedPreference) {
+                                    let data = {
+                                      station: station,
+                                      preference: matchedPreference ?? [],
+                                    };
+                                    responseData.push(data);
+                                  } else {
+                                    let data = {
+                                      station: station,
+                                      preference: [],
+                                    };
+                                    responseData.push(data);
+                                  }
+                                } else if (matchedPreferenceFilterBybDy) {
+                                  let data = {
+                                    station: station,
+                                    preference: matchedPreferenceFilterBybDy,
+                                  };
+                                  responseData.push(data);
+                                } else {
+                                  let data = {
+                                    station: station,
+                                    preference: [],
+                                  };
+                                  responseData.push(data);
+                                }
+                              } else {
+                                let data = {
+                                  station: station,
+                                  preference: [],
+                                };
+                                responseData.push(data);
+                              }
+                            }
+
+                            responseData = responseData.filter(
+                              (item: { station: any }) =>
+                                item.station.stationType ===
+                                UserDataResult?.Item?.stationType
+                            );
+                            res.status(200);
+                            res.send({
+                              success: true,
+                              message: "Preferences list fetched successfully.",
+                              data: responseData,
+                            });
                           }
-                        } else {
-                          let data = {
-                            station: station,
-                            preference: [],
-                          };
-                          responseData.push(data);
-                        }
-                      }
-                      res.status(200);
-                      res.send({
-                        success: true,
-                        message: "Preferences list fetched successfully.",
-                        data: responseData,
-                      });
+                        })
+                        .catch((error) => {
+                          res.status(500);
+                          res.send({
+                            success: false,
+                            message:
+                              "Something went wrong, please try after sometime.",
+                            error: error,
+                          });
+                        });
                     })
                     .catch((err: any) => {
                       res.status(500);
