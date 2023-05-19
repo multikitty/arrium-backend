@@ -777,12 +777,38 @@ export default class UserController {
               };
               await new UserServices()
                 .updateCurrentSteps(updateParams)
-                .then(async (aaa) => {
-                  res.status(200);
-                  res.send({
-                    success: true,
-                    message: "Account configured mail sent.",
-                  });
+                .then(async (UserData) => {
+                  try {
+                    if (!UserData?.Attributes?.stripeID) {
+                      const stripeCust =
+                        await new StripeServices().createCustomer({
+                          email: UserData?.Attributes?.email,
+                          name: `${UserData?.Attributes?.firstname} ${UserData?.Attributes?.lastname}`,
+                          customerId: UserData?.Attributes?.customerID,
+                          pk: UserData?.Attributes?.pk,
+                          sk: UserData?.Attributes?.sk,
+                        });
+                      const cus = await new UserServices().updateProfile({
+                        sk: UserData?.Attributes?.sk,
+                        pk: UserData?.Attributes?.pk,
+                        fieldName: "stripeID",
+                        fieldValue: stripeCust?.id,
+                      });
+                    }
+                    res.status(200);
+                    res.send({
+                      success: true,
+                      message: "Account configured mail sent.",
+                    });
+                  } catch (err) {
+                    res.status(500);
+                    res.send({
+                      success: false,
+                      message:
+                        "Something went wrong, please try after sometime.",
+                      error: err,
+                    });
+                  }
                 })
                 .catch((error) => {
                   res.status(500);
