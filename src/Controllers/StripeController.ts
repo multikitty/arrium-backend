@@ -13,8 +13,8 @@ export default class StripeController {
       const exis_user = (await new UserServices().getUserData({ sk, pk }))
         ?.Item;
       const stripeCust = await new StripeServices().createCustomer({
-        email: "zeus@arrium.com",
-        name: "Zeus Thunder",
+        email: exis_user?.email,
+        name: `${exis_user?.firstname} ${exis_user?.lastname}`,
         customerId: exis_user?.customerID,
         pk,
         sk,
@@ -32,6 +32,7 @@ export default class StripeController {
         .json({ error: err, message: "Something went wrong" });
     }
   }
+
   async getPricingPlans(req: any, res: any) {
     const {
       getAll = false,
@@ -57,7 +58,6 @@ export default class StripeController {
       return res.status(500).json({ error: true, message: err?.message });
     }
   }
-
   async createCustomerStripe(
     email: string,
     name: string,
@@ -78,7 +78,6 @@ export default class StripeController {
       throw Error(error?.message);
     }
   }
-
   async handleStripeEvents(req: any, res: any) {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
     const payload = req.rawBody;
@@ -304,7 +303,6 @@ export default class StripeController {
       res.end();
     }
   }
-
   public async subscribeToFreeTrial(data: FreeTrial) {
     const { pk, sk } = data;
     try {
@@ -493,7 +491,6 @@ export default class StripeController {
       });
     }
   }
-
   public async getInvoices(req: any, res: any) {
     const { sk, pk } = req.body;
     const { page = 1, limit = 10, start_after, end_before } = req.query;
